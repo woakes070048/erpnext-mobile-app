@@ -146,13 +146,13 @@ class ActionDock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 14, bottom: 8),
+      padding: const EdgeInsets.only(top: 6, bottom: 0),
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
             decoration: BoxDecoration(
               color: const Color(0xFF090909),
               borderRadius: BorderRadius.circular(999),
@@ -167,22 +167,28 @@ class ActionDock extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Wrap(
-                  spacing: 10,
-                  children: leading,
+                SizedBox(
+                  width: 108,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: leading,
+                  ),
                 ),
                 const Spacer(),
-                const SizedBox(width: 58),
+                const SizedBox(width: 68),
                 const Spacer(),
-                Wrap(
-                  spacing: 10,
-                  children: trailing,
+                SizedBox(
+                  width: 108,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: trailing,
+                  ),
                 ),
               ],
             ),
           ),
           Positioned(
-            top: -10,
+            top: -8,
             child: center,
           ),
         ],
