@@ -51,8 +51,8 @@ class StatusPill extends StatelessWidget {
     switch (status) {
       case DispatchStatus.draft:
         label = 'Draft';
-        color = const Color(0xFFE2E2E2);
-        background = const Color(0xFF161616);
+        color = const Color(0xFF131313);
+        background = const Color(0xFFA78BFA);
       case DispatchStatus.pending:
         label = 'Kutilmoqda';
         color = const Color(0xFF1A1A1A);
