@@ -3,6 +3,8 @@ import '../../../core/api/mobile_api.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../models/app_models.dart';
+import '../../supplier/presentation/widgets/supplier_dock.dart';
+import '../../werka/presentation/widgets/werka_dock.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -19,24 +21,12 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String homeRoute = role == UserRole.supplier
-        ? AppRoutes.supplierHome
-        : AppRoutes.werkaHome;
-
     return AppShell(
       title: 'Profile',
       subtitle: 'Account va session boshqaruvi.',
-      actions: [
-        AppShellIconAction(
-          icon: Icons.home_outlined,
-          onTap: () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              homeRoute,
-              (route) => false,
-            );
-          },
-        ),
-      ],
+      bottom: role == UserRole.supplier
+          ? const SupplierDock(activeTab: SupplierDockTab.home)
+          : const WerkaDock(activeTab: WerkaDockTab.profile),
       child: Column(
         children: [
           SoftCard(
@@ -75,18 +65,21 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          OutlinedButton(
-            onPressed: () async {
-              await MobileApi.instance.logout();
-              if (!context.mounted) {
-                return;
-              }
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                AppRoutes.login,
-                (route) => false,
-              );
-            },
-            child: const Text('Logout'),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () async {
+                await MobileApi.instance.logout();
+                if (!context.mounted) {
+                  return;
+                }
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  AppRoutes.login,
+                  (route) => false,
+                );
+              },
+              child: const Text('Logout'),
+            ),
           ),
         ],
       ),
