@@ -134,30 +134,52 @@ class MetricBadge extends StatelessWidget {
 class ActionDock extends StatelessWidget {
   const ActionDock({
     super.key,
-    required this.children,
+    required this.leading,
+    required this.trailing,
+    required this.center,
   });
 
-  final List<Widget> children;
+  final List<Widget> leading;
+  final List<Widget> trailing;
+  final Widget center;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xFF090909),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: const Color(0xFF2A2A2A), width: 1.35),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x24000000),
-            blurRadius: 18,
-            offset: Offset(0, 10),
+    return Padding(
+      padding: const EdgeInsets.only(top: 18, bottom: 6),
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF090909),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: const Color(0xFF2A2A2A), width: 1.35),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x24000000),
+                  blurRadius: 18,
+                  offset: Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                ...leading,
+                const Spacer(),
+                const SizedBox(width: 72),
+                const Spacer(),
+                ...trailing,
+              ],
+            ),
+          ),
+          Positioned(
+            top: -14,
+            child: center,
           ),
         ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: children,
       ),
     );
   }
@@ -191,17 +213,26 @@ class DockButton extends StatelessWidget {
       child: AnimatedContainer(
         duration: AppMotion.medium,
         curve: AppMotion.smooth,
-        height: primary ? 54 : 46,
-        width: primary ? 54 : 46,
+        height: primary ? 72 : 46,
+        width: primary ? 72 : 46,
         decoration: BoxDecoration(
           color: background,
           shape: BoxShape.circle,
           border: Border.all(
             color: primary ? Colors.white : const Color(0xFF2A2A2A),
-            width: primary ? 1.5 : 1.2,
+            width: primary ? 2 : 1.2,
           ),
+          boxShadow: primary
+              ? const [
+                  BoxShadow(
+                    color: Color(0x33000000),
+                    blurRadius: 18,
+                    offset: Offset(0, 8),
+                  ),
+                ]
+              : null,
         ),
-        child: Icon(icon, color: foreground, size: primary ? 24 : 20),
+        child: Icon(icon, color: foreground, size: primary ? 30 : 20),
       ),
     );
   }

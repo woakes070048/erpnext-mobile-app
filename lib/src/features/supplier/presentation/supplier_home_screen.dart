@@ -18,7 +18,7 @@ class SupplierHomeScreen extends StatelessWidget {
       title: 'Supplier',
       subtitle: 'Jo‘natish va statuslarni shu yerdan boshqarasiz.',
       bottom: ActionDock(
-        children: [
+        leading: [
           DockButton(
             icon: Icons.home_rounded,
             active: true,
@@ -39,12 +39,14 @@ class SupplierHomeScreen extends StatelessWidget {
               );
             },
           ),
-          DockButton(
-            icon: Icons.add_rounded,
-            primary: true,
-            onTap: () =>
-                Navigator.of(context).pushNamed(AppRoutes.supplierItemPicker),
-          ),
+        ],
+        center: DockButton(
+          icon: Icons.add_rounded,
+          primary: true,
+          onTap: () =>
+              Navigator.of(context).pushNamed(AppRoutes.supplierItemPicker),
+        ),
+        trailing: [
           DockButton(
             icon: Icons.history_rounded,
             onTap: () {
