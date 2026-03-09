@@ -94,7 +94,7 @@ class AppShell extends StatelessWidget {
                   padding: EdgeInsets.fromLTRB(
                     20,
                     0,
-                    20,
+                    24,
                     bottom != null ? 0 : 20,
                   ),
                   child: child,
@@ -102,7 +102,7 @@ class AppShell extends StatelessWidget {
               ),
               if (bottom != null)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 24, 0),
                   child: Transform.translate(
                     offset: const Offset(0, 12),
                     child: bottom,
