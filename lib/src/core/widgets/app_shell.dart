@@ -91,7 +91,12 @@ class AppShell extends StatelessWidget {
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    0,
+                    20,
+                    bottom != null ? 4 : 20,
+                  ),
                   child: child,
                 ),
               ),
