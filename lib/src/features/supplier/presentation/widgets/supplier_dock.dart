@@ -13,9 +13,11 @@ class SupplierDock extends StatelessWidget {
   const SupplierDock({
     super.key,
     required this.activeTab,
+    this.centerActive = false,
   });
 
   final SupplierDockTab activeTab;
+  final bool centerActive;
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +48,12 @@ class SupplierDock extends StatelessWidget {
       center: DockButton(
         icon: Icons.add_rounded,
         primary: true,
-        onTap: () =>
-            Navigator.of(context).pushNamed(AppRoutes.supplierItemPicker),
+        onTap: () {
+          if (centerActive) {
+            return;
+          }
+          Navigator.of(context).pushNamed(AppRoutes.supplierItemPicker);
+        },
       ),
       trailing: [
         DockButton(

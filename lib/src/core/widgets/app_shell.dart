@@ -7,6 +7,7 @@ class AppShell extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.child,
+    this.leading,
     this.actions,
     this.bottom,
   });
@@ -14,6 +15,7 @@ class AppShell extends StatelessWidget {
   final String title;
   final String subtitle;
   final Widget child;
+  final Widget? leading;
   final List<Widget>? actions;
   final Widget? bottom;
 
@@ -38,6 +40,10 @@ class AppShell extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (leading != null) ...[
+                      leading!,
+                      const SizedBox(width: 14),
+                    ],
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

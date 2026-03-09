@@ -3,6 +3,7 @@ import '../../../core/api/mobile_api.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../shared/models/app_models.dart';
+import 'widgets/supplier_dock.dart';
 import 'package:flutter/material.dart';
 
 class SupplierItemPickerScreen extends StatefulWidget {
@@ -15,6 +16,13 @@ class SupplierItemPickerScreen extends StatefulWidget {
 
 class _SupplierItemPickerScreenState extends State<SupplierItemPickerScreen> {
   final TextEditingController controller = TextEditingController();
+  late final Future<List<SupplierItem>> itemsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    itemsFuture = MobileApi.instance.supplierItems();
+  }
 
   @override
   void dispose() {
@@ -25,8 +33,16 @@ class _SupplierItemPickerScreenState extends State<SupplierItemPickerScreen> {
   @override
   Widget build(BuildContext context) {
     return AppShell(
+      leading: AppShellIconAction(
+        icon: Icons.arrow_back_rounded,
+        onTap: () => Navigator.of(context).maybePop(),
+      ),
       title: 'Mahsulot tanlash',
       subtitle: 'Faqat sizga biriktirilgan itemlar ko‘rinadi.',
+      bottom: const SupplierDock(
+        activeTab: SupplierDockTab.home,
+        centerActive: true,
+      ),
       child: Column(
         children: [
           TextField(
@@ -40,8 +56,7 @@ class _SupplierItemPickerScreenState extends State<SupplierItemPickerScreen> {
           const SizedBox(height: 16),
           Expanded(
             child: FutureBuilder<List<SupplierItem>>(
-              future: MobileApi.instance
-                  .supplierItems(query: controller.text.trim()),
+              future: itemsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState != ConnectionState.done) {
                   return const Center(child: CircularProgressIndicator());
@@ -53,7 +68,26 @@ class _SupplierItemPickerScreenState extends State<SupplierItemPickerScreen> {
                     ),
                   );
                 }
-                final filtered = snapshot.data ?? <SupplierItem>[];
+                final query = controller.text.trim().toLowerCase();
+                final allItems = snapshot.data ?? <SupplierItem>[];
+                final filtered = allItems.where((item) {
+                  if (query.isEmpty) {
+                    return true;
+                  }
+                  return item.code.toLowerCase().contains(query) ||
+                      item.name.toLowerCase().contains(query);
+                }).toList();
+                if (filtered.isEmpty) {
+                  return Center(
+                    child: SoftCard(
+                      child: Text(
+                        query.isEmpty
+                            ? 'Bu supplierga item biriktirilmagan.'
+                            : 'Qidiruv bo‘yicha item topilmadi.',
+                      ),
+                    ),
+                  );
+                }
                 return ListView.separated(
                   itemCount: filtered.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
