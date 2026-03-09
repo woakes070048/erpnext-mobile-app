@@ -193,7 +193,7 @@ class ActionDock extends StatelessWidget implements BottomInsetWidget {
         color: AppTheme.cardBackground(context),
       ),
       child: Align(
-        alignment: Alignment.bottomCenter,
+        alignment: const Alignment(0, -0.15),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: buttons
