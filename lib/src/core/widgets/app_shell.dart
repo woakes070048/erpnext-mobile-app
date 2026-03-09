@@ -1,6 +1,5 @@
 import '../theme/app_motion.dart';
 import '../theme/app_theme.dart';
-import 'common_widgets.dart';
 import 'package:flutter/material.dart';
 
 class AppShell extends StatelessWidget {
@@ -11,7 +10,6 @@ class AppShell extends StatelessWidget {
     required this.child,
     this.leading,
     this.actions,
-    this.bottom,
   });
 
   final String title;
@@ -19,20 +17,10 @@ class AppShell extends StatelessWidget {
   final Widget child;
   final Widget? leading;
   final List<Widget>? actions;
-  final Widget? bottom;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final width = MediaQuery.sizeOf(context).width;
-    final bool largeDock = width > 430;
-    final double dockLeft = largeDock ? 36 : 20;
-    final double dockRight = largeDock ? 40 : 24;
-    final double bottomInset = bottom == null
-        ? 0
-        : bottom is BottomInsetWidget
-            ? (bottom as BottomInsetWidget).bottomInsetForWidth(width)
-            : 88;
 
     return Scaffold(
       body: DecoratedBox(
@@ -103,28 +91,10 @@ class AppShell extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.fromLTRB(
-                          20,
-                          0,
-                          24,
-                          bottomInset,
-                        ),
-                        child: child,
-                      ),
-                    ),
-                    if (bottom != null)
-                      Positioned(
-                        left: dockLeft,
-                        right: dockRight,
-                        bottom: 0,
-                        child: bottom!,
-                      ),
-                  ],
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(20, 0, 24, 0),
+                  child: child,
                 ),
               ),
             ],
