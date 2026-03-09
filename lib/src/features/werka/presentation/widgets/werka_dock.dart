@@ -28,6 +28,9 @@ class WerkaDock extends StatelessWidget {
           icon: Icons.home_rounded,
           active: activeTab == WerkaDockTab.home,
           onTap: () {
+            if (activeTab == WerkaDockTab.home) {
+              return;
+            }
             Navigator.of(context).pushNamedAndRemoveUntil(
               AppRoutes.werkaHome,
               (route) => false,
@@ -38,6 +41,9 @@ class WerkaDock extends StatelessWidget {
           icon: Icons.notifications_none_rounded,
           active: activeTab == WerkaDockTab.notifications,
           onTap: () {
+            if (activeTab == WerkaDockTab.notifications) {
+              return;
+            }
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                   content: Text('Werka bildirishnomalari keyingi bosqichda')),
@@ -68,6 +74,9 @@ class WerkaDock extends StatelessWidget {
           icon: Icons.person_outline_rounded,
           active: activeTab == WerkaDockTab.profile,
           onTap: () {
+            if (activeTab == WerkaDockTab.profile) {
+              return;
+            }
             Navigator.of(context).pushNamed(
               AppRoutes.profile,
               arguments: ProfileArgs(

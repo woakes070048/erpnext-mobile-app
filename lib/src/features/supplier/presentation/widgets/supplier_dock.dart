@@ -28,6 +28,9 @@ class SupplierDock extends StatelessWidget {
           icon: Icons.home_rounded,
           active: activeTab == SupplierDockTab.home,
           onTap: () {
+            if (activeTab == SupplierDockTab.home) {
+              return;
+            }
             Navigator.of(context).pushNamedAndRemoveUntil(
               AppRoutes.supplierHome,
               (route) => false,
@@ -38,6 +41,9 @@ class SupplierDock extends StatelessWidget {
           icon: Icons.notifications_none_rounded,
           active: activeTab == SupplierDockTab.notifications,
           onTap: () {
+            if (activeTab == SupplierDockTab.notifications) {
+              return;
+            }
             Navigator.of(context).pushNamed(AppRoutes.supplierNotifications);
           },
         ),
@@ -53,6 +59,9 @@ class SupplierDock extends StatelessWidget {
           icon: Icons.history_rounded,
           active: activeTab == SupplierDockTab.recent,
           onTap: () {
+            if (activeTab == SupplierDockTab.recent) {
+              return;
+            }
             Navigator.of(context).pushNamed(AppRoutes.supplierRecent);
           },
         ),
