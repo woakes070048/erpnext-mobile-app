@@ -47,7 +47,7 @@ ingress:
 EOF
 
 rm -f "$TUNNEL_LOG"
-nohup cloudflared tunnel --config "$TUNNEL_CONFIG" run "$TUNNEL_NAME" >"$TUNNEL_LOG" 2>&1 &
+setsid cloudflared tunnel --config "$TUNNEL_CONFIG" run "$TUNNEL_NAME" >"$TUNNEL_LOG" 2>&1 < /dev/null &
 echo $! >"$TUNNEL_PID"
 
 for _ in $(seq 1 80); do

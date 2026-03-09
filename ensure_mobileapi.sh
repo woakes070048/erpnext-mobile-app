@@ -16,7 +16,7 @@ fi
 echo "Starting mobileapi from $BACKEND_ROOT"
 (
 	cd "$BACKEND_ROOT"
-	nohup go run ./cmd/mobileapi >"$LOG_FILE" 2>&1 &
+	setsid go run ./cmd/mobileapi >"$LOG_FILE" 2>&1 < /dev/null &
 	echo $! >"$PID_FILE"
 )
 

@@ -23,7 +23,7 @@ if [ -f "$TUNNEL_PID" ]; then
 fi
 
 rm -f "$TUNNEL_LOG" "$TUNNEL_URL_FILE"
-nohup cloudflared tunnel --url "$CORE_URL" --no-autoupdate >"$TUNNEL_LOG" 2>&1 &
+setsid cloudflared tunnel --url "$CORE_URL" --no-autoupdate >"$TUNNEL_LOG" 2>&1 < /dev/null &
 echo $! >"$TUNNEL_PID"
 
 for _ in $(seq 1 80); do
