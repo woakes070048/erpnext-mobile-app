@@ -162,32 +162,26 @@ class ActionDock extends StatelessWidget {
       ...trailing,
     ];
 
-    return Transform.translate(
-      offset: const Offset(0, -11),
-      child: Container(
-        padding: EdgeInsets.zero,
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(
-              color: AppTheme.dockDivider(context),
-              width: 1.2,
-            ),
+    return Container(
+      padding: const EdgeInsets.only(top: 2),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: AppTheme.dockDivider(context),
+            width: 1.2,
           ),
         ),
-        child: Transform.translate(
-          offset: const Offset(0, 11),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: buttons
-                .map(
-                  (button) => Padding(
-                    padding: EdgeInsets.symmetric(horizontal: compact ? 1 : 3),
-                    child: button,
-                  ),
-                )
-                .toList(),
-          ),
-        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: buttons
+            .map(
+              (button) => Padding(
+                padding: EdgeInsets.symmetric(horizontal: compact ? 1 : 3),
+                child: button,
+              ),
+            )
+            .toList(),
       ),
     );
   }
