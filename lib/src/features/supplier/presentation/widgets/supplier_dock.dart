@@ -70,7 +70,11 @@ class SupplierDock extends StatelessWidget {
       ),
       trailing: [
         DockButton(
-          icon: Icons.history_rounded,
+          iconWidget: const DockSvgIcon(
+            fillAsset: 'assets/icons/repeat-2-fill.svg',
+            lineAsset: 'assets/icons/repeat-2-fill.svg',
+            primary: false,
+          ),
           active: activeTab == SupplierDockTab.recent,
           onTap: () {
             if (activeTab == SupplierDockTab.recent) {
@@ -83,7 +87,11 @@ class SupplierDock extends StatelessWidget {
           },
         ),
         DockButton(
-          icon: Icons.person_outline_rounded,
+          iconWidget: const DockSvgIcon(
+            fillAsset: 'assets/icons/account-circle-fill.svg',
+            lineAsset: 'assets/icons/account-circle-line.svg',
+            primary: false,
+          ),
           active: activeTab == SupplierDockTab.profile,
           onTap: () {
             if (activeTab == SupplierDockTab.profile) {
