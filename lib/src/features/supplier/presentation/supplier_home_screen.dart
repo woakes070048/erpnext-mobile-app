@@ -35,7 +35,7 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen> {
   Widget build(BuildContext context) {
     return AppShell(
       title: 'Supplier',
-      subtitle: 'Jo‘natish va statuslarni shu yerdan boshqarasiz.',
+      subtitle: 'Faqat asosiy holatlar.',
       bottom: const SupplierDock(activeTab: SupplierDockTab.home),
       child: FutureBuilder<List<DispatchRecord>>(
         future: _historyFuture,
@@ -46,7 +46,7 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen> {
           if (snapshot.hasError) {
             return Center(
               child: SoftCard(
-                child: Text('Supplier history yuklanmadi: ${snapshot.error}'),
+                child: Text('Home yuklanmadi: ${snapshot.error}'),
               ),
             );
           }
@@ -55,16 +55,14 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen> {
           final pendingCount = history
               .where((item) => item.status == DispatchStatus.pending)
               .length;
-          final acceptedCount = history
+          final submittedCount = history
               .where((item) => item.status == DispatchStatus.accepted)
               .length;
-          final itemCount = history
-              .map((item) =>
-                  item.itemCode.trim().isEmpty ? item.itemName : item.itemCode)
-              .toSet()
+          final returnedCount = history
+              .where((item) =>
+                  item.status == DispatchStatus.rejected ||
+                  item.status == DispatchStatus.cancelled)
               .length;
-          final totalQty =
-              history.fold<double>(0, (sum, item) => sum + item.sentQty);
 
           return RefreshIndicator.adaptive(
             onRefresh: _reload,
@@ -72,99 +70,20 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
               children: [
-                SmoothAppear(
-                  child: _SummaryCard(
-                    totalQty: totalQty,
-                    pendingCount: pendingCount,
-                    acceptedCount: acceptedCount,
-                    itemCount: itemCount,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Recent',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
-                    Text(
-                      '${history.length} ta',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
+                _HomeStatCard(
+                  label: 'Jarayonda',
+                  value: pendingCount.toString(),
                 ),
                 const SizedBox(height: 12),
-                if (history.isEmpty)
-                  const SoftCard(
-                    child: Text('Hali jo‘natishlar yo‘q.'),
-                  )
-                else
-                  SoftCard(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                    child: Column(
-                      children: history.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final record = entry.value;
-                        return SmoothAppear(
-                          delay: Duration(milliseconds: 60 + (index * 35)),
-                          offset: const Offset(0, 12),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            record.itemName.isEmpty
-                                                ? record.itemCode
-                                                : record.itemName,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium,
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            '${record.sentQty.toStringAsFixed(0)} ${record.uom}',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium,
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            record.createdLabel,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    StatusPill(status: record.status),
-                                  ],
-                                ),
-                              ),
-                              if (index != history.length - 1)
-                                Divider(
-                                  height: 1,
-                                  color: AppTheme.dockDivider(context),
-                                ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
+                _HomeStatCard(
+                  label: 'Submit',
+                  value: submittedCount.toString(),
+                ),
+                const SizedBox(height: 12),
+                _HomeStatCard(
+                  label: 'Qaytarilgan',
+                  value: returnedCount.toString(),
+                ),
                 const SizedBox(height: 12),
               ],
             ),
@@ -175,58 +94,8 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen> {
   }
 }
 
-class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({
-    required this.totalQty,
-    required this.pendingCount,
-    required this.acceptedCount,
-    required this.itemCount,
-  });
-
-  final double totalQty;
-  final int pendingCount;
-  final int acceptedCount;
-  final int itemCount;
-
-  @override
-  Widget build(BuildContext context) {
-    return SoftCard(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Overview',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            totalQty.toStringAsFixed(0),
-            style: Theme.of(context).textTheme.displaySmall,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Jami jo‘natilgan birlik',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 18),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              _StatChip(label: 'Pending', value: pendingCount.toString()),
-              _StatChip(label: 'Accepted', value: acceptedCount.toString()),
-              _StatChip(label: 'Items', value: itemCount.toString()),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatChip extends StatelessWidget {
-  const _StatChip({
+class _HomeStatCard extends StatelessWidget {
+  const _HomeStatCard({
     required this.label,
     required this.value,
   });
@@ -236,26 +105,28 @@ class _StatChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: AppTheme.actionSurface(context),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppTheme.cardBorder(context)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(width: 10),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        ],
+    return SmoothAppear(
+      child: SoftCard(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    fontSize: 34,
+                    color: AppTheme.isDark(context)
+                        ? Colors.white
+                        : const Color(0xFF1F1A17),
+                  ),
+            ),
+          ],
+        ),
       ),
     );
   }
