@@ -102,11 +102,15 @@ class AppShell extends StatelessWidget {
                 ),
               ),
               if (bottom != null)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 24, 0),
-                  child: Transform.translate(
-                    offset: Offset(0, compact ? -6 : 12),
-                    child: bottom,
+                Container(
+                  width: double.infinity,
+                  color: theme.scaffoldBackgroundColor,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 24, 0),
+                    child: Transform.translate(
+                      offset: Offset(0, compact ? -6 : 12),
+                      child: bottom,
+                    ),
                   ),
                 ),
             ],
