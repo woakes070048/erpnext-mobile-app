@@ -1,6 +1,5 @@
 import '../theme/app_motion.dart';
 import '../theme/app_theme.dart';
-import 'common_widgets.dart';
 import 'package:flutter/material.dart';
 
 class AppShell extends StatelessWidget {
@@ -24,13 +23,17 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final double bottomInset = bottom == null
-        ? 0
-        : bottom is BottomInsetWidget
-            ? (bottom as BottomInsetWidget).bottomInsetForContext(context)
-            : 88;
 
     return Scaffold(
+      bottomNavigationBar: bottom == null
+          ? null
+          : SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 24, 0),
+                child: bottom!,
+              ),
+            ),
       body: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -100,23 +103,10 @@ class AppShell extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.fromLTRB(20, 0, 24, bottomInset),
-                        child: child,
-                      ),
-                    ),
-                    if (bottom != null)
-                      Positioned(
-                        left: 20,
-                        right: 24,
-                        bottom: 0,
-                        child: bottom!,
-                      ),
-                  ],
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(20, 0, 24, 0),
+                  child: child,
                 ),
               ),
             ],
