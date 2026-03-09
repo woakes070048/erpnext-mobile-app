@@ -35,6 +35,7 @@ class AppShell extends StatelessWidget {
           ),
         ),
         child: SafeArea(
+          bottom: false,
           child: Column(
             children: [
               Padding(
