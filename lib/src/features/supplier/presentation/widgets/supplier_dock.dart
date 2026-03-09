@@ -8,6 +8,7 @@ enum SupplierDockTab {
   home,
   notifications,
   recent,
+  profile,
 }
 
 class SupplierDock extends StatelessWidget {
@@ -67,14 +68,20 @@ class SupplierDock extends StatelessWidget {
         ),
         DockButton(
           icon: Icons.person_outline_rounded,
-          onTap: () => Navigator.of(context).pushNamed(
-            AppRoutes.profile,
-            arguments: ProfileArgs(
-              role: UserRole.supplier,
-              name: profile?.displayName ?? 'Supplier',
-              subtitle: 'Jo‘natish va statuslarni boshqaradi',
-            ),
-          ),
+          active: activeTab == SupplierDockTab.profile,
+          onTap: () {
+            if (activeTab == SupplierDockTab.profile) {
+              return;
+            }
+            Navigator.of(context).pushNamed(
+              AppRoutes.profile,
+              arguments: ProfileArgs(
+                role: UserRole.supplier,
+                name: profile?.displayName ?? 'Supplier',
+                subtitle: 'Jo‘natish va statuslarni boshqaradi',
+              ),
+            );
+          },
         ),
       ],
     );

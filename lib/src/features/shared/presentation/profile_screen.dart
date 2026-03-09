@@ -25,7 +25,7 @@ class ProfileScreen extends StatelessWidget {
       title: 'Profile',
       subtitle: 'Account va session boshqaruvi.',
       bottom: role == UserRole.supplier
-          ? const SupplierDock(activeTab: SupplierDockTab.home)
+          ? const SupplierDock(activeTab: SupplierDockTab.profile)
           : const WerkaDock(activeTab: WerkaDockTab.profile),
       child: Column(
         children: [
