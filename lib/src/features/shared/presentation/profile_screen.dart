@@ -182,60 +182,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final current = profile;
     final role = current.role;
     final subtitle = role == UserRole.supplier
-        ? 'Jo‘natish va statuslarni boshqaradi'
-        : 'Pending qabul qilish va tasdiqlash bilan ishlaydi';
+        ? 'Supplier account'
+        : 'Werka account';
 
     return AppShell(
       title: 'Profile',
-      subtitle: 'Account va session boshqaruvi.',
+      subtitle: 'Shaxsiy sozlamalar va session.',
       bottom: role == UserRole.supplier
           ? const SupplierDock(activeTab: SupplierDockTab.profile)
           : const WerkaDock(activeTab: WerkaDockTab.profile),
       child: RefreshIndicator.adaptive(
         onRefresh: _refreshProfile,
-        child: SingleChildScrollView(
+        child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Column(
-            children: [
+          padding: EdgeInsets.zero,
+          children: [
             SoftCard(
+              padding: const EdgeInsets.all(22),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Stack(
-                      children: [
-                        _AvatarPreview(
-                          displayName: current.displayName,
-                          cachedAvatar: cachedAvatar,
-                          pendingAvatarBytes: pendingAvatarBytes,
-                        ),
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: GestureDetector(
-                            onTap: savingAvatar ? null : _pickAvatar,
-                            child: Container(
-                              height: 30,
-                              width: 30,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 2,
-                                ),
+                  Stack(
+                    children: [
+                      _AvatarPreview(
+                        displayName: current.displayName,
+                        cachedAvatar: cachedAvatar,
+                        pendingAvatarBytes: pendingAvatarBytes,
+                      ),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: GestureDetector(
+                          onTap: savingAvatar ? null : _pickAvatar,
+                          child: Container(
+                            height: 32,
+                            width: 32,
+                            decoration: BoxDecoration(
+                              color: AppTheme.primaryButton(context),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppTheme.cardBackground(context),
+                                width: 2,
                               ),
-                              child: const Icon(
-                                Icons.camera_alt_rounded,
-                                size: 16,
-                                color: Colors.black,
-                              ),
+                            ),
+                            child: Icon(
+                              Icons.camera_alt_rounded,
+                              size: 16,
+                              color:
+                                  AppTheme.primaryButtonForeground(context),
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 18),
                   Text(
@@ -243,16 +241,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     style: Theme.of(context)
                         .textTheme
                         .displaySmall
-                        ?.copyWith(fontSize: 30),
+                        ?.copyWith(fontSize: 28),
+                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 10),
-                  Text(subtitle, style: Theme.of(context).textTheme.bodyLarge),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 6),
                   Text(
-                    role == UserRole.supplier
-                        ? 'Supplier account'
-                        : 'Werka account',
+                    subtitle,
                     style: Theme.of(context).textTheme.bodySmall,
+                    textAlign: TextAlign.center,
                   ),
                   if (pendingAvatarBytes != null) ...[
                     const SizedBox(height: 16),
@@ -307,7 +303,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Colors.black,
                               ),
                             )
-                          : const Text('Nickname saqlash'),
+                          : const Text('Saqlash'),
                     ),
                   ),
                 ],
@@ -318,19 +314,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Telefon',
-                    style: Theme.of(context).textTheme.titleLarge,
+                  _InfoRow(
+                    label: 'Telefon',
+                    value: current.phone,
                   ),
-                  const SizedBox(height: 10),
-                  SelectableText(
-                    current.phone,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Telefon raqam faqat ko‘rish uchun. Uni ilovadan o‘zgartirib bo‘lmaydi.',
-                    style: Theme.of(context).textTheme.bodySmall,
+                  const SizedBox(height: 14),
+                  _InfoRow(
+                    label: 'Asl ism',
+                    value: current.legalName.isEmpty
+                        ? current.displayName
+                        : current.legalName,
                   ),
                 ],
               ),
@@ -344,7 +337,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     'Theme',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       Expanded(
@@ -366,27 +359,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 18),
-                  Text(
-                    'Asl ism',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    current.legalName.isEmpty
-                        ? current.displayName
-                        : current.legalName,
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    'Session',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Bu yerdan hisobdan chiqishingiz mumkin. Keyingi login bilan role qayta tanlanadi.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
                 ],
               ),
             ),
@@ -406,16 +378,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (!mounted) {
                     return;
                   }
-                  navigator.pushNamedAndRemoveUntil(
-                    '/',
-                    (route) => false,
-                  );
+                  navigator.pushNamedAndRemoveUntil('/', (route) => false);
                 },
                 child: const Text('Logout'),
               ),
             ),
-            ],
-          ),
+            const SizedBox(height: 12),
+          ],
         ),
       ),
     );
@@ -463,6 +432,39 @@ class _ThemeModeButton extends StatelessWidget {
   }
 }
 
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({
+    required this.label,
+    required this.value,
+  });
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          flex: 2,
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _AvatarPreview extends StatelessWidget {
   const _AvatarPreview({
     required this.displayName,
@@ -477,10 +479,10 @@ class _AvatarPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fallback = Container(
-      height: 84,
-      width: 84,
-      decoration: const BoxDecoration(
-        color: Color(0xFF121212),
+      height: 96,
+      width: 96,
+      decoration: BoxDecoration(
+        color: AppTheme.actionSurface(context),
         shape: BoxShape.circle,
       ),
       alignment: Alignment.center,
@@ -494,8 +496,8 @@ class _AvatarPreview extends StatelessWidget {
       return ClipOval(
         child: Image.memory(
           pendingAvatarBytes!,
-          height: 84,
-          width: 84,
+          height: 96,
+          width: 96,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) => fallback,
         ),
@@ -509,8 +511,8 @@ class _AvatarPreview extends StatelessWidget {
     return ClipOval(
       child: Image.file(
         cachedAvatar!,
-        height: 84,
-        width: 84,
+        height: 96,
+        width: 96,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) => fallback,
       ),

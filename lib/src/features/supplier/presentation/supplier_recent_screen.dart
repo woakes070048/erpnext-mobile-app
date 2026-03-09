@@ -114,7 +114,11 @@ class _SupplierRecentScreenState extends State<SupplierRecentScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          StatusPill(status: record.status),
+                          Icon(
+                            recentStatusIcon(record.status),
+                            color: recentStatusColor(record.status),
+                            size: 22,
+                          ),
                           const SizedBox(height: 8),
                           Text(
                             record.createdLabel,
@@ -131,5 +135,39 @@ class _SupplierRecentScreenState extends State<SupplierRecentScreen> {
         },
       ),
     );
+  }
+}
+
+IconData recentStatusIcon(DispatchStatus status) {
+  switch (status) {
+    case DispatchStatus.accepted:
+      return Icons.check_rounded;
+    case DispatchStatus.partial:
+      return Icons.timelapse_rounded;
+    case DispatchStatus.rejected:
+      return Icons.close_rounded;
+    case DispatchStatus.cancelled:
+      return Icons.remove_rounded;
+    case DispatchStatus.draft:
+      return Icons.edit_note_rounded;
+    case DispatchStatus.pending:
+      return Icons.schedule_rounded;
+  }
+}
+
+Color recentStatusColor(DispatchStatus status) {
+  switch (status) {
+    case DispatchStatus.accepted:
+      return const Color(0xFF5BB450);
+    case DispatchStatus.partial:
+      return const Color(0xFF2A6FDB);
+    case DispatchStatus.rejected:
+      return const Color(0xFFC53B30);
+    case DispatchStatus.cancelled:
+      return const Color(0xFF9CA3AF);
+    case DispatchStatus.draft:
+      return const Color(0xFFA78BFA);
+    case DispatchStatus.pending:
+      return const Color(0xFFFFD54F);
   }
 }
