@@ -4,6 +4,7 @@ import '../../../core/widgets/common_widgets.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../shared/models/app_models.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AdminSupplierDetailScreen extends StatefulWidget {
   const AdminSupplierDetailScreen({
@@ -26,6 +27,7 @@ class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
   bool _regeneratingCode = false;
   bool _removing = false;
   bool _searching = false;
+  bool _searchOpen = false;
   List<SupplierItem> _searchResults = const <SupplierItem>[];
   final Map<String, SupplierItem> _selectedItems = <String, SupplierItem>{};
 
@@ -96,12 +98,27 @@ class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
     }
   }
 
-  Future<void> _saveItems() async {
-    setState(() => _savingItems = true);
+  Future<void> _toggleItemSelection(SupplierItem item) async {
+    if (_savingItems) {
+      return;
+    }
+    final nextItems = Map<String, SupplierItem>.from(_selectedItems);
+    if (nextItems.containsKey(item.code)) {
+      nextItems.remove(item.code);
+    } else {
+      nextItems[item.code] = item;
+    }
+
+    setState(() {
+      _savingItems = true;
+      _selectedItems
+        ..clear()
+        ..addAll(nextItems);
+    });
     try {
       final updated = await MobileApi.instance.adminUpdateSupplierItems(
         ref: widget.supplierRef,
-        itemCodes: _selectedItems.keys.toList(),
+        itemCodes: nextItems.keys.toList(),
       );
       _syncSelectedItems(updated.assignedItems);
       setState(() {
@@ -109,7 +126,9 @@ class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
       });
     } finally {
       if (mounted) {
-        setState(() => _savingItems = false);
+        setState(() {
+          _savingItems = false;
+        });
       }
     }
   }
@@ -125,6 +144,7 @@ class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
       }
       setState(() {
         _searchResults = items;
+        _searchOpen = true;
       });
     } finally {
       if (mounted) {
@@ -170,6 +190,16 @@ class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
         setState(() => _removing = false);
       }
     }
+  }
+
+  Future<void> _copyCode(String code) async {
+    await Clipboard.setData(ClipboardData(text: code));
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Code nusxalandi')),
+    );
   }
 
   @override
@@ -253,41 +283,49 @@ class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
                     const SizedBox(height: 14),
                     Text('Code', style: Theme.of(context).textTheme.bodySmall),
                     const SizedBox(height: 6),
-                    SelectableText(
-                      detail.code,
-                      style: Theme.of(context).textTheme.titleLarge,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SelectableText(
+                            detail.code,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => _copyCode(detail.code),
+                          icon: const Icon(Icons.content_copy_outlined),
+                        ),
+                        IconButton(
+                          onPressed: _regeneratingCode ? null : _regenerateCode,
+                          icon: _regeneratingCode
+                              ? const SizedBox(
+                                  height: 18,
+                                  width: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.refresh_rounded),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed:
+                            _savingStatus ? null : () => _toggleBlocked(detail),
+                        child: Text(
+                          _savingStatus
+                              ? 'Saqlanmoqda...'
+                              : detail.blocked
+                                  ? 'Unblock qilish'
+                                  : 'Block qilish',
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed:
-                          _savingStatus ? null : () => _toggleBlocked(detail),
-                      child: Text(
-                        _savingStatus
-                            ? 'Saqlanmoqda...'
-                            : detail.blocked
-                                ? 'Unblock qilish'
-                                : 'Block qilish',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: _regeneratingCode ? null : _regenerateCode,
-                      child: Text(
-                        _regeneratingCode
-                            ? 'Yangilanmoqda...'
-                            : 'Code yangilash',
-                      ),
-                    ),
-                  ),
-                ],
               ),
               const SizedBox(height: 12),
               SoftCard(
@@ -322,6 +360,12 @@ class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
                                   padding: const EdgeInsets.all(12),
                                   child: Row(
                                     children: [
+                                      IconButton(
+                                        onPressed: _savingItems
+                                            ? null
+                                            : () => _toggleItemSelection(item),
+                                        icon: const Icon(Icons.remove_rounded),
+                                      ),
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
@@ -343,14 +387,6 @@ class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
                                           ],
                                         ),
                                       ),
-                                      IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _selectedItems.remove(item.code);
-                                          });
-                                        },
-                                        icon: const Icon(Icons.close_rounded),
-                                      ),
                                     ],
                                   ),
                                 ),
@@ -361,104 +397,91 @@ class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
                     const SizedBox(height: 12),
                     TextField(
                       controller: _searchController,
+                      readOnly: false,
                       decoration: const InputDecoration(
                         labelText: 'Mahsulot qidirish',
                         hintText: 'Masalan: Rice yoki ITEM-001',
                       ),
-                      onSubmitted: (_) => _searchItems(),
+                      onTap: _searchItems,
+                      onChanged: (_) => _searchItems(),
                     ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: _searching ? null : _searchItems,
-                        child: Text(
-                          _searching ? 'Qidirilmoqda...' : 'Mahsulot qidirish',
-                        ),
-                      ),
-                    ),
-                    if (_searchResults.isNotEmpty) ...[
+                    if (_searchOpen) ...[
                       const SizedBox(height: 12),
-                      ..._searchResults.map(
-                        (item) {
-                          final bool selected =
-                              _selectedItems.containsKey(item.code);
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(18),
-                              onTap: () {
-                                setState(() {
-                                  if (selected) {
-                                    _selectedItems.remove(item.code);
-                                  } else {
-                                    _selectedItems[item.code] = item;
-                                  }
-                                });
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(18),
-                                  border: Border.all(
-                                    color: selected
-                                        ? Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                        : Theme.of(context)
-                                            .colorScheme
-                                            .outlineVariant,
-                                    width: selected ? 1.4 : 1,
-                                  ),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outlineVariant,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            if (_searching)
+                              const Padding(
+                                padding: EdgeInsets.all(14),
+                                child: CircularProgressIndicator(),
+                              )
+                            else if (_searchResults.isEmpty)
+                              Padding(
+                                padding: const EdgeInsets.all(14),
+                                child: Text(
+                                  'Mahsulot topilmadi.',
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
-                                padding: const EdgeInsets.all(12),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                              )
+                            else
+                              ..._searchResults.map(
+                                (item) {
+                                  final bool selected =
+                                      _selectedItems.containsKey(item.code);
+                                  return InkWell(
+                                    onTap: _savingItems
+                                        ? null
+                                        : () => _toggleItemSelection(item),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 10,
+                                      ),
+                                      child: Row(
                                         children: [
-                                          Text(
-                                            item.name,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium,
+                                          Icon(
+                                            selected
+                                                ? Icons.remove_rounded
+                                                : Icons.add_rounded,
                                           ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            '${item.code} • ${item.uom}',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall,
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  item.name,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium,
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  '${item.code} • ${item.uom}',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall,
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    Icon(
-                                      selected
-                                          ? Icons.check_circle_rounded
-                                          : Icons.add_circle_outline_rounded,
-                                    ),
-                                  ],
-                                ),
+                                  );
+                                },
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: _savingItems ? null : _saveItems,
-                        child: Text(
-                          _savingItems
-                              ? 'Saqlanmoqda...'
-                              : 'Mahsulotlarni saqlash',
+                          ],
                         ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
