@@ -20,7 +20,7 @@ class AdminCreateHubScreen extends StatelessWidget {
             title: 'Supplier qo‘shish',
             subtitle: 'Supplier yaratish va code boshqaruvi',
             onTap: () =>
-                Navigator.of(context).pushNamed(AppRoutes.adminSuppliers),
+                Navigator.of(context).pushNamed(AppRoutes.adminSupplierCreate),
           ),
           const SizedBox(height: 12),
           AdminModuleCard(

@@ -16,21 +16,11 @@ class AdminSuppliersScreen extends StatefulWidget {
 
 class _AdminSuppliersScreenState extends State<AdminSuppliersScreen> {
   late Future<List<AdminSupplier>> _future;
-  final name = TextEditingController();
-  final phone = TextEditingController();
-  bool saving = false;
 
   @override
   void initState() {
     super.initState();
     _future = MobileApi.instance.adminSuppliers();
-  }
-
-  @override
-  void dispose() {
-    name.dispose();
-    phone.dispose();
-    super.dispose();
   }
 
   Future<void> _reload() async {
@@ -41,21 +31,6 @@ class _AdminSuppliersScreenState extends State<AdminSuppliersScreen> {
     await future;
   }
 
-  Future<void> _create() async {
-    setState(() => saving = true);
-    try {
-      await MobileApi.instance.adminCreateSupplier(
-        name: name.text.trim(),
-        phone: phone.text.trim(),
-      );
-      name.clear();
-      phone.clear();
-      await _reload();
-    } finally {
-      if (mounted) setState(() => saving = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return AppShell(
@@ -64,7 +39,7 @@ class _AdminSuppliersScreenState extends State<AdminSuppliersScreen> {
         onTap: () => Navigator.of(context).maybePop(),
       ),
       title: 'Suppliers',
-      subtitle: 'Qo‘shish va ixcham list moduli.',
+      subtitle: 'Supplierlar ro‘yxati.',
       bottom: const AdminDock(activeTab: AdminDockTab.suppliers),
       child: FutureBuilder<List<AdminSupplier>>(
         future: _future,
@@ -80,51 +55,18 @@ class _AdminSuppliersScreenState extends State<AdminSuppliersScreen> {
             );
           }
           final items = snapshot.data ?? const <AdminSupplier>[];
-          return ListView.separated(
-            padding: EdgeInsets.zero,
-            itemCount: 2,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return SoftCard(
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: name,
-                        decoration:
-                            const InputDecoration(labelText: 'Supplier name'),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: phone,
-                        decoration:
-                            const InputDecoration(labelText: 'Supplier phone'),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton(
-                          onPressed: saving ? null : _create,
-                          child: Text(
-                            saving ? 'Qo‘shilmoqda...' : 'Supplier qo‘shish',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+          return RefreshIndicator(
+            onRefresh: _reload,
+            child: AdminSupplierListModule(
+              items: items,
+              onTapSupplier: (item) async {
+                await Navigator.of(context).pushNamed(
+                  AppRoutes.adminSupplierDetail,
+                  arguments: item.ref,
                 );
-              }
-              return AdminSupplierListModule(
-                items: items,
-                onTapSupplier: (item) async {
-                  await Navigator.of(context).pushNamed(
-                    AppRoutes.adminSupplierDetail,
-                    arguments: item.ref,
-                  );
-                  await _reload();
-                },
-              );
-            },
+                await _reload();
+              },
+            ),
           );
         },
       ),
