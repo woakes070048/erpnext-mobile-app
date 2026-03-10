@@ -58,7 +58,7 @@ class _SupplierItemPickerScreenState extends State<SupplierItemPickerScreen>
       title: 'Mahsulot tanlash',
       subtitle: 'Faqat sizga biriktirilgan itemlar ko‘rinadi.',
       bottom: const SupplierDock(
-        activeTab: SupplierDockTab.home,
+        activeTab: null,
         centerActive: true,
       ),
       child: Column(

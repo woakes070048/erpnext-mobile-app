@@ -16,7 +16,7 @@ class SupplierDock extends StatelessWidget {
     this.centerActive = false,
   });
 
-  final SupplierDockTab activeTab;
+  final SupplierDockTab? activeTab;
   final bool centerActive;
 
   @override
@@ -31,7 +31,7 @@ class SupplierDock extends StatelessWidget {
           ),
           active: activeTab == SupplierDockTab.home,
           onTap: () {
-            if (activeTab == SupplierDockTab.home) {
+            if (activeTab == SupplierDockTab.home && !centerActive) {
               return;
             }
             Navigator.of(context).pushNamedAndRemoveUntil(
