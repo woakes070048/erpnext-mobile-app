@@ -91,7 +91,7 @@ class _AdminActivityScreenState extends State<AdminActivityScreen> {
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                           ),
-                          StatusPill(status: item.status),
+                          _ActivityStatusBadge(status: item.status),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -123,6 +123,50 @@ class _AdminActivityScreenState extends State<AdminActivityScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _ActivityStatusBadge extends StatelessWidget {
+  const _ActivityStatusBadge({
+    required this.status,
+  });
+
+  final DispatchStatus status;
+
+  String get label {
+    switch (status) {
+      case DispatchStatus.draft:
+        return 'Draft';
+      case DispatchStatus.pending:
+        return 'Kutilmoqda';
+      case DispatchStatus.accepted:
+        return 'Qabul qilindi';
+      case DispatchStatus.partial:
+        return 'Qisman qabul';
+      case DispatchStatus.rejected:
+        return 'Rad etildi';
+      case DispatchStatus.cancelled:
+        return 'Bekor qilindi';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Theme.of(context).dividerColor),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontWeight: FontWeight.w700,
+            ),
       ),
     );
   }
