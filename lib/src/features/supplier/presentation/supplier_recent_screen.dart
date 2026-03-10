@@ -42,9 +42,38 @@ class _SupplierRecentScreenState extends State<SupplierRecentScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(
-              child: SoftCard(
-                child: Text('Recent yuklanmadi: ${snapshot.error}'),
+            return RefreshIndicator.adaptive(
+              onRefresh: _reload,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                children: [
+                  const SizedBox(height: 120),
+                  SoftCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Recent yuklanmadi',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${snapshot.error}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        const SizedBox(height: 14),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: _reload,
+                            child: const Text('Qayta urinish'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             );
           }
