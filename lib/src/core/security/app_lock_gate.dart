@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'device_permissions_bootstrap.dart';
 import 'security_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +18,14 @@ class AppLockGate extends StatefulWidget {
 
 class _AppLockGateState extends State<AppLockGate> {
   bool _biometricAttempted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      DevicePermissionsBootstrap.instance.runOnce();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +48,13 @@ class _AppLockGateState extends State<AppLockGate> {
         return Stack(
           children: [
             widget.child,
-            const ModalBarrier(
-              dismissible: false,
-              color: Color(0xCC000000),
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                child: Container(
+                  color: const Color(0xAA000000),
+                ),
+              ),
             ),
             const _PinUnlockOverlay(),
           ],
