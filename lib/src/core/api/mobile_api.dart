@@ -55,8 +55,8 @@ class MobileApi {
     if (token != null) {
       await _sendAuthorized(
         () => http.post(
-        Uri.parse('$baseUrl/v1/mobile/auth/logout'),
-        headers: _headers(token),
+          Uri.parse('$baseUrl/v1/mobile/auth/logout'),
+          headers: _headers(token),
         ),
       );
     }
@@ -84,7 +84,8 @@ class MobileApi {
     final http.Response response = await _sendAuthorized(
       () => http.put(
         Uri.parse('$baseUrl/v1/mobile/profile'),
-        headers: _headers(requireToken())..['Content-Type'] = 'application/json',
+        headers: _headers(requireToken())
+          ..['Content-Type'] = 'application/json',
         body: jsonEncode({'nickname': nickname}),
       ),
     );
@@ -172,7 +173,8 @@ class MobileApi {
     final http.Response response = await _sendAuthorized(
       () => http.post(
         Uri.parse('$baseUrl/v1/mobile/supplier/dispatch'),
-        headers: _headers(requireToken())..['Content-Type'] = 'application/json',
+        headers: _headers(requireToken())
+          ..['Content-Type'] = 'application/json',
         body: jsonEncode({
           'item_code': itemCode,
           'qty': qty,
@@ -209,7 +211,8 @@ class MobileApi {
     final http.Response response = await _sendAuthorized(
       () => http.post(
         Uri.parse('$baseUrl/v1/mobile/werka/confirm'),
-        headers: _headers(requireToken())..['Content-Type'] = 'application/json',
+        headers: _headers(requireToken())
+          ..['Content-Type'] = 'application/json',
         body: jsonEncode({
           'receipt_id': receiptID,
           'accepted_qty': acceptedQty,
@@ -242,7 +245,8 @@ class MobileApi {
     final response = await _sendAuthorized(
       () => http.put(
         Uri.parse('$baseUrl/v1/mobile/admin/settings'),
-        headers: _headers(requireToken())..['Content-Type'] = 'application/json',
+        headers: _headers(requireToken())
+          ..['Content-Type'] = 'application/json',
         body: jsonEncode(settings.toJson()),
       ),
     );
@@ -270,6 +274,55 @@ class MobileApi {
         .toList();
   }
 
+  Future<AdminSupplierSummary> adminSupplierSummary() async {
+    final response = await _sendAuthorized(
+      () => http.get(
+        Uri.parse('$baseUrl/v1/mobile/admin/suppliers/summary'),
+        headers: _headers(requireToken()),
+      ),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Admin supplier summary failed');
+    }
+    return AdminSupplierSummary.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<AdminSupplierDetail> adminSupplierDetail(String ref) async {
+    final response = await _sendAuthorized(
+      () => http.get(
+        Uri.parse('$baseUrl/v1/mobile/admin/suppliers/detail')
+            .replace(queryParameters: {'ref': ref}),
+        headers: _headers(requireToken()),
+      ),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Admin supplier detail failed');
+    }
+    return AdminSupplierDetail.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<List<SupplierItem>> adminItems({String query = ''}) async {
+    final response = await _sendAuthorized(
+      () => http.get(
+        Uri.parse('$baseUrl/v1/mobile/admin/items').replace(
+          queryParameters: query.trim().isEmpty ? null : {'q': query.trim()},
+        ),
+        headers: _headers(requireToken()),
+      ),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Admin items failed');
+    }
+    final List<dynamic> json = jsonDecode(response.body) as List<dynamic>;
+    return json
+        .map((item) => SupplierItem.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<AdminSupplier> adminCreateSupplier({
     required String name,
     required String phone,
@@ -277,7 +330,8 @@ class MobileApi {
     final response = await _sendAuthorized(
       () => http.post(
         Uri.parse('$baseUrl/v1/mobile/admin/suppliers'),
-        headers: _headers(requireToken())..['Content-Type'] = 'application/json',
+        headers: _headers(requireToken())
+          ..['Content-Type'] = 'application/json',
         body: jsonEncode({
           'name': name,
           'phone': phone,
@@ -290,6 +344,77 @@ class MobileApi {
     return AdminSupplier.fromJson(
       jsonDecode(response.body) as Map<String, dynamic>,
     );
+  }
+
+  Future<AdminSupplierDetail> adminSetSupplierBlocked({
+    required String ref,
+    required bool blocked,
+  }) async {
+    final response = await _sendAuthorized(
+      () => http.put(
+        Uri.parse('$baseUrl/v1/mobile/admin/suppliers/status')
+            .replace(queryParameters: {'ref': ref}),
+        headers: _headers(requireToken())
+          ..['Content-Type'] = 'application/json',
+        body: jsonEncode({'blocked': blocked}),
+      ),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Admin supplier status failed');
+    }
+    return AdminSupplierDetail.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<AdminSupplierDetail> adminRegenerateSupplierCode(String ref) async {
+    final response = await _sendAuthorized(
+      () => http.post(
+        Uri.parse('$baseUrl/v1/mobile/admin/suppliers/code/regenerate')
+            .replace(queryParameters: {'ref': ref}),
+        headers: _headers(requireToken()),
+      ),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Admin supplier code regenerate failed');
+    }
+    return AdminSupplierDetail.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<AdminSupplierDetail> adminUpdateSupplierItems({
+    required String ref,
+    required List<String> itemCodes,
+  }) async {
+    final response = await _sendAuthorized(
+      () => http.put(
+        Uri.parse('$baseUrl/v1/mobile/admin/suppliers/items')
+            .replace(queryParameters: {'ref': ref}),
+        headers: _headers(requireToken())
+          ..['Content-Type'] = 'application/json',
+        body: jsonEncode({'item_codes': itemCodes}),
+      ),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Admin supplier item update failed');
+    }
+    return AdminSupplierDetail.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<void> adminRemoveSupplier(String ref) async {
+    final response = await _sendAuthorized(
+      () => http.delete(
+        Uri.parse('$baseUrl/v1/mobile/admin/suppliers/remove')
+            .replace(queryParameters: {'ref': ref}),
+        headers: _headers(requireToken()),
+      ),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Admin supplier remove failed');
+    }
   }
 
   Map<String, String> _headers(String token) {

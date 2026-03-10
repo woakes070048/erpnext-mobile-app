@@ -200,12 +200,18 @@ class AdminSupplier {
     required this.name,
     required this.phone,
     required this.code,
+    required this.blocked,
+    required this.assignedItemCodes,
+    required this.assignedItemCount,
   });
 
   final String ref;
   final String name;
   final String phone;
   final String code;
+  final bool blocked;
+  final List<String> assignedItemCodes;
+  final int assignedItemCount;
 
   factory AdminSupplier.fromJson(Map<String, dynamic> json) {
     return AdminSupplier(
@@ -213,6 +219,80 @@ class AdminSupplier {
       name: json['name'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
       code: json['code'] as String? ?? '',
+      blocked: json['blocked'] as bool? ?? false,
+      assignedItemCodes: (json['assigned_item_codes'] as List<dynamic>? ?? [])
+          .map((item) => item as String)
+          .toList(),
+      assignedItemCount: json['assigned_item_count'] as int? ?? 0,
+    );
+  }
+}
+
+class AdminSupplierSummary {
+  const AdminSupplierSummary({
+    required this.totalSuppliers,
+    required this.activeSuppliers,
+    required this.blockedSuppliers,
+  });
+
+  final int totalSuppliers;
+  final int activeSuppliers;
+  final int blockedSuppliers;
+
+  factory AdminSupplierSummary.fromJson(Map<String, dynamic> json) {
+    return AdminSupplierSummary(
+      totalSuppliers: json['total_suppliers'] as int? ?? 0,
+      activeSuppliers: json['active_suppliers'] as int? ?? 0,
+      blockedSuppliers: json['blocked_suppliers'] as int? ?? 0,
+    );
+  }
+}
+
+class AdminSupplierDetail {
+  const AdminSupplierDetail({
+    required this.ref,
+    required this.name,
+    required this.phone,
+    required this.code,
+    required this.blocked,
+    required this.assignedItems,
+  });
+
+  final String ref;
+  final String name;
+  final String phone;
+  final String code;
+  final bool blocked;
+  final List<SupplierItem> assignedItems;
+
+  factory AdminSupplierDetail.fromJson(Map<String, dynamic> json) {
+    return AdminSupplierDetail(
+      ref: json['ref'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      phone: json['phone'] as String? ?? '',
+      code: json['code'] as String? ?? '',
+      blocked: json['blocked'] as bool? ?? false,
+      assignedItems: (json['assigned_items'] as List<dynamic>? ?? [])
+          .map((item) => SupplierItem.fromJson(item as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  AdminSupplierDetail copyWith({
+    String? ref,
+    String? name,
+    String? phone,
+    String? code,
+    bool? blocked,
+    List<SupplierItem>? assignedItems,
+  }) {
+    return AdminSupplierDetail(
+      ref: ref ?? this.ref,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      code: code ?? this.code,
+      blocked: blocked ?? this.blocked,
+      assignedItems: assignedItems ?? this.assignedItems,
     );
   }
 }

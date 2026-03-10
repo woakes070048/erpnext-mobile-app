@@ -1,3 +1,4 @@
+import '../../../app/app_router.dart';
 import '../../../core/api/mobile_api.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
@@ -113,16 +114,66 @@ class _AdminSuppliersScreenState extends State<AdminSuppliersScreen> {
                 );
               }
               final item = items[index - 1];
-              return SoftCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(item.name, style: Theme.of(context).textTheme.titleLarge),
-                    const SizedBox(height: 6),
-                    Text(item.phone, style: Theme.of(context).textTheme.bodySmall),
-                    const SizedBox(height: 10),
-                    SelectableText(item.code, style: Theme.of(context).textTheme.titleMedium),
-                  ],
+              return InkWell(
+                borderRadius: BorderRadius.circular(24),
+                onTap: () async {
+                  await Navigator.of(context).pushNamed(
+                    AppRoutes.adminSupplierDetail,
+                    arguments: item.ref,
+                  );
+                  await _reload();
+                },
+                child: SoftCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item.name,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                          ),
+                          if (item.blocked)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0x22C53B30),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                'Blocked',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(color: const Color(0xFFC53B30)),
+                              ),
+                            ),
+                          const SizedBox(width: 10),
+                          const Icon(Icons.arrow_forward_rounded),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(item.phone,
+                          style: Theme.of(context).textTheme.bodySmall),
+                      const SizedBox(height: 10),
+                      SelectableText(
+                        item.code,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        item.assignedItemCount == 0
+                            ? 'Mahsulot biriktirilmagan'
+                            : 'Biriktirilgan mahsulotlar: ${item.assignedItemCount}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
