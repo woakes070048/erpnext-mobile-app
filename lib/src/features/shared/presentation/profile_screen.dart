@@ -672,7 +672,7 @@ class _ThemeIconButton extends StatelessWidget {
         child: AnimatedRotation(
           duration: const Duration(milliseconds: 320),
           curve: Curves.easeInOutCubic,
-          turns: isDark ? 0.5 : 0,
+          turns: isDark ? 0.08 : 0,
           child: SvgPicture.asset(
             asset,
             width: 22,
