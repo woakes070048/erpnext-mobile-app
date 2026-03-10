@@ -18,7 +18,14 @@ class AppSession {
     if (!isLoggedIn) {
       return '/';
     }
-    return profile!.role == UserRole.supplier ? '/supplier-home' : '/werka-home';
+    switch (profile!.role) {
+      case UserRole.supplier:
+        return '/supplier-home';
+      case UserRole.werka:
+        return '/werka-home';
+      case UserRole.admin:
+        return '/admin-home';
+    }
   }
 
   Future<void> load() async {

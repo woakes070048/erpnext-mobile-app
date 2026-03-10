@@ -139,7 +139,9 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       final String route = profile.role == UserRole.supplier
           ? AppRoutes.supplierHome
-          : AppRoutes.werkaHome;
+          : profile.role == UserRole.werka
+              ? AppRoutes.werkaHome
+              : AppRoutes.adminHome;
       Navigator.of(context).pushNamedAndRemoveUntil(route, (route) => false);
     }).catchError((_) {
       if (!context.mounted) {

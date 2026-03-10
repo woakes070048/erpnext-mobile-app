@@ -193,14 +193,18 @@ class _ProfileScreenState extends State<ProfileScreen>
     final role = current.role;
     final subtitle = role == UserRole.supplier
         ? 'Supplier account'
-        : 'Werka account';
+        : role == UserRole.werka
+            ? 'Werka account'
+            : 'Admin account';
 
     return AppShell(
       title: 'Profile',
       subtitle: 'Shaxsiy sozlamalar va session.',
       bottom: role == UserRole.supplier
           ? const SupplierDock(activeTab: SupplierDockTab.profile)
-          : const WerkaDock(activeTab: WerkaDockTab.profile),
+          : role == UserRole.werka
+              ? const WerkaDock(activeTab: WerkaDockTab.profile)
+              : null,
       child: RefreshIndicator.adaptive(
         onRefresh: _refreshProfile,
         child: ListView(

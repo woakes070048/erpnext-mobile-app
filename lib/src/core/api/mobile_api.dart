@@ -223,6 +223,53 @@ class MobileApi {
         jsonDecode(response.body) as Map<String, dynamic>);
   }
 
+  Future<AdminSettings> adminSettings() async {
+    final response = await _sendAuthorized(
+      () => http.get(
+        Uri.parse('$baseUrl/v1/mobile/admin/settings'),
+        headers: _headers(requireToken()),
+      ),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Admin settings failed');
+    }
+    return AdminSettings.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<AdminSettings> updateAdminSettings(AdminSettings settings) async {
+    final response = await _sendAuthorized(
+      () => http.put(
+        Uri.parse('$baseUrl/v1/mobile/admin/settings'),
+        headers: _headers(requireToken())..['Content-Type'] = 'application/json',
+        body: jsonEncode(settings.toJson()),
+      ),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Admin settings update failed');
+    }
+    return AdminSettings.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<List<AdminSupplier>> adminSuppliers() async {
+    final response = await _sendAuthorized(
+      () => http.get(
+        Uri.parse('$baseUrl/v1/mobile/admin/suppliers'),
+        headers: _headers(requireToken()),
+      ),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Admin suppliers failed');
+    }
+    final List<dynamic> json = jsonDecode(response.body) as List<dynamic>;
+    return json
+        .map((item) => AdminSupplier.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
   Map<String, String> _headers(String token) {
     return {
       'Authorization': 'Bearer $token',

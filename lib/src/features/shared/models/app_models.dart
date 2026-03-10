@@ -1,6 +1,7 @@
 enum UserRole {
   supplier,
   werka,
+  admin,
 }
 
 enum DispatchStatus {
@@ -94,7 +95,11 @@ class SessionProfile {
     final String roleValue =
         (json['role'] as String? ?? '').trim().toLowerCase();
     return SessionProfile(
-      role: roleValue == 'werka' ? UserRole.werka : UserRole.supplier,
+      role: roleValue == 'werka'
+          ? UserRole.werka
+          : roleValue == 'admin'
+              ? UserRole.admin
+              : UserRole.supplier,
       displayName: json['display_name'] as String? ?? '',
       legalName: json['legal_name'] as String? ?? '',
       ref: json['ref'] as String? ?? '',
@@ -105,7 +110,11 @@ class SessionProfile {
 
   Map<String, dynamic> toJson() {
     return {
-      'role': role == UserRole.werka ? 'werka' : 'supplier',
+      'role': role == UserRole.werka
+          ? 'werka'
+          : role == UserRole.admin
+              ? 'admin'
+              : 'supplier',
       'display_name': displayName,
       'legal_name': legalName,
       'ref': ref,
@@ -129,6 +138,81 @@ class SessionProfile {
       ref: ref ?? this.ref,
       phone: phone ?? this.phone,
       avatarUrl: avatarUrl ?? this.avatarUrl,
+    );
+  }
+}
+
+class AdminSettings {
+  const AdminSettings({
+    required this.erpUrl,
+    required this.erpApiKey,
+    required this.erpApiSecret,
+    required this.defaultTargetWarehouse,
+    required this.defaultUom,
+    required this.werkaPhone,
+    required this.werkaName,
+    required this.adminPhone,
+    required this.adminName,
+  });
+
+  final String erpUrl;
+  final String erpApiKey;
+  final String erpApiSecret;
+  final String defaultTargetWarehouse;
+  final String defaultUom;
+  final String werkaPhone;
+  final String werkaName;
+  final String adminPhone;
+  final String adminName;
+
+  factory AdminSettings.fromJson(Map<String, dynamic> json) {
+    return AdminSettings(
+      erpUrl: json['erp_url'] as String? ?? '',
+      erpApiKey: json['erp_api_key'] as String? ?? '',
+      erpApiSecret: json['erp_api_secret'] as String? ?? '',
+      defaultTargetWarehouse: json['default_target_warehouse'] as String? ?? '',
+      defaultUom: json['default_uom'] as String? ?? '',
+      werkaPhone: json['werka_phone'] as String? ?? '',
+      werkaName: json['werka_name'] as String? ?? '',
+      adminPhone: json['admin_phone'] as String? ?? '',
+      adminName: json['admin_name'] as String? ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'erp_url': erpUrl,
+      'erp_api_key': erpApiKey,
+      'erp_api_secret': erpApiSecret,
+      'default_target_warehouse': defaultTargetWarehouse,
+      'default_uom': defaultUom,
+      'werka_phone': werkaPhone,
+      'werka_name': werkaName,
+      'admin_phone': adminPhone,
+      'admin_name': adminName,
+    };
+  }
+}
+
+class AdminSupplier {
+  const AdminSupplier({
+    required this.ref,
+    required this.name,
+    required this.phone,
+    required this.code,
+  });
+
+  final String ref;
+  final String name;
+  final String phone;
+  final String code;
+
+  factory AdminSupplier.fromJson(Map<String, dynamic> json) {
+    return AdminSupplier(
+      ref: json['ref'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      phone: json['phone'] as String? ?? '',
+      code: json['code'] as String? ?? '',
     );
   }
 }

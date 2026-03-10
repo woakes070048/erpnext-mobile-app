@@ -1,4 +1,7 @@
 import '../features/auth/presentation/login_screen.dart';
+import '../features/admin/presentation/admin_home_screen.dart';
+import '../features/admin/presentation/admin_settings_screen.dart';
+import '../features/admin/presentation/admin_suppliers_screen.dart';
 import '../features/shared/models/app_models.dart';
 import '../features/shared/presentation/profile_screen.dart';
 import '../features/supplier/presentation/supplier_confirm_screen.dart';
@@ -27,6 +30,9 @@ class AppRoutes {
   static const String werkaDetail = '/werka-detail';
   static const String werkaSuccess = '/werka-success';
   static const String profile = '/profile';
+  static const String adminHome = '/admin-home';
+  static const String adminSettings = '/admin-settings';
+  static const String adminSuppliers = '/admin-suppliers';
 }
 
 class AppRouter {
@@ -35,6 +41,7 @@ class AppRouter {
     AppRoutes.supplierNotifications,
     AppRoutes.supplierRecent,
     AppRoutes.werkaHome,
+    AppRoutes.adminHome,
     AppRoutes.profile,
   };
 
@@ -70,6 +77,12 @@ class AppRouter {
         return _buildRoute(settings, WerkaSuccessScreen(record: record));
       case AppRoutes.profile:
         return _buildRoute(settings, const ProfileScreen());
+      case AppRoutes.adminHome:
+        return _buildRoute(settings, const AdminHomeScreen());
+      case AppRoutes.adminSettings:
+        return _buildRoute(settings, const AdminSettingsScreen());
+      case AppRoutes.adminSuppliers:
+        return _buildRoute(settings, const AdminSuppliersScreen());
       default:
         return _buildRoute(settings, const LoginScreen());
     }
