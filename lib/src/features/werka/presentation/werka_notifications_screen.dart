@@ -134,7 +134,9 @@ class _WerkaNotificationsScreenState extends State<WerkaNotificationsScreen>
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          '${record.itemCode} • ${record.itemName}',
+                          record.eventType == 'supplier_ack'
+                              ? record.highlight
+                              : '${record.itemCode} • ${record.itemName}',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         const SizedBox(height: 8),
@@ -175,6 +177,9 @@ class _WerkaNotificationsScreenState extends State<WerkaNotificationsScreen>
 }
 
 String _notificationTitle(DispatchRecord record) {
+  if (record.eventType == 'supplier_ack') {
+    return 'Supplier tasdiqladi';
+  }
   switch (record.status) {
     case DispatchStatus.pending:
       return record.supplierName;

@@ -132,8 +132,10 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
           final detail = snapshot.data!;
           final record = detail.record;
           final canConfirm = role == UserRole.werka &&
+              record.eventType.isEmpty &&
               (record.status == DispatchStatus.pending ||
                   record.status == DispatchStatus.draft);
+          final isSupplierAckEvent = record.eventType == 'supplier_ack';
           final supplierAcknowledged = detail.comments.any(
             (item) =>
                 item.authorLabel.startsWith('Supplier') &&
@@ -228,6 +230,13 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
                     child: Text(record.note),
                   ),
                 ],
+                if (isSupplierAckEvent && record.highlight.trim().isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    record.highlight,
+                    style: textTheme.headlineMedium,
+                  ),
+                ],
                 if (canConfirm) ...[
                   const SizedBox(height: 18),
                   SizedBox(
@@ -315,7 +324,7 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
                     ),
                   ),
                 ],
-                if (canComment) ...[
+                if (canComment && !isSupplierAckEvent) ...[
                   const SizedBox(height: 20),
                   Text(
                     'Izohlar',

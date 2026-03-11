@@ -101,13 +101,17 @@ class _WerkaHomeScreenState extends State<WerkaHomeScreen>
                 final history = snapshot.data ?? <DispatchRecord>[];
                 final items = history
                     .where((item) =>
+                        item.eventType.isEmpty &&
                         item.status == DispatchStatus.draft ||
-                        item.status == DispatchStatus.pending)
+                        item.eventType.isEmpty &&
+                            item.status == DispatchStatus.pending)
                     .toList();
                 final confirmedCount = history
                     .where((item) =>
+                        item.eventType.isEmpty &&
                         item.status == DispatchStatus.accepted ||
-                        item.status == DispatchStatus.partial)
+                        item.eventType.isEmpty &&
+                            item.status == DispatchStatus.partial)
                     .length;
                 final previewItems =
                     items.length > 3 ? items.take(3).toList() : items;
