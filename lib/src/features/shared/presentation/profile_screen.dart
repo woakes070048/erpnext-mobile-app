@@ -604,6 +604,12 @@ class _ThemeIconButton extends StatelessWidget {
           switchInCurve: Curves.easeInOutCubic,
           switchOutCurve: Curves.easeInOutCubic,
           transitionBuilder: (child, animation) {
+            if (animation.status == AnimationStatus.reverse) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            }
             final turns = Tween<double>(
               begin: -0.15,
               end: 0,
