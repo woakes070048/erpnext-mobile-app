@@ -24,6 +24,7 @@ import '../features/supplier/presentation/supplier_recent_screen.dart';
 import '../features/supplier/presentation/supplier_success_screen.dart';
 import '../features/werka/presentation/werka_detail_screen.dart';
 import '../features/werka/presentation/werka_home_screen.dart';
+import '../features/werka/presentation/werka_notifications_screen.dart';
 import '../features/werka/presentation/werka_success_screen.dart';
 import '../core/theme/app_motion.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,7 @@ class AppRoutes {
   static const String supplierNotifications = '/supplier-notifications';
   static const String supplierRecent = '/supplier-recent';
   static const String werkaHome = '/werka-home';
+  static const String werkaNotifications = '/werka-notifications';
   static const String werkaDetail = '/werka-detail';
   static const String werkaSuccess = '/werka-success';
   static const String profile = '/profile';
@@ -63,6 +65,7 @@ class AppRouter {
     AppRoutes.supplierNotifications,
     AppRoutes.supplierRecent,
     AppRoutes.werkaHome,
+    AppRoutes.werkaNotifications,
     AppRoutes.adminHome,
     AppRoutes.adminActivity,
     AppRoutes.adminCreateHub,
@@ -96,6 +99,8 @@ class AppRouter {
         return _buildRoute(settings, const SupplierRecentScreen());
       case AppRoutes.werkaHome:
         return _buildRoute(settings, const WerkaHomeScreen());
+      case AppRoutes.werkaNotifications:
+        return _buildRoute(settings, const WerkaNotificationsScreen());
       case AppRoutes.werkaDetail:
         final DispatchRecord record = settings.arguments as DispatchRecord;
         return _buildRoute(settings, WerkaDetailScreen(record: record));

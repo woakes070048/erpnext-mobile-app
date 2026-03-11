@@ -3,6 +3,7 @@ import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../shared/models/app_models.dart';
+import 'widgets/admin_dock.dart';
 import 'package:flutter/material.dart';
 
 class AdminInactiveSuppliersScreen extends StatefulWidget {
@@ -68,6 +69,7 @@ class _AdminInactiveSuppliersScreenState
       ),
       title: 'Inactive Suppliers',
       subtitle: '',
+      bottom: const AdminDock(activeTab: AdminDockTab.suppliers),
       child: FutureBuilder<List<AdminSupplier>>(
         future: _future,
         builder: (context, snapshot) {

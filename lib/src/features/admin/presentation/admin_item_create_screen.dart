@@ -2,6 +2,7 @@ import '../../../core/api/mobile_api.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../shared/models/app_models.dart';
+import 'widgets/admin_dock.dart';
 import 'package:flutter/material.dart';
 
 class AdminItemCreateScreen extends StatefulWidget {
@@ -58,6 +59,7 @@ class _AdminItemCreateScreenState extends State<AdminItemCreateScreen> {
       ),
       title: 'Item qo‘shish',
       subtitle: '',
+      bottom: const AdminDock(activeTab: AdminDockTab.settings),
       child: ListView(
         padding: EdgeInsets.zero,
         children: [

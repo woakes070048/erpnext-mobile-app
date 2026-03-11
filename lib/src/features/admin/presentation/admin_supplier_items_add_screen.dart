@@ -2,6 +2,7 @@ import '../../../core/api/mobile_api.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../shared/models/app_models.dart';
 import 'admin_supplier_items_view_screen.dart';
+import 'widgets/admin_dock.dart';
 import 'package:flutter/material.dart';
 
 class AdminSupplierItemsAddScreen extends StatefulWidget {
@@ -106,6 +107,7 @@ class _AdminSupplierItemsAddScreenState
       ),
       title: 'Mahsulot qo‘shish',
       subtitle: '',
+      bottom: const AdminDock(activeTab: AdminDockTab.suppliers),
       child: loading
           ? const Center(child: CircularProgressIndicator())
           : ItemsTable(

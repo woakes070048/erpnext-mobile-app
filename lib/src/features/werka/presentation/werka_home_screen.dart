@@ -4,6 +4,7 @@ import '../../../core/widgets/motion_widgets.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../shared/models/app_models.dart';
+import 'widgets/werka_dock.dart';
 import 'package:flutter/material.dart';
 
 class WerkaHomeScreen extends StatefulWidget {
@@ -56,6 +57,7 @@ class _WerkaHomeScreenState extends State<WerkaHomeScreen>
           onTap: () => Navigator.of(context).pushNamed('/profile'),
         ),
       ],
+      bottom: const WerkaDock(activeTab: WerkaDockTab.home),
       child: Column(
         children: [
           Expanded(

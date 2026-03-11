@@ -3,6 +3,7 @@ import '../../../core/api/mobile_api.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../shared/models/app_models.dart';
+import 'widgets/werka_dock.dart';
 import 'package:flutter/material.dart';
 
 class WerkaDetailScreen extends StatefulWidget {
@@ -38,6 +39,7 @@ class _WerkaDetailScreenState extends State<WerkaDetailScreen> {
     return AppShell(
       title: 'Qabul qilish',
       subtitle: '',
+      bottom: const WerkaDock(activeTab: null),
       child: Column(
         children: [
           SoftCard(

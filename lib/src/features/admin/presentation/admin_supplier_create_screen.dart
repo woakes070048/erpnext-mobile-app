@@ -1,5 +1,6 @@
 import '../../../core/api/mobile_api.dart';
 import '../../../core/widgets/app_shell.dart';
+import 'widgets/admin_dock.dart';
 import 'package:flutter/material.dart';
 
 class AdminSupplierCreateScreen extends StatefulWidget {
@@ -49,6 +50,7 @@ class _AdminSupplierCreateScreenState extends State<AdminSupplierCreateScreen> {
       ),
       title: 'Supplier qo‘shish',
       subtitle: '',
+      bottom: const AdminDock(activeTab: AdminDockTab.suppliers),
       child: ListView(
         padding: EdgeInsets.zero,
         children: [

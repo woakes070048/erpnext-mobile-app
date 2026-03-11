@@ -2,6 +2,7 @@ import '../../../core/api/mobile_api.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../shared/models/app_models.dart';
+import 'widgets/admin_dock.dart';
 import 'package:flutter/material.dart';
 
 class AdminSupplierItemsViewScreen extends StatefulWidget {
@@ -103,6 +104,7 @@ class _AdminSupplierItemsViewScreenState
       ),
       title: 'Biriktirilgan mahsulotlar',
       subtitle: '',
+      bottom: const AdminDock(activeTab: AdminDockTab.suppliers),
       child: loading
           ? const Center(child: CircularProgressIndicator())
           : ItemsTable(

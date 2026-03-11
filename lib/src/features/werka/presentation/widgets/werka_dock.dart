@@ -15,7 +15,7 @@ class WerkaDock extends StatelessWidget {
     required this.activeTab,
   });
 
-  final WerkaDockTab activeTab;
+  final WerkaDockTab? activeTab;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,10 @@ class WerkaDock extends StatelessWidget {
             if (activeTab == WerkaDockTab.home) {
               return;
             }
-            Navigator.of(context).pushReplacementNamed(AppRoutes.werkaHome);
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.werkaHome,
+              (route) => false,
+            );
           },
         ),
         DockButton(
@@ -46,9 +49,9 @@ class WerkaDock extends StatelessWidget {
             if (activeTab == WerkaDockTab.notifications) {
               return;
             }
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text('Werka bildirishnomalari keyingi bosqichda')),
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.werkaNotifications,
+              (route) => false,
             );
           },
         ),
@@ -60,7 +63,10 @@ class WerkaDock extends StatelessWidget {
           if (activeTab == WerkaDockTab.home) {
             return;
           }
-          Navigator.of(context).pushReplacementNamed(AppRoutes.werkaHome);
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            AppRoutes.werkaHome,
+            (route) => false,
+          );
         },
       ),
       trailing: [
@@ -80,7 +86,10 @@ class WerkaDock extends StatelessWidget {
               showLogoutPrompt(context);
               return;
             }
-            Navigator.of(context).pushReplacementNamed(AppRoutes.profile);
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.profile,
+              (route) => false,
+            );
           },
         ),
       ],

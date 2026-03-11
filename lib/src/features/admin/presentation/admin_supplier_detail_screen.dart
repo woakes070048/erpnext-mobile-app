@@ -4,6 +4,7 @@ import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../shared/models/app_models.dart';
+import 'widgets/admin_dock.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -224,6 +225,7 @@ class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
       ),
       title: 'Supplier',
       subtitle: '',
+      bottom: const AdminDock(activeTab: AdminDockTab.suppliers),
       child: FutureBuilder<AdminSupplierDetail>(
         future: _detailFuture,
         builder: (context, snapshot) {

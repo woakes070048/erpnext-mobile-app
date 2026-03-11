@@ -2,6 +2,7 @@ import '../../../app/app_router.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../shared/models/app_models.dart';
+import 'widgets/werka_dock.dart';
 import 'package:flutter/material.dart';
 
 class WerkaSuccessScreen extends StatelessWidget {
@@ -16,8 +17,8 @@ class WerkaSuccessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppShell(
       title: 'Qabul qilindi',
-      subtitle:
-          'Receipt submit bo‘lganidan keyin supplierga ham status qaytadi.',
+      subtitle: '',
+      bottom: const WerkaDock(activeTab: null),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
