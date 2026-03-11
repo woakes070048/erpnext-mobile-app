@@ -24,7 +24,13 @@ class LocalNotificationService {
     }
 
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const settings = InitializationSettings(android: androidSettings);
+    const linuxSettings = LinuxInitializationSettings(
+      defaultActionName: 'Open notification',
+    );
+    const settings = InitializationSettings(
+      android: androidSettings,
+      linux: linuxSettings,
+    );
     await _plugin.initialize(settings);
 
     final android = _plugin
@@ -57,6 +63,7 @@ class LocalNotificationService {
         priority: Priority.high,
         playSound: true,
       ),
+      linux: const LinuxNotificationDetails(),
     );
 
     await _plugin.show(
