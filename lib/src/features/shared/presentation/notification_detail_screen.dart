@@ -25,17 +25,28 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
   late Future<NotificationDetail> _future;
   final TextEditingController _commentController = TextEditingController();
   bool _sending = false;
+  bool _hasCommentText = false;
 
   @override
   void initState() {
     super.initState();
     _future = _load();
+    _commentController.addListener(_handleCommentChanged);
   }
 
   @override
   void dispose() {
+    _commentController.removeListener(_handleCommentChanged);
     _commentController.dispose();
     super.dispose();
+  }
+
+  void _handleCommentChanged() {
+    final hasText = _commentController.text.trim().isNotEmpty;
+    if (hasText == _hasCommentText || !mounted) {
+      return;
+    }
+    setState(() => _hasCommentText = hasText);
   }
 
   Future<NotificationDetail> _load() {
@@ -61,6 +72,7 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
       );
       _commentController.clear();
       setState(() {
+        _hasCommentText = false;
         _future = Future<NotificationDetail>.value(updated);
       });
     } catch (error) {
@@ -200,14 +212,18 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
                     hintText: 'Izoh yozing',
                   ),
                 ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _sending ? null : _sendComment,
-                    child: Text(_sending ? 'Yuborilmoqda...' : 'Comment yuborish'),
+                if (_hasCommentText) ...[
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _sending ? null : _sendComment,
+                      child: Text(
+                        _sending ? 'Yuborilmoqda...' : 'Comment yuborish',
+                      ),
+                    ),
                   ),
-                ),
+                ],
                 const SizedBox(height: 24),
               ],
             ),
