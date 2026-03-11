@@ -25,6 +25,7 @@ class _WerkaDetailScreenState extends State<WerkaDetailScreen> {
   bool fullReturnMode = false;
   bool submitting = false;
   String? returnReason;
+  String? _acceptedQtyBeforeFullReturn;
 
   static const List<String> _returnReasons = <String>[
     'Yaroqsiz',
@@ -207,13 +208,14 @@ class _WerkaDetailScreenState extends State<WerkaDetailScreen> {
                 setState(() {
                   fullReturnMode = !fullReturnMode;
                   if (fullReturnMode) {
+                    _acceptedQtyBeforeFullReturn = controller.text;
                     controller.text = '0';
-                    showReturnFields = true;
+                    showReturnFields = false;
                     returnedController.clear();
                   } else {
-                    controller.text =
+                    controller.text = _acceptedQtyBeforeFullReturn ??
                         widget.record.sentQty.toStringAsFixed(0);
-                    returnCommentController.clear();
+                    showReturnFields = false;
                   }
                 });
               },
