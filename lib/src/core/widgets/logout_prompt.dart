@@ -48,7 +48,7 @@ Future<void> showLogoutPrompt(BuildContext context) async {
                       Row(
                         children: [
                           Expanded(
-                            child: OutlinedButton(
+                            child: FilledButton(
                               onPressed: () => Navigator.of(context).pop(false),
                               child: const Text('Yo‘q'),
                             ),
