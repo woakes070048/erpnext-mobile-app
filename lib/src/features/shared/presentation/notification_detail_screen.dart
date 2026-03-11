@@ -26,10 +26,12 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
   final TextEditingController _commentController = TextEditingController();
   bool _sending = false;
   bool _hasCommentText = false;
+  String _accountKey = '';
 
   @override
   void initState() {
     super.initState();
+    _accountKey = _currentAccountKey();
     _future = _load();
     _commentController.addListener(_handleCommentChanged);
   }
@@ -51,6 +53,28 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
 
   Future<NotificationDetail> _load() {
     return MobileApi.instance.notificationDetail(widget.receiptID);
+  }
+
+  String _currentAccountKey() {
+    final profile = AppSession.instance.profile;
+    if (profile == null) {
+      return '';
+    }
+    return '${profile.role.name}:${profile.ref}';
+  }
+
+  Future<void> _reloadForAccountChange() async {
+    _accountKey = _currentAccountKey();
+    final future = _load();
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _future = future;
+      _hasCommentText = false;
+      _commentController.clear();
+    });
+    await future;
   }
 
   Future<void> _reload() async {
@@ -79,8 +103,15 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
       if (!mounted) {
         return;
       }
+      final text = '$error';
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Comment yuborilmadi: $error')),
+        SnackBar(
+          content: Text(
+            text.contains('forbidden')
+                ? 'Bu receipt sizga tegishli emas.'
+                : 'Comment yuborilmadi: $error',
+          ),
+        ),
       );
     } finally {
       if (mounted) {
@@ -93,6 +124,25 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
   Widget build(BuildContext context) {
     final role = AppSession.instance.profile?.role;
     final textTheme = Theme.of(context).textTheme;
+    if (_accountKey != _currentAccountKey()) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _reloadForAccountChange();
+      });
+      return AppShell(
+        leading: AppShellIconAction(
+          icon: Icons.arrow_back_rounded,
+          onTap: () => Navigator.of(context).maybePop(),
+        ),
+        title: 'Batafsil',
+        subtitle: '',
+        bottom: role == UserRole.supplier
+            ? const SupplierDock(activeTab: null)
+            : role == UserRole.werka
+                ? const WerkaDock(activeTab: null)
+                : null,
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
     return AppShell(
       leading: AppShellIconAction(
         icon: Icons.arrow_back_rounded,
@@ -308,10 +358,13 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
                                 if (!mounted) {
                                   return;
                                 }
+                                final text = '$error';
                                 messenger.showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      'Tasdiqlash yuborilmadi: $error',
+                                      text.contains('forbidden')
+                                          ? 'Bu receipt sizga tegishli emas.'
+                                          : 'Tasdiqlash yuborilmadi: $error',
                                     ),
                                   ),
                                 );
