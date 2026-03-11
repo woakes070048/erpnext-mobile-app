@@ -25,6 +25,7 @@ class AdminSupplierDetailScreen extends StatefulWidget {
 class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
   late Future<AdminSupplierDetail> _detailFuture;
   bool _savingStatus = false;
+  bool _savingPhone = false;
   bool _regeneratingCode = false;
   bool _removing = false;
   int _retryAfterSec = 0;
@@ -88,6 +89,63 @@ class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
     } finally {
       if (mounted) {
         setState(() => _savingStatus = false);
+      }
+    }
+  }
+
+  Future<void> _addPhone(AdminSupplierDetail detail) async {
+    final controller = TextEditingController();
+    final phone = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Telefon raqam qo‘shish'),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.phone,
+            autofocus: true,
+            decoration: const InputDecoration(
+              hintText: '+998901234567',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Bekor qilish'),
+            ),
+            FilledButton(
+              onPressed: () =>
+                  Navigator.of(context).pop(controller.text.trim()),
+              child: const Text('Saqlash'),
+            ),
+          ],
+        );
+      },
+    );
+    controller.dispose();
+    if (phone == null || phone.trim().isEmpty) {
+      return;
+    }
+
+    setState(() => _savingPhone = true);
+    try {
+      final updated = await MobileApi.instance.adminUpdateSupplierPhone(
+        ref: detail.ref,
+        phone: phone,
+      );
+      setState(() {
+        _detailFuture = Future<AdminSupplierDetail>.value(updated);
+      });
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Telefon saqlanmadi: $error')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _savingPhone = false);
       }
     }
   }
@@ -191,6 +249,7 @@ class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
           }
 
           final detail = snapshot.data!;
+          final hasPhone = detail.phone.trim().isNotEmpty;
           return ListView(
             padding: EdgeInsets.zero,
             children: [
@@ -233,8 +292,35 @@ class _AdminSupplierDetailScreenState extends State<AdminSupplierDetailScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(detail.phone,
-                        style: Theme.of(context).textTheme.bodySmall),
+                    Text(
+                      hasPhone ? detail.phone : 'Telefon raqam berilmagan',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    if (!hasPhone) ...[
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 32,
+                        width: 32,
+                        child: OutlinedButton(
+                          onPressed: _savingPhone ? null : () => _addPhone(detail),
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: _savingPhone
+                              ? const SizedBox(
+                                  height: 14,
+                                  width: 14,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.add_rounded, size: 18),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 14),
                     Text('Code', style: Theme.of(context).textTheme.bodySmall),
                     const SizedBox(height: 6),

@@ -439,6 +439,27 @@ class MobileApi {
     );
   }
 
+  Future<AdminSupplierDetail> adminUpdateSupplierPhone({
+    required String ref,
+    required String phone,
+  }) async {
+    final response = await _sendAuthorized(
+      () => http.put(
+        Uri.parse('$baseUrl/v1/mobile/admin/suppliers/phone')
+            .replace(queryParameters: {'ref': ref}),
+        headers: _headers(requireToken())
+          ..['Content-Type'] = 'application/json',
+        body: jsonEncode({'phone': phone}),
+      ),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Admin supplier phone update failed');
+    }
+    return AdminSupplierDetail.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
   Future<AdminSupplierDetail> adminRegenerateSupplierCode(String ref) async {
     final response = await _sendAuthorized(
       () => http.post(
