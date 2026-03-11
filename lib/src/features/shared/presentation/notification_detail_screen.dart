@@ -151,6 +151,9 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
               record.status == DispatchStatus.partial ||
               record.status == DispatchStatus.rejected ||
               record.status == DispatchStatus.cancelled;
+          final canWriteIssueComment = canComment &&
+              !isSupplierAckEvent &&
+              !(role == UserRole.supplier && supplierAcknowledged);
 
           return RefreshIndicator.adaptive(
             onRefresh: _reload,
@@ -324,7 +327,7 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
                     ),
                   ),
                 ],
-                if (canComment && !isSupplierAckEvent) ...[
+                if (canWriteIssueComment) ...[
                   const SizedBox(height: 20),
                   Text(
                     'Izohlar',
