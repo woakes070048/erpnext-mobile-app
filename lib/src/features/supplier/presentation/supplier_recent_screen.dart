@@ -1,5 +1,6 @@
 import '../../../core/api/mobile_api.dart';
 import '../../../app/app_router.dart';
+import '../../../core/notifications/refresh_hub.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../shared/models/app_models.dart';
@@ -17,18 +18,32 @@ class SupplierRecentScreen extends StatefulWidget {
 class _SupplierRecentScreenState extends State<SupplierRecentScreen>
     with WidgetsBindingObserver {
   late Future<List<DispatchRecord>> _itemsFuture;
+  int _refreshVersion = 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _itemsFuture = MobileApi.instance.supplierHistory();
+    RefreshHub.instance.addListener(_handlePushRefresh);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    RefreshHub.instance.removeListener(_handlePushRefresh);
     super.dispose();
+  }
+
+  void _handlePushRefresh() {
+    if (!mounted || RefreshHub.instance.topic != 'supplier') {
+      return;
+    }
+    if (_refreshVersion == RefreshHub.instance.version) {
+      return;
+    }
+    _refreshVersion = RefreshHub.instance.version;
+    _reload();
   }
 
   @override

@@ -1,4 +1,5 @@
 import '../api/mobile_api.dart';
+import 'refresh_hub.dart';
 import '../session/app_session.dart';
 import '../../features/shared/models/app_models.dart';
 import 'local_notification_service.dart';
@@ -101,6 +102,10 @@ class _NotificationRuntimeState extends State<NotificationRuntime>
         final next = _signature(record);
         final old = previous[record.id];
         if (old == null || old != next) {
+          RefreshHub.instance.emit(
+            profile.role == UserRole.supplier ? 'supplier' : 'werka',
+          );
+          RefreshHub.instance.emit('admin');
           await LocalNotificationService.instance.showDispatchNotification(
             role: profile.role,
             record: record,

@@ -1,5 +1,6 @@
 import '../../../core/api/mobile_api.dart';
 import '../../../app/app_router.dart';
+import '../../../core/notifications/refresh_hub.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../shared/models/app_models.dart';
@@ -16,11 +17,30 @@ class AdminHomeScreen extends StatefulWidget {
 
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
   late Future<AdminSupplierSummary> _summaryFuture;
+  int _refreshVersion = 0;
 
   @override
   void initState() {
     super.initState();
     _summaryFuture = MobileApi.instance.adminSupplierSummary();
+    RefreshHub.instance.addListener(_handlePushRefresh);
+  }
+
+  @override
+  void dispose() {
+    RefreshHub.instance.removeListener(_handlePushRefresh);
+    super.dispose();
+  }
+
+  void _handlePushRefresh() {
+    if (!mounted || RefreshHub.instance.topic != 'admin') {
+      return;
+    }
+    if (_refreshVersion == RefreshHub.instance.version) {
+      return;
+    }
+    _refreshVersion = RefreshHub.instance.version;
+    _reload();
   }
 
   Future<void> _reload() async {

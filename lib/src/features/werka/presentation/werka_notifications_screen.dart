@@ -1,5 +1,6 @@
 import '../../../app/app_router.dart';
 import '../../../core/api/mobile_api.dart';
+import '../../../core/notifications/refresh_hub.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../shared/models/app_models.dart';
@@ -17,18 +18,32 @@ class WerkaNotificationsScreen extends StatefulWidget {
 class _WerkaNotificationsScreenState extends State<WerkaNotificationsScreen>
     with WidgetsBindingObserver {
   late Future<List<DispatchRecord>> _itemsFuture;
+  int _refreshVersion = 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _itemsFuture = MobileApi.instance.werkaHistory();
+    RefreshHub.instance.addListener(_handlePushRefresh);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    RefreshHub.instance.removeListener(_handlePushRefresh);
     super.dispose();
+  }
+
+  void _handlePushRefresh() {
+    if (!mounted || RefreshHub.instance.topic != 'werka') {
+      return;
+    }
+    if (_refreshVersion == RefreshHub.instance.version) {
+      return;
+    }
+    _refreshVersion = RefreshHub.instance.version;
+    _reload();
   }
 
   @override

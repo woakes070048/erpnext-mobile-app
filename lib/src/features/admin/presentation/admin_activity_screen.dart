@@ -1,4 +1,5 @@
 import '../../../core/api/mobile_api.dart';
+import '../../../core/notifications/refresh_hub.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../shared/models/app_models.dart';
@@ -14,11 +15,30 @@ class AdminActivityScreen extends StatefulWidget {
 
 class _AdminActivityScreenState extends State<AdminActivityScreen> {
   late Future<List<DispatchRecord>> _future;
+  int _refreshVersion = 0;
 
   @override
   void initState() {
     super.initState();
     _future = MobileApi.instance.adminActivity();
+    RefreshHub.instance.addListener(_handlePushRefresh);
+  }
+
+  @override
+  void dispose() {
+    RefreshHub.instance.removeListener(_handlePushRefresh);
+    super.dispose();
+  }
+
+  void _handlePushRefresh() {
+    if (!mounted || RefreshHub.instance.topic != 'admin') {
+      return;
+    }
+    if (_refreshVersion == RefreshHub.instance.version) {
+      return;
+    }
+    _refreshVersion = RefreshHub.instance.version;
+    _reload();
   }
 
   Future<void> _reload() async {
