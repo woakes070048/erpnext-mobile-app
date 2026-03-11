@@ -22,7 +22,11 @@ class WerkaDock extends StatelessWidget {
     return ActionDock(
       leading: [
         DockButton(
-          icon: Icons.home_rounded,
+          iconWidget: const DockSvgIcon(
+            fillAsset: 'assets/icons/home-fill.svg',
+            lineAsset: 'assets/icons/home-line.svg',
+            primary: false,
+          ),
           active: activeTab == WerkaDockTab.home,
           onTap: () {
             if (activeTab == WerkaDockTab.home) {
@@ -32,7 +36,11 @@ class WerkaDock extends StatelessWidget {
           },
         ),
         DockButton(
-          icon: Icons.notifications_none_rounded,
+          iconWidget: const DockSvgIcon(
+            fillAsset: 'assets/icons/notification-3-fill.svg',
+            lineAsset: 'assets/icons/notification-3-line.svg',
+            primary: false,
+          ),
           active: activeTab == WerkaDockTab.notifications,
           onTap: () {
             if (activeTab == WerkaDockTab.notifications) {
