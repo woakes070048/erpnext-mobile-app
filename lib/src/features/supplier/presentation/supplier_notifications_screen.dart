@@ -30,7 +30,7 @@ class _SupplierNotificationsScreenState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _itemsFuture = MobileApi.instance.supplierHistory();
+    _itemsFuture = _loadAndTrack();
     _loadCache();
     RefreshHub.instance.addListener(_handlePushRefresh);
   }
@@ -70,12 +70,8 @@ class _SupplierNotificationsScreenState
     }
   }
 
-  Future<void> _reload() async {
-    final future = MobileApi.instance.supplierHistory();
-    setState(() {
-      _itemsFuture = future;
-    });
-    final items = await future;
+  Future<List<DispatchRecord>> _loadAndTrack() async {
+    final items = await MobileApi.instance.supplierHistory();
     final highlighted = NotificationUnreadStore.instance
         .unreadIdsForProfile(AppSession.instance.profile)
         .intersection(items.map((item) => item.id).toSet());
@@ -92,6 +88,15 @@ class _SupplierNotificationsScreenState
       _cacheKey,
       items.map((item) => item.toJson()).toList(),
     );
+    return items;
+  }
+
+  Future<void> _reload() async {
+    final future = _loadAndTrack();
+    setState(() {
+      _itemsFuture = future;
+    });
+    await future;
   }
 
   @override
