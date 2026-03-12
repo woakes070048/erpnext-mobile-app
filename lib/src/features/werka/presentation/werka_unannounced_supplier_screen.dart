@@ -87,21 +87,22 @@ class _WerkaUnannouncedSupplierScreenState
                               horizontal: 18,
                               vertical: 16,
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  items[index].name,
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                  textAlign: TextAlign.left,
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  items[index].phone,
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                  textAlign: TextAlign.left,
-                                ),
-                              ],
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    items[index].name,
+                                    style: Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    items[index].phone,
+                                    style: Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
