@@ -132,21 +132,7 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen>
               physics: const AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
               children: [
-                _HomeStatCard(
-                  label: 'Jarayonda',
-                  value: current.pendingCount.toString(),
-                ),
-                const SizedBox(height: 12),
-                _HomeStatCard(
-                  label: 'Submit',
-                  value: current.submittedCount.toString(),
-                ),
-                const SizedBox(height: 12),
-                _HomeStatCard(
-                  label: 'Qaytarilgan',
-                  value: current.returnedCount.toString(),
-                ),
-                const SizedBox(height: 12),
+                _SupplierSummaryCard(summary: current),
               ],
             ),
           );
@@ -156,8 +142,45 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen>
   }
 }
 
-class _HomeStatCard extends StatelessWidget {
-  const _HomeStatCard({
+class _SupplierSummaryCard extends StatelessWidget {
+  const _SupplierSummaryCard({
+    required this.summary,
+  });
+
+  final SupplierHomeSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    return SmoothAppear(
+      child: SoftCard(
+        padding: EdgeInsets.zero,
+        borderWidth: 1.35,
+        borderRadius: 20,
+        child: Column(
+          children: [
+            _SupplierSummaryRow(
+              label: 'Jarayonda',
+              value: summary.pendingCount.toString(),
+            ),
+            const Divider(height: 1, thickness: 1),
+            _SupplierSummaryRow(
+              label: 'Submit',
+              value: summary.submittedCount.toString(),
+            ),
+            const Divider(height: 1, thickness: 1),
+            _SupplierSummaryRow(
+              label: 'Qaytarilgan',
+              value: summary.returnedCount.toString(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SupplierSummaryRow extends StatelessWidget {
+  const _SupplierSummaryRow({
     required this.label,
     required this.value,
   });
@@ -167,28 +190,29 @@ class _HomeStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SmoothAppear(
-      child: SoftCard(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                label,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    fontSize: 34,
-                    color: AppTheme.isDark(context)
-                        ? Colors.white
-                        : const Color(0xFF1F1A17),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
                   ),
             ),
-          ],
-        ),
+          ),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                  fontSize: 34,
+                  color: AppTheme.isDark(context)
+                      ? Colors.white
+                      : const Color(0xFF1F1A17),
+                ),
+          ),
+        ],
       ),
     );
   }
