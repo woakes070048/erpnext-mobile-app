@@ -1,4 +1,5 @@
 import '../../../core/api/mobile_api.dart';
+import '../../../app/app_router.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../shared/models/app_models.dart';
@@ -109,25 +110,36 @@ class _WerkaStatusBreakdownScreenState
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final item = items[index];
-                return SoftCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.supplierName,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        _metricLabel(item),
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${item.receiptCount} ta receipt',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
+                return InkWell(
+                  borderRadius: BorderRadius.circular(24),
+                  onTap: () => Navigator.of(context).pushNamed(
+                    AppRoutes.werkaStatusDetail,
+                    arguments: WerkaStatusDetailArgs(
+                      kind: widget.kind,
+                      supplierRef: item.supplierRef,
+                      supplierName: item.supplierName,
+                    ),
+                  ),
+                  child: SoftCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.supplierName,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          _metricLabel(item),
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${item.receiptCount} ta receipt',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -137,4 +149,16 @@ class _WerkaStatusBreakdownScreenState
       ),
     );
   }
+}
+
+class WerkaStatusDetailArgs {
+  const WerkaStatusDetailArgs({
+    required this.kind,
+    required this.supplierRef,
+    required this.supplierName,
+  });
+
+  final WerkaStatusKind kind;
+  final String supplierRef;
+  final String supplierName;
 }

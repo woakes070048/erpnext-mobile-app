@@ -327,6 +327,30 @@ class MobileApi {
         .toList();
   }
 
+  Future<List<DispatchRecord>> werkaStatusDetails({
+    required WerkaStatusKind kind,
+    required String supplierRef,
+  }) async {
+    final http.Response response = await _sendAuthorized(
+      () => http.get(
+        Uri.parse('$baseUrl/v1/mobile/werka/status-details').replace(
+          queryParameters: {
+            'kind': kind.name,
+            'supplier_ref': supplierRef,
+          },
+        ),
+        headers: _headers(requireToken()),
+      ),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Werka status details failed');
+    }
+    final List<dynamic> json = jsonDecode(response.body) as List<dynamic>;
+    return json
+        .map((item) => DispatchRecord.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<List<DispatchRecord>> werkaHistory() async {
     final http.Response response = await _sendAuthorized(
       () => http.get(
