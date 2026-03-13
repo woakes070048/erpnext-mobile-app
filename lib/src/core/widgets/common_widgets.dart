@@ -270,6 +270,7 @@ class DockButton extends StatefulWidget {
 class _DockButtonState extends State<DockButton> {
   Timer? _holdTimer;
   bool _holdTriggered = false;
+  bool _pressed = false;
 
   void _startHold() {
     if (widget.onHoldComplete == null) {
@@ -311,102 +312,123 @@ class _DockButtonState extends State<DockButton> {
         ? AppTheme.primaryButtonForeground(context)
         : Theme.of(context).colorScheme.onSurface;
 
-    return GestureDetector(
-      onTapDown: (_) => _startHold(),
-      onTapUp: (_) => _cancelHold(),
-      onTapCancel: _cancelHold,
-      onTap: () {
-        if (_holdTriggered) {
-          _holdTriggered = false;
-          return;
-        }
-        widget.onTap();
-      },
-      child: AnimatedContainer(
-        duration: AppMotion.medium,
-        curve: AppMotion.smooth,
-        height: widget.primary
-            ? switch (deviceClass) {
-                _DockDeviceClass.small => widget.compact ? 50 : 54,
-                _DockDeviceClass.medium => widget.compact ? 53 : 57,
-                _DockDeviceClass.large => widget.compact ? 52 : 56,
-              }
-            : switch (deviceClass) {
-                _DockDeviceClass.small => widget.compact ? 42 : 46,
-                _DockDeviceClass.medium => widget.compact ? 46 : 50,
-                _DockDeviceClass.large => widget.compact ? 46 : 50,
-              },
-        width: widget.primary
-            ? switch (deviceClass) {
-                _DockDeviceClass.small => widget.compact ? 50 : 54,
-                _DockDeviceClass.medium => widget.compact ? 53 : 57,
-                _DockDeviceClass.large => widget.compact ? 52 : 56,
-              }
-            : switch (deviceClass) {
-                _DockDeviceClass.small => widget.compact ? 42 : 46,
-                _DockDeviceClass.medium => widget.compact ? 46 : 50,
-                _DockDeviceClass.large => widget.compact ? 46 : 50,
-              },
-        decoration: BoxDecoration(
-          color: background,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: widget.primary ? background : AppTheme.cardBorder(context),
-            width: widget.primary ? 2 : 1.2,
-          ),
-          boxShadow: widget.primary
-              ? const [
-                  BoxShadow(
-                    color: Color(0x33000000),
-                    blurRadius: 14,
-                    offset: Offset(0, 4),
-                  ),
-                ]
-              : [
-                  BoxShadow(
-                    color: AppTheme.isDark(context)
-                        ? const Color(0x22000000)
-                        : const Color(0x12000000),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-        ),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Center(
-              child: widget.iconWidget ??
-                  Icon(
-                    widget.icon,
-                    color: foreground,
-                    size: widget.primary
-                        ? switch (deviceClass) {
-                            _DockDeviceClass.small => 24,
-                            _DockDeviceClass.medium => 25,
-                            _DockDeviceClass.large => 25,
-                          }
-                        : switch (deviceClass) {
-                            _DockDeviceClass.small => 22,
-                            _DockDeviceClass.medium => 23,
-                            _DockDeviceClass.large => 23,
-                          },
-                  ),
-            ),
-            if (widget.showBadge)
-              Positioned(
-                right: 2,
-                top: 2,
-                child: Container(
-                  height: 9,
-                  width: 9,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFE53935),
-                    shape: BoxShape.circle,
-                  ),
-                ),
+    return AnimatedScale(
+      duration: AppMotion.fast,
+      curve: AppMotion.smooth,
+      scale: _pressed ? 0.92 : 1,
+      child: Material(
+        color: Colors.transparent,
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          splashColor: const Color(0x33212121),
+          highlightColor: const Color(0x14212121),
+          onTapDown: (_) {
+            _startHold();
+            setState(() => _pressed = true);
+          },
+          onTapUp: (_) {
+            _cancelHold();
+            setState(() => _pressed = false);
+          },
+          onTapCancel: () {
+            _cancelHold();
+            setState(() => _pressed = false);
+          },
+          onTap: () {
+            if (_holdTriggered) {
+              _holdTriggered = false;
+              return;
+            }
+            widget.onTap();
+          },
+          child: AnimatedContainer(
+            duration: AppMotion.medium,
+            curve: AppMotion.smooth,
+            height: widget.primary
+                ? switch (deviceClass) {
+                    _DockDeviceClass.small => widget.compact ? 50 : 54,
+                    _DockDeviceClass.medium => widget.compact ? 53 : 57,
+                    _DockDeviceClass.large => widget.compact ? 52 : 56,
+                  }
+                : switch (deviceClass) {
+                    _DockDeviceClass.small => widget.compact ? 42 : 46,
+                    _DockDeviceClass.medium => widget.compact ? 46 : 50,
+                    _DockDeviceClass.large => widget.compact ? 46 : 50,
+                  },
+            width: widget.primary
+                ? switch (deviceClass) {
+                    _DockDeviceClass.small => widget.compact ? 50 : 54,
+                    _DockDeviceClass.medium => widget.compact ? 53 : 57,
+                    _DockDeviceClass.large => widget.compact ? 52 : 56,
+                  }
+                : switch (deviceClass) {
+                    _DockDeviceClass.small => widget.compact ? 42 : 46,
+                    _DockDeviceClass.medium => widget.compact ? 46 : 50,
+                    _DockDeviceClass.large => widget.compact ? 46 : 50,
+                  },
+            decoration: BoxDecoration(
+              color: background,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: widget.primary ? background : AppTheme.cardBorder(context),
+                width: widget.primary ? 2 : 1.2,
               ),
-          ],
+              boxShadow: widget.primary
+                  ? const [
+                      BoxShadow(
+                        color: Color(0x33000000),
+                        blurRadius: 14,
+                        offset: Offset(0, 4),
+                      ),
+                    ]
+                  : [
+                      BoxShadow(
+                        color: AppTheme.isDark(context)
+                            ? const Color(0x22000000)
+                            : const Color(0x12000000),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+            ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Center(
+                  child: widget.iconWidget ??
+                      Icon(
+                        widget.icon,
+                        color: foreground,
+                        size: widget.primary
+                            ? switch (deviceClass) {
+                                _DockDeviceClass.small => 24,
+                                _DockDeviceClass.medium => 25,
+                                _DockDeviceClass.large => 25,
+                              }
+                            : switch (deviceClass) {
+                                _DockDeviceClass.small => 22,
+                                _DockDeviceClass.medium => 23,
+                                _DockDeviceClass.large => 23,
+                              },
+                      ),
+                ),
+                if (widget.showBadge)
+                  Positioned(
+                    right: 2,
+                    top: 2,
+                    child: Container(
+                      height: 9,
+                      width: 9,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFE53935),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );

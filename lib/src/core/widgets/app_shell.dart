@@ -99,7 +99,7 @@ class AppShell extends StatelessWidget {
   }
 }
 
-class AppShellIconAction extends StatelessWidget {
+class AppShellIconAction extends StatefulWidget {
   const AppShellIconAction({
     super.key,
     required this.icon,
@@ -110,23 +110,43 @@ class AppShellIconAction extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<AppShellIconAction> createState() => _AppShellIconActionState();
+}
+
+class _AppShellIconActionState extends State<AppShellIconAction> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: AppMotion.fast,
-        curve: AppMotion.smooth,
-        height: 48,
-        width: 48,
-        decoration: BoxDecoration(
-          color: AppTheme.actionSurface(context),
+    return AnimatedScale(
+      duration: AppMotion.fast,
+      curve: AppMotion.smooth,
+      scale: _pressed ? 0.95 : 1,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.cardBorder(context)),
-        ),
-        child: Icon(
-          icon,
-          color: Theme.of(context).colorScheme.onSurface,
+          splashColor: const Color(0x33212121),
+          highlightColor: const Color(0x14212121),
+          onTapDown: (_) => setState(() => _pressed = true),
+          onTapUp: (_) => setState(() => _pressed = false),
+          onTapCancel: () => setState(() => _pressed = false),
+          onTap: widget.onTap,
+          child: AnimatedContainer(
+            duration: AppMotion.fast,
+            curve: AppMotion.smooth,
+            height: 48,
+            width: 48,
+            decoration: BoxDecoration(
+              color: AppTheme.actionSurface(context),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppTheme.cardBorder(context)),
+            ),
+            child: Icon(
+              widget.icon,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
         ),
       ),
     );
