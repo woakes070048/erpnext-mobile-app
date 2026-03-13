@@ -230,16 +230,7 @@ class _WerkaHomeScreenState extends State<WerkaHomeScreen>
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: _WerkaSummaryCard(summary: currentSummary),
                       ),
-                      if (previewItems.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10, bottom: 12),
-                          child: Text(
-                            'Jarayondagi mahsulotlar',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ),
-                      ],
+                      if (previewItems.isNotEmpty) const SizedBox(height: 16),
                       if (previewItems.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -391,6 +382,20 @@ class _WerkaPendingSection extends StatelessWidget {
         borderRadius: 20,
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 16, 18, 14),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Jarayondagi mahsulotlar',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1, thickness: 1),
             for (int index = 0; index < items.length; index++)
               _WerkaPendingRow(
                 record: items[index],
