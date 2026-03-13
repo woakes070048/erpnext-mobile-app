@@ -75,17 +75,28 @@ class _PressableScaleState extends State<PressableScale> {
       scale: pressed ? widget.scale : 1,
       duration: AppMotion.fast,
       curve: AppMotion.smooth,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          splashColor: widget.splashColor,
-          highlightColor: widget.highlightColor,
-          onTapDown: (_) => setState(() => pressed = true),
-          onTapCancel: () => setState(() => pressed = false),
-          onTapUp: (_) => setState(() => pressed = false),
-          onTap: widget.onTap,
-          child: widget.child,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(widget.borderRadius),
+        child: Stack(
+          fit: StackFit.passthrough,
+          children: [
+            widget.child,
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(widget.borderRadius),
+                  splashColor: widget.splashColor,
+                  highlightColor: widget.highlightColor,
+                  onTapDown: (_) => setState(() => pressed = true),
+                  onTapCancel: () => setState(() => pressed = false),
+                  onTapUp: (_) => setState(() => pressed = false),
+                  onTap: widget.onTap,
+                  child: const SizedBox.expand(),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
