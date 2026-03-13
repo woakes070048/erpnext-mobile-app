@@ -90,7 +90,11 @@ class AdminDock extends StatelessWidget {
           },
         ),
         DockButton(
-          icon: Icons.person_outline_rounded,
+          iconWidget: const DockSvgIcon(
+            fillAsset: 'assets/icons/account-circle-fill.svg',
+            lineAsset: 'assets/icons/account-circle-line.svg',
+            primary: false,
+          ),
           active: activeTab == AdminDockTab.profile,
           compact: compact,
           onHoldComplete: activeTab == AdminDockTab.profile
