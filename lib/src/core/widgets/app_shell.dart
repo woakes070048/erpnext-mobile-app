@@ -116,11 +116,13 @@ class AppShell extends StatelessWidget {
 class AppShellIconAction extends StatefulWidget {
   const AppShellIconAction({
     super.key,
-    required this.icon,
+    this.icon,
+    this.iconWidget,
     required this.onTap,
   });
 
-  final IconData icon;
+  final IconData? icon;
+  final Widget? iconWidget;
   final VoidCallback onTap;
 
   @override
@@ -156,9 +158,12 @@ class _AppShellIconActionState extends State<AppShellIconAction> {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: AppTheme.cardBorder(context)),
             ),
-            child: Icon(
-              widget.icon,
-              color: Theme.of(context).colorScheme.onSurface,
+            child: Center(
+              child: widget.iconWidget ??
+                  Icon(
+                    widget.icon,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
             ),
           ),
         ),

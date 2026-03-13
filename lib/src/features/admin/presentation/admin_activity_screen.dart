@@ -8,6 +8,7 @@ import '../../../core/widgets/common_widgets.dart';
 import '../../shared/models/app_models.dart';
 import 'widgets/admin_dock.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AdminActivityScreen extends StatefulWidget {
   const AdminActivityScreen({super.key});
@@ -114,7 +115,15 @@ class _AdminActivityScreenState extends State<AdminActivityScreen> {
       subtitle: '',
       actions: [
         AppShellIconAction(
-          icon: Icons.cleaning_services_rounded,
+          iconWidget: SvgPicture.asset(
+            'assets/icons/brush-3-line.svg',
+            width: 22,
+            height: 22,
+            colorFilter: ColorFilter.mode(
+              Theme.of(context).colorScheme.onSurface,
+              BlendMode.srcIn,
+            ),
+          ),
           onTap: _clearAll,
         ),
       ],
