@@ -41,14 +41,7 @@ class AppShell extends StatelessWidget {
             ),
       body: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppTheme.shellStart(context),
-              AppTheme.shellEnd(context),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: AppTheme.shellStart(context),
         ),
         child: SafeArea(
           bottom: false,
