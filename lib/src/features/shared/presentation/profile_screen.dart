@@ -5,7 +5,7 @@ import '../../../core/session/app_session.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/theme_controller.dart';
 import '../../../core/widgets/app_shell.dart';
-import '../../../core/widgets/common_widgets.dart';
+import '../../../core/widgets/motion_widgets.dart';
 import '../data/profile_avatar_cache.dart';
 import '../models/app_models.dart';
 import '../../admin/presentation/widgets/admin_dock.dart';
@@ -333,7 +333,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             ? 'Werka account'
             : role == UserRole.customer
                 ? 'Customer account'
-            : 'Admin account';
+                : 'Admin account';
     final bool hasPin = SecurityController.instance.hasPinForCurrentUser;
     final bool biometricEnabled =
         SecurityController.instance.biometricEnabledForCurrentUser;
@@ -348,7 +348,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               ? const WerkaDock(activeTab: WerkaDockTab.profile)
               : role == UserRole.customer
                   ? const CustomerDock(activeTab: CustomerDockTab.profile)
-              : const AdminDock(activeTab: AdminDockTab.profile),
+                  : const AdminDock(activeTab: AdminDockTab.profile),
       contentPadding: const EdgeInsets.fromLTRB(12, 0, 14, 0),
       child: RefreshIndicator.adaptive(
         onRefresh: _refreshProfile,
@@ -356,203 +356,233 @@ class _ProfileScreenState extends State<ProfileScreen>
           physics: const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.zero,
           children: [
-            SoftCard(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Stack(
-                        children: [
-                          _AvatarPreview(
-                            displayName: current.displayName,
-                            cachedAvatar: cachedAvatar,
-                            pendingAvatarBytes: pendingAvatarBytes,
-                          ),
-                          Positioned(
-                            right: 0,
-                            bottom: 0,
-                            child: GestureDetector(
-                              onTap: savingAvatar ? null : _pickAvatar,
-                              child: Container(
-                                height: 30,
-                                width: 30,
-                                decoration: BoxDecoration(
-                                  color: AppTheme.primaryButton(context),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: AppTheme.cardBackground(context),
-                                    width: 2,
+            SmoothAppear(
+              delay: const Duration(milliseconds: 20),
+              child: _ProfilePanel(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Stack(
+                          children: [
+                            _AvatarPreview(
+                              displayName: current.displayName,
+                              cachedAvatar: cachedAvatar,
+                              pendingAvatarBytes: pendingAvatarBytes,
+                            ),
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: GestureDetector(
+                                onTap: savingAvatar ? null : _pickAvatar,
+                                child: Container(
+                                  height: 32,
+                                  width: 32,
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceContainerLow,
+                                      width: 2,
+                                    ),
                                   ),
-                                ),
-                                child: Icon(
-                                  Icons.camera_alt_rounded,
-                                  size: 14,
-                                  color:
-                                      AppTheme.primaryButtonForeground(context),
+                                  child: Icon(
+                                    Icons.camera_alt_rounded,
+                                    size: 16,
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              current.displayName,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium
-                                  ?.copyWith(fontSize: 24),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              subtitle,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
                           ],
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      _ThemeIconToggle(
-                        isDark: ThemeController.instance.isDark,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  _InfoRow(
-                    label: 'Telefon',
-                    value: current.phone,
-                  ),
-                  const SizedBox(height: 12),
-                  _InfoRow(
-                    label: 'Asl ism',
-                    value: current.legalName.isEmpty
-                        ? current.displayName
-                        : current.legalName,
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: nicknameController,
-                    onChanged: (_) => setState(() {}),
-                    decoration: const InputDecoration(
-                      labelText: 'Nickname',
-                      hintText: 'O‘zingizga ko‘rinadigan ism',
-                    ),
-                  ),
-                  if (_hasProfileChanges) ...[
-                    const SizedBox(height: 12),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(999),
-                        onTap:
-                            savingProfileChanges ? null : _saveProfileChanges,
-                        child: Container(
-                          height: 42,
-                          width: 42,
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryButton(context),
-                            shape: BoxShape.circle,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                current.displayName,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineSmall
+                                    ?.copyWith(fontWeight: FontWeight.w700),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                subtitle,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
                           ),
-                          alignment: Alignment.center,
-                          child: savingProfileChanges
+                        ),
+                        const SizedBox(width: 12),
+                        _ThemeIconToggle(
+                          isDark: ThemeController.instance.isDark,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    _InfoTile(
+                      label: 'Telefon',
+                      value: current.phone,
+                    ),
+                    const SizedBox(height: 10),
+                    _InfoTile(
+                      label: 'Asl ism',
+                      value: current.legalName.isEmpty
+                          ? current.displayName
+                          : current.legalName,
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: nicknameController,
+                      onChanged: (_) => setState(() {}),
+                      decoration: const InputDecoration(
+                        labelText: 'Nickname',
+                        hintText: 'O‘zingizga ko‘rinadigan ism',
+                      ),
+                    ),
+                    if (_hasProfileChanges) ...[
+                      const SizedBox(height: 14),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed:
+                              savingProfileChanges ? null : _saveProfileChanges,
+                          icon: savingProfileChanges
                               ? const SizedBox(
                                   height: 18,
                                   width: 18,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Colors.black,
                                   ),
                                 )
-                              : Icon(
-                                  Icons.check_rounded,
-                                  color:
-                                      AppTheme.primaryButtonForeground(context),
-                                ),
+                              : const Icon(Icons.check_rounded),
+                          label: const Text('Saqlash'),
                         ),
                       ),
-                    ),
+                    ],
+                    if (pendingAvatarBytes != null) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        'Yangi rasm tanlandi, saqlashni bosing.',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
                   ],
-                  if (pendingAvatarBytes != null) ...[
-                    const SizedBox(height: 10),
-                    Text(
-                      'Yangi rasm tanlandi, saqlashni bosing.',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ],
+                ),
               ),
             ),
             const SizedBox(height: 18),
-            SoftCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Security',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    hasPin
-                        ? '4 xonali PIN yoqilgan'
-                        : 'App uchun 4 xonali PIN o‘rnating',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 12),
-                  _ProfileActionButton(
-                    primary: true,
-                    onPressed: savingPin ? null : _showPinFlow,
-                    label: savingPin
-                        ? 'Saqlanmoqda...'
-                        : hasPin
-                            ? 'PIN almashtirish'
-                            : 'PIN o‘rnatish',
-                  ),
-                  if (hasPin) ...[
-                    const SizedBox(height: 10),
-                    _ProfileActionButton(
-                      primary: false,
-                      onPressed: savingPin ? null : _removePin,
-                      label: 'PIN o‘chirish',
+            SmoothAppear(
+              delay: const Duration(milliseconds: 60),
+              child: _ProfilePanel(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Security',
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
-                  ],
-                  const SizedBox(height: 14),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          biometricEnabled
-                              ? 'Face ID / Fingerprint yoqilgan'
-                              : 'Face ID / Fingerprint o‘chirilgan',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ),
-                      Switch.adaptive(
-                        value: biometricEnabled,
-                        onChanged: hasPin && !savingBiometric
-                            ? (value) => _toggleBiometric(value)
-                            : null,
+                    const SizedBox(height: 8),
+                    Text(
+                      hasPin
+                          ? '4 xonali PIN yoqilgan'
+                          : 'App uchun 4 xonali PIN o‘rnating',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 14),
+                    _ProfileActionButton(
+                      primary: true,
+                      onPressed: savingPin ? null : _showPinFlow,
+                      label: savingPin
+                          ? 'Saqlanmoqda...'
+                          : hasPin
+                              ? 'PIN almashtirish'
+                              : 'PIN o‘rnatish',
+                    ),
+                    if (hasPin) ...[
+                      const SizedBox(height: 10),
+                      _ProfileActionButton(
+                        primary: false,
+                        onPressed: savingPin ? null : _removePin,
+                        label: 'PIN o‘chirish',
                       ),
                     ],
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              biometricEnabled
+                                  ? 'Face ID / Fingerprint yoqilgan'
+                                  : 'Face ID / Fingerprint o‘chirilgan',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ),
+                          Switch.adaptive(
+                            value: biometricEnabled,
+                            onChanged: hasPin && !savingBiometric
+                                ? (value) => _toggleBiometric(value)
+                                : null,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             if (errorMessage != null) ...[
               const SizedBox(height: 14),
-              SoftCard(
+              _ProfilePanel(
                 child: Text(errorMessage!),
               ),
             ],
             const SizedBox(height: 12),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ProfilePanel extends StatelessWidget {
+  const _ProfilePanel({
+    required this.child,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card.filled(
+      margin: EdgeInsets.zero,
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: child,
       ),
     );
   }
@@ -660,24 +690,14 @@ class _ProfileActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final child = SizedBox(
       width: double.infinity,
-      height: 54,
+      height: 52,
       child: primary
           ? FilledButton(
               onPressed: onPressed,
-              style: FilledButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-              ),
               child: Text(label),
             )
           : OutlinedButton(
               onPressed: onPressed,
-              style: OutlinedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-              ),
               child: Text(label),
             ),
     );
@@ -685,8 +705,8 @@ class _ProfileActionButton extends StatelessWidget {
   }
 }
 
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({
+class _InfoTile extends StatelessWidget {
+  const _InfoTile({
     required this.label,
     required this.value,
   });
@@ -696,24 +716,32 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall,
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          flex: 2,
-          child: Text(
-            value,
-            textAlign: TextAlign.right,
-            style: Theme.of(context).textTheme.titleMedium,
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 2,
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
