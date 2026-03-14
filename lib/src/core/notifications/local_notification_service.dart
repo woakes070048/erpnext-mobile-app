@@ -23,7 +23,8 @@ class LocalNotificationService {
       return;
     }
 
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const linuxSettings = LinuxInitializationSettings(
       defaultActionName: 'Open notification',
     );
@@ -33,18 +34,16 @@ class LocalNotificationService {
     );
     await _plugin.initialize(settings);
 
-    final android = _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+    final android = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
     await android?.createNotificationChannel(_channel);
     _initialized = true;
   }
 
   Future<void> requestPermission() async {
     await initialize();
-    final android = _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+    final android = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
     await android?.requestNotificationsPermission();
   }
 
@@ -78,6 +77,9 @@ class LocalNotificationService {
     if (role == UserRole.supplier) {
       return record.itemCode;
     }
+    if (role == UserRole.customer) {
+      return record.itemCode;
+    }
     return record.supplierName;
   }
 
@@ -96,6 +98,21 @@ class LocalNotificationService {
           return 'Rad etildi.$suffix';
         case DispatchStatus.cancelled:
           return 'Bekor qilindi.$suffix';
+      }
+    }
+
+    if (role == UserRole.customer) {
+      switch (record.status) {
+        case DispatchStatus.pending:
+        case DispatchStatus.draft:
+          return '${record.sentQty.toStringAsFixed(0)} ${record.uom} jo‘natildi.$suffix';
+        case DispatchStatus.accepted:
+          return 'Qabul qilindi: ${record.acceptedQty.toStringAsFixed(0)} ${record.uom}.$suffix';
+        case DispatchStatus.rejected:
+          return 'Rad etildi.$suffix';
+        case DispatchStatus.partial:
+        case DispatchStatus.cancelled:
+          return suffix.trim().isEmpty ? 'Holat o‘zgardi.' : suffix.trim();
       }
     }
 

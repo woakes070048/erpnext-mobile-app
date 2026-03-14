@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/app_router.dart';
 import '../../../core/api/mobile_api.dart';
+import '../../../core/notifications/refresh_hub.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
   const CustomerHomeScreen({super.key});
@@ -17,11 +18,19 @@ class CustomerHomeScreen extends StatefulWidget {
 
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   late Future<_CustomerHomePayload> _future;
+  int _refreshVersion = 0;
 
   @override
   void initState() {
     super.initState();
     _future = _load();
+    RefreshHub.instance.addListener(_handlePushRefresh);
+  }
+
+  @override
+  void dispose() {
+    RefreshHub.instance.removeListener(_handlePushRefresh);
+    super.dispose();
   }
 
   Future<_CustomerHomePayload> _load() async {
@@ -37,6 +46,17 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     final future = _load();
     setState(() => _future = future);
     await future;
+  }
+
+  void _handlePushRefresh() {
+    if (!mounted || RefreshHub.instance.topic != 'customer') {
+      return;
+    }
+    if (_refreshVersion == RefreshHub.instance.version) {
+      return;
+    }
+    _refreshVersion = RefreshHub.instance.version;
+    _reload();
   }
 
   Future<void> _openDetail(String deliveryNoteID) async {

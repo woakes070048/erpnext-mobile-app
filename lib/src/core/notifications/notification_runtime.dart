@@ -66,7 +66,9 @@ class _NotificationRuntimeState extends State<NotificationRuntime>
     }
     final profile = AppSession.instance.profile;
     if (profile == null ||
-        (profile.role != UserRole.supplier && profile.role != UserRole.werka)) {
+        (profile.role != UserRole.supplier &&
+            profile.role != UserRole.werka &&
+            profile.role != UserRole.customer)) {
       return;
     }
 
@@ -81,7 +83,9 @@ class _NotificationRuntimeState extends State<NotificationRuntime>
 
       final records = profile.role == UserRole.supplier
           ? await MobileApi.instance.supplierHistory()
-          : await MobileApi.instance.werkaHistory();
+          : profile.role == UserRole.werka
+              ? await MobileApi.instance.werkaHistory()
+              : await MobileApi.instance.customerHistory();
 
       await NotificationUnreadStore.instance.retainForProfile(
         profile: profile,
@@ -108,13 +112,18 @@ class _NotificationRuntimeState extends State<NotificationRuntime>
         final next = _signature(record);
         final old = previous[record.id];
         if ((old == null || old != next) &&
-            _shouldSurfaceForCurrentProfile(profile, record, hadPrevious: old != null)) {
+            _shouldSurfaceForCurrentProfile(profile, record,
+                hadPrevious: old != null)) {
           await NotificationUnreadStore.instance.markUnread(
             profile: profile,
             ids: [record.id],
           );
           RefreshHub.instance.emit(
-            profile.role == UserRole.supplier ? 'supplier' : 'werka',
+            profile.role == UserRole.supplier
+                ? 'supplier'
+                : profile.role == UserRole.werka
+                    ? 'werka'
+                    : 'customer',
           );
           RefreshHub.instance.emit('admin');
           await LocalNotificationService.instance.showDispatchNotification(
@@ -162,11 +171,14 @@ class _NotificationRuntimeState extends State<NotificationRuntime>
       if (record.eventType == 'supplier_ack') {
         return true;
       }
-      if (!hadPrevious &&
-          record.eventType == 'werka_unannounced_pending') {
+      if (!hadPrevious && record.eventType == 'werka_unannounced_pending') {
         return false;
       }
       return true;
+    }
+
+    if (profile.role == UserRole.customer) {
+      return !hadPrevious;
     }
 
     return false;
