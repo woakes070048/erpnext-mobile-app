@@ -2,7 +2,6 @@ import '../../../app/app_router.dart';
 import '../../../core/api/mobile_api.dart';
 import '../../../core/notifications/refresh_hub.dart';
 import '../../../core/widgets/app_shell.dart';
-import '../../../core/widgets/common_widgets.dart';
 import '../../../core/widgets/motion_widgets.dart';
 import '../../shared/models/app_models.dart';
 import 'widgets/customer_dock.dart';
@@ -85,13 +84,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(
-              child: CircularProgressIndicator.adaptive(),
-            );
+            return const Center(child: CircularProgressIndicator.adaptive());
           }
           if (snapshot.hasError) {
             return Center(
-              child: SoftCard(
+              child: _QuietPanel(
                 child: Text('${snapshot.error}'),
               ),
             );
@@ -106,15 +103,15 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               children: [
                 SmoothAppear(
                   delay: const Duration(milliseconds: 20),
-                  child: _CustomerStatusCard(
+                  child: _CustomerStatusPanel(
                     summary: payload.summary,
                     onOpenStatus: _openStatus,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
                 SmoothAppear(
                   delay: const Duration(milliseconds: 60),
-                  child: _CustomerPendingPreviewCard(
+                  child: _CustomerShipmentsPanel(
                     items: payload.previewItems,
                     onTapRecord: _openDetail,
                   ),
@@ -138,8 +135,34 @@ class _CustomerHomePayload {
   final List<DispatchRecord> previewItems;
 }
 
-class _CustomerStatusCard extends StatelessWidget {
-  const _CustomerStatusCard({
+class _QuietPanel extends StatelessWidget {
+  const _QuietPanel({
+    required this.child,
+    this.padding = const EdgeInsets.all(16),
+  });
+
+  final Widget child;
+  final EdgeInsets padding;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(
+          color: scheme.outlineVariant.withValues(alpha: 0.55),
+        ),
+      ),
+      padding: padding,
+      child: child,
+    );
+  }
+}
+
+class _CustomerStatusPanel extends StatelessWidget {
+  const _CustomerStatusPanel({
     required this.summary,
     required this.onOpenStatus,
   });
@@ -151,43 +174,31 @@ class _CustomerStatusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return SoftCard(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      borderRadius: 28,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: Column(
-          children: [
-            _CustomerStatusRow(
-              label: 'Pending',
-              value: summary.pendingCount.toString(),
-              accentColor: scheme.primary,
-              onTap: () => onOpenStatus(CustomerStatusKind.pending),
-              isFirst: true,
-            ),
-            Divider(
-              height: 1,
-              thickness: 1,
-              color: scheme.outlineVariant,
-            ),
-            _CustomerStatusRow(
-              label: 'Confirmed',
-              value: summary.confirmedCount.toString(),
-              onTap: () => onOpenStatus(CustomerStatusKind.confirmed),
-            ),
-            Divider(
-              height: 1,
-              thickness: 1,
-              color: scheme.outlineVariant,
-            ),
-            _CustomerStatusRow(
-              label: 'Rejected',
-              value: summary.rejectedCount.toString(),
-              onTap: () => onOpenStatus(CustomerStatusKind.rejected),
-              isLast: true,
-            ),
-          ],
-        ),
+    return _QuietPanel(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          _CustomerStatusRow(
+            label: 'Pending',
+            value: summary.pendingCount.toString(),
+            highlighted: true,
+            onTap: () => onOpenStatus(CustomerStatusKind.pending),
+            isFirst: true,
+          ),
+          Divider(height: 1, thickness: 1, color: scheme.outlineVariant),
+          _CustomerStatusRow(
+            label: 'Confirmed',
+            value: summary.confirmedCount.toString(),
+            onTap: () => onOpenStatus(CustomerStatusKind.confirmed),
+          ),
+          Divider(height: 1, thickness: 1, color: scheme.outlineVariant),
+          _CustomerStatusRow(
+            label: 'Rejected',
+            value: summary.rejectedCount.toString(),
+            onTap: () => onOpenStatus(CustomerStatusKind.rejected),
+            isLast: true,
+          ),
+        ],
       ),
     );
   }
@@ -198,7 +209,7 @@ class _CustomerStatusRow extends StatelessWidget {
     required this.label,
     required this.value,
     required this.onTap,
-    this.accentColor,
+    this.highlighted = false,
     this.isFirst = false,
     this.isLast = false,
   });
@@ -206,7 +217,7 @@ class _CustomerStatusRow extends StatelessWidget {
   final String label;
   final String value;
   final VoidCallback onTap;
-  final Color? accentColor;
+  final bool highlighted;
   final bool isFirst;
   final bool isLast;
 
@@ -216,55 +227,66 @@ class _CustomerStatusRow extends StatelessWidget {
     final scheme = theme.colorScheme;
 
     return PressableScale(
-      borderRadius: 28,
+      borderRadius: 26,
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(isFirst ? 28 : 0),
-            topRight: Radius.circular(isFirst ? 28 : 0),
-            bottomLeft: Radius.circular(isLast ? 28 : 0),
-            bottomRight: Radius.circular(isLast ? 28 : 0),
+            topLeft: Radius.circular(isFirst ? 26 : 0),
+            topRight: Radius.circular(isFirst ? 26 : 0),
+            bottomLeft: Radius.circular(isLast ? 26 : 0),
+            bottomRight: Radius.circular(isLast ? 26 : 0),
           ),
         ),
         child: Row(
           children: [
-            if (accentColor != null) ...[
-              Container(
-                width: 4,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: accentColor,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-              const SizedBox(width: 12),
-            ],
             Expanded(
-              child: Text(
-                label,
-                style: theme.textTheme.titleMedium,
+              child: Row(
+                children: [
+                  if (highlighted) ...[
+                    Container(
+                      width: 3,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        color: scheme.primary,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                  ],
+                  Text(
+                    label,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: highlighted ? scheme.onSurface : null,
+                    ),
+                  ),
+                ],
               ),
             ),
             Container(
-              constraints: const BoxConstraints(minWidth: 38),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              constraints: const BoxConstraints(minWidth: 42),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: scheme.surfaceContainerHighest,
+                color: highlighted
+                    ? scheme.secondaryContainer
+                    : scheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Text(
                 value,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  color: scheme.onSurface,
+                  color: highlighted
+                      ? scheme.onSecondaryContainer
+                      : scheme.onSurface,
                 ),
               ),
             ),
             const SizedBox(width: 8),
             Icon(
               Icons.chevron_right_rounded,
+              size: 22,
               color: scheme.onSurfaceVariant,
             ),
           ],
@@ -274,8 +296,8 @@ class _CustomerStatusRow extends StatelessWidget {
   }
 }
 
-class _CustomerPendingPreviewCard extends StatelessWidget {
-  const _CustomerPendingPreviewCard({
+class _CustomerShipmentsPanel extends StatelessWidget {
+  const _CustomerShipmentsPanel({
     required this.items,
     required this.onTapRecord,
   });
@@ -286,59 +308,43 @@ class _CustomerPendingPreviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
 
-    return SoftCard(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-      borderRadius: 28,
+    return _QuietPanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionHeader(label: 'Recent shipments'),
+          Text('Recent shipments', style: theme.textTheme.titleLarge),
           const SizedBox(height: 14),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: Container(
+          Container(
+            decoration: BoxDecoration(
               color: scheme.surfaceContainer,
-              child: items.isEmpty
-                  ? const _CustomerEmptyState()
-                  : Column(
-                      children: [
-                        for (int index = 0; index < items.length; index++) ...[
-                          _CustomerPreviewRow(
-                            record: items[index],
-                            isFirst: index == 0,
-                            isLast: index == items.length - 1,
-                            onTap: () => onTapRecord(items[index].id),
-                          ),
-                          if (index != items.length - 1)
-                            Divider(
-                              height: 1,
-                              thickness: 1,
-                              color: scheme.outlineVariant,
-                            ),
-                        ],
-                      ],
-                    ),
+              borderRadius: BorderRadius.circular(22),
             ),
+            child: items.isEmpty
+                ? const _CustomerEmptyState()
+                : Column(
+                    children: [
+                      for (int index = 0; index < items.length; index++) ...[
+                        _CustomerPreviewRow(
+                          record: items[index],
+                          isFirst: index == 0,
+                          isLast: index == items.length - 1,
+                          onTap: () => onTapRecord(items[index].id),
+                        ),
+                        if (index != items.length - 1)
+                          Divider(
+                            height: 1,
+                            thickness: 1,
+                            color:
+                                scheme.outlineVariant.withValues(alpha: 0.72),
+                          ),
+                      ],
+                    ],
+                  ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({
-    required this.label,
-  });
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: Theme.of(context).textTheme.titleLarge,
     );
   }
 }
@@ -348,16 +354,14 @@ class _CustomerEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(22),
       child: Text(
         'No shipments',
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: scheme.onSurfaceVariant,
-        ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
       ),
     );
   }
@@ -382,30 +386,30 @@ class _CustomerPreviewRow extends StatelessWidget {
     final scheme = theme.colorScheme;
 
     return PressableScale(
-      borderRadius: 24,
+      borderRadius: 22,
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(isFirst ? 24 : 0),
-            topRight: Radius.circular(isFirst ? 24 : 0),
-            bottomLeft: Radius.circular(isLast ? 24 : 0),
-            bottomRight: Radius.circular(isLast ? 24 : 0),
+            topLeft: Radius.circular(isFirst ? 22 : 0),
+            topRight: Radius.circular(isFirst ? 22 : 0),
+            bottomLeft: Radius.circular(isLast ? 22 : 0),
+            bottomRight: Radius.circular(isLast ? 22 : 0),
           ),
         ),
         child: Row(
           children: [
             Container(
-              height: 42,
-              width: 42,
+              height: 38,
+              width: 38,
               decoration: BoxDecoration(
-                color: scheme.primaryContainer,
-                borderRadius: BorderRadius.circular(14),
+                color: scheme.primaryContainer.withValues(alpha: 0.78),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 Icons.local_shipping_outlined,
-                size: 20,
+                size: 18,
                 color: scheme.onPrimaryContainer,
               ),
             ),
@@ -420,7 +424,7 @@ class _CustomerPreviewRow extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleMedium,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 3),
                   Text(
                     record.itemCode,
                     maxLines: 1,
@@ -435,8 +439,9 @@ class _CustomerPreviewRow extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               '${record.sentQty.toStringAsFixed(0)} ${record.uom}',
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.titleSmall?.copyWith(
                 color: scheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
