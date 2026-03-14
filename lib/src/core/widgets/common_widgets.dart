@@ -373,14 +373,14 @@ class _DockButtonState extends State<DockButton> {
         : (widget.iconWidget ?? Icon(widget.icon));
     final double iconSize = widget.primary
         ? switch (deviceClass) {
-            _DockDeviceClass.small => 29,
-            _DockDeviceClass.medium => 30,
-            _DockDeviceClass.large => 30,
+            _DockDeviceClass.small => 31,
+            _DockDeviceClass.medium => 32,
+            _DockDeviceClass.large => 32,
           }
         : switch (deviceClass) {
-            _DockDeviceClass.small => 26,
-            _DockDeviceClass.medium => 27,
-            _DockDeviceClass.large => 27,
+            _DockDeviceClass.small => 28,
+            _DockDeviceClass.medium => 29,
+            _DockDeviceClass.large => 29,
           };
 
     return AnimatedScale(
@@ -423,9 +423,9 @@ class _DockButtonState extends State<DockButton> {
                     _DockDeviceClass.large => widget.compact ? 54 : 58,
                   }
                 : switch (deviceClass) {
-                    _DockDeviceClass.small => widget.compact ? 52 : 56,
-                    _DockDeviceClass.medium => widget.compact ? 54 : 58,
-                    _DockDeviceClass.large => widget.compact ? 54 : 58,
+                    _DockDeviceClass.small => widget.compact ? 54 : 58,
+                    _DockDeviceClass.medium => widget.compact ? 56 : 60,
+                    _DockDeviceClass.large => widget.compact ? 56 : 60,
                   },
             width: widget.primary
                 ? switch (deviceClass) {
@@ -434,9 +434,9 @@ class _DockButtonState extends State<DockButton> {
                     _DockDeviceClass.large => widget.compact ? 54 : 58,
                   }
                 : switch (deviceClass) {
-                    _DockDeviceClass.small => widget.compact ? 66 : 72,
-                    _DockDeviceClass.medium => widget.compact ? 70 : 78,
-                    _DockDeviceClass.large => widget.compact ? 70 : 78,
+                    _DockDeviceClass.small => widget.compact ? 70 : 76,
+                    _DockDeviceClass.medium => widget.compact ? 74 : 82,
+                    _DockDeviceClass.large => widget.compact ? 74 : 82,
                   },
             decoration: BoxDecoration(
               color: background,
@@ -462,8 +462,8 @@ class _DockButtonState extends State<DockButton> {
                         AnimatedContainer(
                           duration: AppMotion.medium,
                           curve: AppMotion.smooth,
-                          height: 38,
-                          width: widget.active ? 62 : 38,
+                          height: 42,
+                          width: widget.active ? 68 : 42,
                           decoration: BoxDecoration(
                             color: widget.active
                                 ? scheme.secondaryContainer
