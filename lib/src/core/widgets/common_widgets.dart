@@ -162,6 +162,7 @@ class ActionDock extends StatelessWidget {
     required this.center,
     this.compact = false,
     this.tightToEdges = false,
+    this.liftCenter = true,
   });
 
   final List<Widget> leading;
@@ -169,6 +170,7 @@ class ActionDock extends StatelessWidget {
   final Widget center;
   final bool compact;
   final bool tightToEdges;
+  final bool liftCenter;
 
   double _hostHeightForDevice(_DockDeviceClass deviceClass) {
     final double base = switch (deviceClass) {
@@ -218,7 +220,10 @@ class ActionDock extends StatelessWidget {
                     },
                   ),
                   child: Transform.translate(
-                    offset: Offset(0, index == leading.length ? -3 : 0),
+                    offset: Offset(
+                      0,
+                      liftCenter && index == leading.length ? -3 : 0,
+                    ),
                     child: buttons[index],
                   ),
                 ),

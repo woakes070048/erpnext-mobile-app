@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 enum CustomerDockTab {
   home,
+  notifications,
   profile,
 }
 
@@ -19,6 +20,7 @@ class CustomerDock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ActionDock(
+      liftCenter: false,
       leading: [
         DockButton(
           iconWidget: const DockSvgIcon(
@@ -35,33 +37,22 @@ class CustomerDock extends StatelessWidget {
             );
           },
         ),
-        DockButton(
-          iconWidget: const DockSvgIcon(
-            fillAsset: 'assets/icons/notification-3-fill.svg',
-            lineAsset: 'assets/icons/notification-3-line.svg',
-            primary: false,
-          ),
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Customer feed keyingi bosqichda')),
-            );
-          },
-        ),
       ],
       center: DockButton(
-        icon: Icons.add_rounded,
-        primary: true,
-        onTap: () {},
+        iconWidget: const DockSvgIcon(
+          fillAsset: 'assets/icons/notification-3-fill.svg',
+          lineAsset: 'assets/icons/notification-3-line.svg',
+          primary: false,
+        ),
+        active: activeTab == CustomerDockTab.notifications,
+        primary: false,
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Customer feed keyingi bosqichda')),
+          );
+        },
       ),
       trailing: [
-        DockButton(
-          icon: Icons.history_rounded,
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Customer history keyingi bosqichda')),
-            );
-          },
-        ),
         DockButton(
           iconWidget: const DockSvgIcon(
             fillAsset: 'assets/icons/account-circle-fill.svg',
