@@ -189,8 +189,8 @@ class _CustomerSummaryRow extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(isFirst ? 20 : 0),
-            topRight: Radius.circular(isFirst ? 20 : 0),
+            topLeft: const Radius.circular(0),
+            topRight: const Radius.circular(0),
             bottomLeft: Radius.circular(isLast ? 20 : 0),
             bottomRight: Radius.circular(isLast ? 20 : 0),
           ),
@@ -316,8 +316,8 @@ class _CustomerPreviewRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(isFirst ? 16 : 0),
-            topRight: Radius.circular(isFirst ? 16 : 0),
+            topLeft: const Radius.circular(0),
+            topRight: const Radius.circular(0),
             bottomLeft: Radius.circular(isLast ? 20 : 0),
             bottomRight: Radius.circular(isLast ? 20 : 0),
           ),
