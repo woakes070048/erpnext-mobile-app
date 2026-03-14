@@ -250,6 +250,7 @@ class _CustomerPendingPreviewCard extends StatelessWidget {
             for (int index = 0; index < items.length; index++) ...[
               _CustomerPreviewRow(
                 record: items[index],
+                isFirst: index == 0,
                 isLast: index == items.length - 1,
                 onTap: () => onTapRecord(items[index].id),
               ),
@@ -294,11 +295,13 @@ class _CustomerSectionHeader extends StatelessWidget {
 class _CustomerPreviewRow extends StatelessWidget {
   const _CustomerPreviewRow({
     required this.record,
+    required this.isFirst,
     required this.isLast,
     required this.onTap,
   });
 
   final DispatchRecord record;
+  final bool isFirst;
   final bool isLast;
   final VoidCallback onTap;
 
@@ -311,6 +314,8 @@ class _CustomerPreviewRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(isFirst ? 16 : 0),
+            topRight: Radius.circular(isFirst ? 16 : 0),
             bottomLeft: Radius.circular(isLast ? 20 : 0),
             bottomRight: Radius.circular(isLast ? 20 : 0),
           ),
