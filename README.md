@@ -179,6 +179,30 @@ Muhim:
 - backend contractlar saqlanadi
 - asosiy maqsad: mavjud funksional oqimlarni buzmasdan UI systemni professional holatga olib chiqish
 
+Hozirgi qamrov:
+
+- `customer home` ekranlari M3 card va tonal surface uslubiga o‘tkazilgan
+- `customer notifications` oqimi theme bilan bir xil visual tilga yaqinlashtirilgan
+- `customer detail` section hierarchy M3 surface qatlamlariga moslashtirilgan
+- `profile` ekranida katta panel, tighter spacing va shared control styling ishlatilgan
+- `login` ekrani marketing-heavy hero layoutdan chiqib, aniq sign-in flow ko‘rinishiga keltirilgan
+- `PIN` setup va `app lock` oqimlari yangi animated keypad va indicator bilan yangilangan
+
+Foundation darajasida yangilangan qatlamlar:
+
+- `ColorScheme` va light/dark tonal role mapping
+- `AppShell` surface hierarchy
+- dock/navigation visual system
+- route motion va state transition easing
+- shared PIN keypad va morphing indicator UX
+
+Keyingi eng mantiqli bosqichlar:
+
+- `supplier`, `werka`, `admin` ekranlarini ham shu visual systemga tekislash
+- remaining legacy grouped list geometriyalarini M3 surface ritmiga moslashtirish
+- dialog, switch, toggle va form feedback motionlarini bir xil easing tokenlarga to‘liq ulash
+- light theme’dagi remaining custom rang qoldiqlarini role-based M3 color systemga tozalash
+
 Asosiy shared UI komponentlar:
 
 - `[common_widgets.dart](/home/wikki/local.git/erpnext_stock_telegram/mobile_app/lib/src/core/widgets/common_widgets.dart)`
