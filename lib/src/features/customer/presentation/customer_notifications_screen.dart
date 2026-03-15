@@ -1,4 +1,3 @@
-import '../../../app/app_router.dart';
 import '../../../core/api/mobile_api.dart';
 import '../../../core/cache/json_cache_store.dart';
 import '../../../core/notifications/notification_hidden_store.dart';
@@ -10,11 +9,17 @@ import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/motion_widgets.dart';
 import '../../shared/models/app_models.dart';
 import 'widgets/customer_dock.dart';
-import 'widgets/customer_tab_navigation.dart';
 import 'package:flutter/material.dart';
 
 class CustomerNotificationsScreen extends StatefulWidget {
-  const CustomerNotificationsScreen({super.key});
+  const CustomerNotificationsScreen({
+    super.key,
+    this.showShell = true,
+    this.onClearActionChanged,
+  });
+
+  final bool showShell;
+  final ValueChanged<VoidCallback?>? onClearActionChanged;
 
   @override
   State<CustomerNotificationsScreen> createState() =>
@@ -44,8 +49,17 @@ class _CustomerNotificationsScreenState
 
   @override
   void dispose() {
+    widget.onClearActionChanged?.call(null);
     RefreshHub.instance.removeListener(_handlePushRefresh);
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomerNotificationsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.onClearActionChanged != oldWidget.onClearActionChanged) {
+      widget.onClearActionChanged?.call(_clearAll);
+    }
   }
 
   Future<void> _loadCache() async {
@@ -75,13 +89,10 @@ class _CustomerNotificationsScreenState
     setState(() {
       _highlightedUnreadIds.remove(deliveryNoteID);
     });
-    final changed = await Navigator.of(context).pushNamed(
-      AppRoutes.customerDetail,
+    await Navigator.of(context).pushNamed(
+      '/customer-detail',
       arguments: deliveryNoteID,
     );
-    if (changed == true) {
-      await _reload();
-    }
   }
 
   Future<void> _clearAll() async {
@@ -202,6 +213,64 @@ class _CustomerNotificationsScreenState
 
   @override
   Widget build(BuildContext context) {
+    widget.onClearActionChanged?.call(_clearAll);
+
+    final content = FutureBuilder<List<DispatchRecord>>(
+      future: _future,
+      builder: (context, snapshot) {
+        final hidden = NotificationHiddenStore.instance.hiddenIdsForProfile(
+          AppSession.instance.profile,
+        );
+        final items = (snapshot.data ?? _cachedItems ?? <DispatchRecord>[])
+            .where((item) => !hidden.contains(item.id))
+            .toList();
+        final orderedItems = [
+          ...items.where((item) => _highlightedUnreadIds.contains(item.id)),
+          ...items.where((item) => !_highlightedUnreadIds.contains(item.id)),
+        ];
+
+        if (snapshot.connectionState != ConnectionState.done && items.isEmpty) {
+          return const Center(child: CircularProgressIndicator.adaptive());
+        }
+        if (snapshot.hasError && items.isEmpty) {
+          return Center(
+            child: _NotificationPanel(
+              child: Text('${snapshot.error}'),
+            ),
+          );
+        }
+        if (items.isEmpty) {
+          return const Center(
+            child: _NotificationPanel(
+              child: Text('Hozircha yozuv yo‘q.'),
+            ),
+          );
+        }
+
+        return RefreshIndicator.adaptive(
+          onRefresh: _reload,
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
+            children: [
+              SmoothAppear(
+                delay: const Duration(milliseconds: 20),
+                child: _NotificationSection(
+                  items: orderedItems,
+                  highlightedUnreadIds: _highlightedUnreadIds,
+                  onTapRecord: _openDetail,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (!widget.showShell) {
+      return content;
+    }
+
     return AppShell(
       title: 'Bildirishnomalar',
       subtitle: '',
@@ -213,67 +282,7 @@ class _CustomerNotificationsScreenState
         ),
       ],
       bottom: const CustomerDock(activeTab: CustomerDockTab.notifications),
-      child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onHorizontalDragEnd: (details) => handleCustomerTabSwipe(
-          context,
-          activeTab: CustomerDockTab.notifications,
-          details: details,
-        ),
-        child: FutureBuilder<List<DispatchRecord>>(
-          future: _future,
-          builder: (context, snapshot) {
-            final hidden = NotificationHiddenStore.instance.hiddenIdsForProfile(
-              AppSession.instance.profile,
-            );
-            final items = (snapshot.data ?? _cachedItems ?? <DispatchRecord>[])
-                .where((item) => !hidden.contains(item.id))
-                .toList();
-            final orderedItems = [
-              ...items.where((item) => _highlightedUnreadIds.contains(item.id)),
-              ...items
-                  .where((item) => !_highlightedUnreadIds.contains(item.id)),
-            ];
-
-            if (snapshot.connectionState != ConnectionState.done &&
-                items.isEmpty) {
-              return const Center(child: CircularProgressIndicator.adaptive());
-            }
-            if (snapshot.hasError && items.isEmpty) {
-              return Center(
-                child: _NotificationPanel(
-                  child: Text('${snapshot.error}'),
-                ),
-              );
-            }
-            if (items.isEmpty) {
-              return const Center(
-                child: _NotificationPanel(
-                  child: Text('Hozircha yozuv yo‘q.'),
-                ),
-              );
-            }
-
-            return RefreshIndicator.adaptive(
-              onRefresh: _reload,
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
-                children: [
-                  SmoothAppear(
-                    delay: const Duration(milliseconds: 20),
-                    child: _NotificationSection(
-                      items: orderedItems,
-                      highlightedUnreadIds: _highlightedUnreadIds,
-                      onTapRecord: _openDetail,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
+      child: content,
     );
   }
 }

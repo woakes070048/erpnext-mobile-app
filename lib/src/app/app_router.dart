@@ -1,8 +1,8 @@
 import '../features/auth/presentation/login_screen.dart';
-import '../features/customer/presentation/customer_home_screen.dart';
 import '../features/customer/presentation/customer_delivery_detail_screen.dart';
-import '../features/customer/presentation/customer_notifications_screen.dart';
 import '../features/customer/presentation/customer_status_detail_screen.dart';
+import '../features/customer/presentation/customer_tab_shell_screen.dart';
+import '../features/customer/presentation/widgets/customer_dock.dart';
 import '../features/admin/presentation/admin_activity_screen.dart';
 import '../features/admin/presentation/admin_create_hub_screen.dart';
 import '../features/admin/presentation/admin_home_screen.dart';
@@ -239,9 +239,17 @@ class AppRouter {
       case AppRoutes.profile:
         return _buildRoute(settings, const ProfileScreen());
       case AppRoutes.customerHome:
-        return _buildRoute(settings, const CustomerHomeScreen());
+        return _buildRoute(
+          settings,
+          const CustomerTabShellScreen(initialTab: CustomerDockTab.home),
+        );
       case AppRoutes.customerNotifications:
-        return _buildRoute(settings, const CustomerNotificationsScreen());
+        return _buildRoute(
+          settings,
+          const CustomerTabShellScreen(
+            initialTab: CustomerDockTab.notifications,
+          ),
+        );
       case AppRoutes.customerStatusDetail:
         final CustomerStatusKind kind =
             settings.arguments as CustomerStatusKind;

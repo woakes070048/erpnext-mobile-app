@@ -1,8 +1,8 @@
+import '../../../../app/app_router.dart';
 import '../../../../core/notifications/notification_unread_store.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/widgets/common_widgets.dart';
 import '../../../../core/widgets/logout_prompt.dart';
-import 'customer_tab_navigation.dart';
 import 'package:flutter/material.dart';
 
 enum CustomerDockTab {
@@ -15,11 +15,13 @@ class CustomerDock extends StatelessWidget {
   const CustomerDock({
     super.key,
     required this.activeTab,
+    this.onTabSelected,
     this.compact = false,
     this.tightToEdges = false,
   });
 
   final CustomerDockTab? activeTab;
+  final ValueChanged<CustomerDockTab>? onTabSelected;
   final bool compact;
   final bool tightToEdges;
 
@@ -47,11 +49,14 @@ class CustomerDock extends StatelessWidget {
                 if (activeTab == CustomerDockTab.home) {
                   return;
                 }
-                navigateToCustomerTab(
-                  context,
-                  from: activeTab!,
-                  to: CustomerDockTab.home,
-                );
+                if (onTabSelected != null) {
+                  onTabSelected!(CustomerDockTab.home);
+                } else {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    AppRoutes.customerHome,
+                    (route) => false,
+                  );
+                }
               },
             ),
           ],
@@ -66,11 +71,14 @@ class CustomerDock extends StatelessWidget {
               if (activeTab == CustomerDockTab.notifications) {
                 return;
               }
-              navigateToCustomerTab(
-                context,
-                from: activeTab!,
-                to: CustomerDockTab.notifications,
-              );
+              if (onTabSelected != null) {
+                onTabSelected!(CustomerDockTab.notifications);
+              } else {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  AppRoutes.customerNotifications,
+                  (route) => false,
+                );
+              }
             },
           ),
           trailing: [
@@ -86,10 +94,9 @@ class CustomerDock extends StatelessWidget {
                 if (activeTab == CustomerDockTab.profile) {
                   return;
                 }
-                navigateToCustomerTab(
-                  context,
-                  from: activeTab!,
-                  to: CustomerDockTab.profile,
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  AppRoutes.profile,
+                  (route) => false,
                 );
               },
             ),
