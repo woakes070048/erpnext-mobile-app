@@ -165,122 +165,150 @@ class _AdminCustomerDetailScreenState extends State<AdminCustomerDetailScreen> {
     return Scaffold(
       backgroundColor: AppTheme.shellStart(context),
       body: SafeArea(
-        child: FutureBuilder<AdminCustomerDetail>(
-          future: _future,
-          builder: (context, snapshot) {
-            final stateLabel = snapshot.connectionState != ConnectionState.done
-                ? 'Yuklanmoqda'
-                : snapshot.hasError
-                    ? 'Xato'
-                    : snapshot.hasData
-                        ? 'Tayyor'
-                        : 'Bo‘sh';
-            return ListView(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    IconButton.filledTonal(
-                      onPressed: () => Navigator.of(context).maybePop(),
-                      icon: const Icon(Icons.arrow_back_rounded),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Text(
-                        'Customer',
-                        style: theme.textTheme.headlineMedium,
-                      ),
-                    ),
-                  ],
+                IconButton.filledTonal(
+                  onPressed: () => Navigator.of(context).maybePop(),
+                  icon: const Icon(Icons.arrow_back_rounded),
                 ),
-                const SizedBox(height: 20),
-                _AdminCustomerInfoCard(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Ref: ${widget.customerRef}',
-                          style: theme.textTheme.titleMedium,
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.secondaryContainer,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          stateLabel,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSecondaryContainer,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    'Customer',
+                    style: theme.textTheme.headlineMedium,
                   ),
                 ),
-                const SizedBox(height: 12),
-                if (snapshot.connectionState != ConnectionState.done)
-                  _AdminCustomerInfoCard(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const CircularProgressIndicator.adaptive(),
-                        const SizedBox(height: 14),
-                        Text(
-                          'Customer detail yuklanmoqda...',
-                          style: theme.textTheme.titleMedium,
-                        ),
-                      ],
-                    ),
-                  )
-                else if (snapshot.hasError)
-                  _AdminCustomerInfoCard(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('Customer detail yuklanmadi: ${snapshot.error}'),
-                        const SizedBox(height: 12),
-                        FilledButton(
-                          onPressed: _reload,
-                          child: const Text('Qayta urinish'),
-                        ),
-                      ],
-                    ),
-                  )
-                else if (!snapshot.hasData)
-                  _AdminCustomerInfoCard(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text('Customer detail topilmadi.'),
-                        const SizedBox(height: 12),
-                        FilledButton(
-                          onPressed: _reload,
-                          child: const Text('Qayta urinish'),
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  _AdminCustomerDetailCard(
-                    detail: snapshot.data!,
-                    savingPhone: _savingPhone,
-                    regeneratingCode: _regeneratingCode,
-                    retryAfterSec: _retryAfterSec,
-                    onAddPhone: _addPhone,
-                    onRegenerateCode: _regenerateCode,
-                    onCopyCode: _copyCode,
-                  ),
               ],
-            );
-          },
+            ),
+            const SizedBox(height: 20),
+            _AdminCustomerInfoCard(
+              child: Text(
+                'Customer detail route: ${widget.customerRef}',
+                style: theme.textTheme.titleMedium,
+              ),
+            ),
+            const SizedBox(height: 12),
+            FutureBuilder<AdminCustomerDetail>(
+              future: _future,
+              builder: (context, snapshot) {
+                try {
+                  return _buildSnapshotBody(context, snapshot);
+                } catch (error, stackTrace) {
+                  FlutterError.reportError(
+                    FlutterErrorDetails(
+                      exception: error,
+                      stack: stackTrace,
+                      library: 'admin_customer_detail_screen',
+                      context: ErrorDescription('while building customer detail'),
+                    ),
+                  );
+                  return _AdminCustomerInfoCard(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('Customer detail build xatosi'),
+                        const SizedBox(height: 8),
+                        Text('$error'),
+                      ],
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSnapshotBody(
+    BuildContext context,
+    AsyncSnapshot<AdminCustomerDetail> snapshot,
+  ) {
+    final theme = Theme.of(context);
+    final stateLabel = snapshot.connectionState != ConnectionState.done
+        ? 'Yuklanmoqda'
+        : snapshot.hasError
+            ? 'Xato'
+            : snapshot.hasData
+                ? 'Tayyor'
+                : 'Bo‘sh';
+
+    if (snapshot.connectionState != ConnectionState.done) {
+      return _AdminCustomerInfoCard(
+        child: Row(
+          children: [
+            const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator.adaptive(strokeWidth: 2.2),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Customer detail yuklanmoqda...',
+                style: theme.textTheme.titleMedium,
+              ),
+            ),
+            _AdminStateChip(label: stateLabel),
+          ],
+        ),
+      );
+    }
+    if (snapshot.hasError) {
+      return _AdminCustomerInfoCard(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Customer detail yuklanmadi',
+                    style: theme.textTheme.titleMedium,
+                  ),
+                ),
+                _AdminStateChip(label: stateLabel),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text('${snapshot.error}'),
+            const SizedBox(height: 12),
+            FilledButton(
+              onPressed: _reload,
+              child: const Text('Qayta urinish'),
+            ),
+          ],
+        ),
+      );
+    }
+    if (!snapshot.hasData) {
+      return _AdminCustomerInfoCard(
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Customer detail topilmadi.',
+                style: theme.textTheme.titleMedium,
+              ),
+            ),
+            _AdminStateChip(label: stateLabel),
+          ],
+        ),
+      );
+    }
+    return _AdminCustomerDetailCard(
+      detail: snapshot.data!,
+      savingPhone: _savingPhone,
+      regeneratingCode: _regeneratingCode,
+      retryAfterSec: _retryAfterSec,
+      onAddPhone: _addPhone,
+      onRegenerateCode: _regenerateCode,
+      onCopyCode: _copyCode,
     );
   }
 }
@@ -456,6 +484,31 @@ class _AdminCustomerField extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
       ),
       child: child,
+    );
+  }
+}
+
+class _AdminStateChip extends StatelessWidget {
+  const _AdminStateChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onSecondaryContainer,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
     );
   }
 }
