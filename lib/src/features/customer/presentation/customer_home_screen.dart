@@ -468,23 +468,9 @@ class _CustomerPreviewRow extends StatelessWidget {
         borderRadius: borderRadius,
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
           child: Row(
             children: [
-              Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: scheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.local_shipping_outlined,
-                  size: 18,
-                  color: scheme.onSecondaryContainer,
-                ),
-              ),
-              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -507,7 +493,7 @@ class _CustomerPreviewRow extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Text(
                 '${record.sentQty.toStringAsFixed(0)} ${record.uom}',
                 style: theme.textTheme.titleSmall?.copyWith(
