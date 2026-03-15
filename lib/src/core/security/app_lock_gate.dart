@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'device_permissions_bootstrap.dart';
 import '../widgets/pin_pad.dart';
 import 'security_controller.dart';
@@ -48,13 +46,9 @@ class _AppLockGateState extends State<AppLockGate> {
 
         return Stack(
           children: [
-            widget.child,
             Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                child: Container(
-                  color: const Color(0xAA000000),
-                ),
+              child: Container(
+                color: Theme.of(context).colorScheme.surface,
               ),
             ),
             const _PinUnlockOverlay(),
