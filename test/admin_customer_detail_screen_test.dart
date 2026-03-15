@@ -6,8 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('admin customer detail renders loaded content',
-      (tester) async {
+  testWidgets('admin customer detail renders loaded content', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: AdminCustomerDetailScreen(
@@ -32,5 +31,35 @@ void main() {
     expect(find.text('comfi'), findsWidgets);
     expect(find.text('+998901000333'), findsOneWidget);
     expect(find.text('30SFT8WLPTR9'), findsOneWidget);
+  });
+
+  testWidgets('admin customer detail renders with semantics enabled',
+      (tester) async {
+    final semantics = tester.ensureSemantics();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AdminCustomerDetailScreen(
+          customerRef: 'comfi',
+          detailLoader: (_) async => const AdminCustomerDetail(
+            ref: 'comfi',
+            name: 'comfi',
+            phone: '+998901000333',
+            code: '30SFT8WLPTR9',
+            codeLocked: false,
+            codeRetryAfterSec: 0,
+          ),
+        ),
+      ),
+    );
+
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('comfi'), findsWidgets);
+    expect(find.text('+998901000333'), findsOneWidget);
+    semantics.dispose();
   });
 }
