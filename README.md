@@ -161,6 +161,24 @@ Ilova dizayni bir nechta qat’iy prinsip asosida qurilgan:
 - role bo‘yicha bir xil interaction pattern
 - minimal, enterprise-style axborot taqdimoti
 
+### Material 3 refresh
+
+Hozir loyiha ichida UI qatlamini bosqichma-bosqich `Material 3` yo‘nalishiga yaqinlashtirish ishlari ketmoqda.
+
+Asosiy yo‘nalishlar:
+
+- `Material 3` color roles va tonal surface hierarchy
+- Google’ga yaqin minimal card/list/layout ritmi
+- yumshoq `forward/backward` va state transition motion
+- role ekranlarini bir xil visual system ichida tekislash
+- eski custom visual qoldiqlarni bosqichma-bosqich kamaytirish
+
+Muhim:
+
+- bu refresh business flowlarni o‘zgartirish uchun emas
+- backend contractlar saqlanadi
+- asosiy maqsad: mavjud funksional oqimlarni buzmasdan UI systemni professional holatga olib chiqish
+
 Asosiy shared UI komponentlar:
 
 - `[common_widgets.dart](/home/wikki/local.git/erpnext_stock_telegram/mobile_app/lib/src/core/widgets/common_widgets.dart)`
