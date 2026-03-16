@@ -349,7 +349,7 @@ class _AdminCustomerDetailScreenState extends State<AdminCustomerDetailScreen> {
     }
   }
 
-  Future<void> _removeItem(SupplierItem item) async {
+  Future<bool> _removeItem(SupplierItem item) async {
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -379,7 +379,7 @@ class _AdminCustomerDetailScreenState extends State<AdminCustomerDetailScreen> {
       },
     );
     if (confirmed != true) {
-      return;
+      return false;
     }
 
     setState(() => _removingItemCode = item.code);
@@ -389,16 +389,18 @@ class _AdminCustomerDetailScreenState extends State<AdminCustomerDetailScreen> {
         itemCode: item.code,
       );
       if (!mounted) {
-        return;
+        return false;
       }
       setState(() => _detail = updated);
+      return true;
     } catch (error) {
       if (!mounted) {
-        return;
+        return false;
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Mahsulot uzilmadi: $error')),
       );
+      return false;
     } finally {
       if (mounted) {
         setState(() => _removingItemCode = null);
@@ -522,7 +524,7 @@ class _AdminCustomerDetailCard extends StatelessWidget {
   final String? removingItemCode;
   final Future<void> Function(AdminCustomerDetail detail) onAddPhone;
   final Future<void> Function() onAddItem;
-  final Future<void> Function(SupplierItem item) onRemoveItem;
+  final Future<bool> Function(SupplierItem item) onRemoveItem;
   final Future<void> Function() onRegenerateCode;
   final Future<void> Function(String code) onCopyCode;
   final Future<void> Function() onRemove;
@@ -671,10 +673,13 @@ Future<void> _showAssignedItemsSheet(
   BuildContext context,
   AdminCustomerDetail detail,
   {
-  required Future<void> Function(SupplierItem item) onRemoveItem,
+  required Future<bool> Function(SupplierItem item) onRemoveItem,
   required String? removingItemCode,
 }
 ) async {
+  final visibleItems = detail.assignedItems.toList();
+  final collapsingCodes = <String>{};
+  String? activeRemovingCode = removingItemCode;
   await showModalBottomSheet<void>(
     context: context,
     useSafeArea: true,
@@ -682,89 +687,132 @@ Future<void> _showAssignedItemsSheet(
     builder: (context) {
       final theme = Theme.of(context);
       final scheme = theme.colorScheme;
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      return StatefulBuilder(
+        builder: (context, setModalState) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(
-                    'Biriktirilgan mahsulotlar',
-                    style: theme.textTheme.titleLarge,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Biriktirilgan mahsulotlar',
+                        style: theme.textTheme.titleLarge,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  detail.name,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
                   ),
                 ),
-                IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close_rounded),
+                const SizedBox(height: 14),
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: visibleItems.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      final item = visibleItems[index];
+                      final collapsing = collapsingCodes.contains(item.code);
+                      return AnimatedSize(
+                        duration: const Duration(milliseconds: 220),
+                        curve: Curves.easeInOutCubic,
+                        child: AnimatedOpacity(
+                          duration: const Duration(milliseconds: 180),
+                          curve: Curves.easeInOutCubic,
+                          opacity: collapsing ? 0 : 1,
+                          child: collapsing
+                              ? const SizedBox.shrink()
+                              : _DetailField(
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              item.name,
+                                              style: theme.textTheme.titleMedium,
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              item.code,
+                                              style: theme.textTheme.bodySmall
+                                                  ?.copyWith(
+                                                color: scheme.onSurfaceVariant,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: activeRemovingCode == item.code
+                                            ? null
+                                            : () async {
+                                                setModalState(() {
+                                                  activeRemovingCode = item.code;
+                                                });
+                                                final removed = await onRemoveItem(item);
+                                                if (!context.mounted) {
+                                                  return;
+                                                }
+                                                if (removed) {
+                                                  setModalState(() {
+                                                    collapsingCodes.add(item.code);
+                                                  });
+                                                  await Future<void>.delayed(
+                                                    const Duration(milliseconds: 180),
+                                                  );
+                                                  if (!context.mounted) {
+                                                    return;
+                                                  }
+                                                  setModalState(() {
+                                                    visibleItems.removeWhere(
+                                                      (current) => current.code == item.code,
+                                                    );
+                                                    collapsingCodes.remove(item.code);
+                                                    activeRemovingCode = null;
+                                                  });
+                                                } else {
+                                                  setModalState(() {
+                                                    activeRemovingCode = null;
+                                                  });
+                                                }
+                                              },
+                                        icon: activeRemovingCode == item.code
+                                            ? const SizedBox(
+                                                height: 18,
+                                                width: 18,
+                                                child: CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                ),
+                                              )
+                                            : const Icon(Icons.remove_rounded),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              detail.name,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: scheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 14),
-            Flexible(
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemCount: detail.assignedItems.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 8),
-                itemBuilder: (context, index) {
-                  final item = detail.assignedItems[index];
-                  return _DetailField(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.name,
-                                style: theme.textTheme.titleMedium,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                item.code,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: scheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: removingItemCode == item.code
-                              ? null
-                              : () async {
-                                  await onRemoveItem(item);
-                                  if (context.mounted) {
-                                    Navigator.of(context).pop();
-                                  }
-                                },
-                          icon: removingItemCode == item.code
-                              ? const SizedBox(
-                                  height: 18,
-                                  width: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(Icons.remove_rounded),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       );
     },
   );
