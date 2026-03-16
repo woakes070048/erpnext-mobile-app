@@ -51,8 +51,10 @@ Future<void> showLogoutPrompt(BuildContext context) async {
                             child: FilledButton(
                               onPressed: () => Navigator.of(context).pop(false),
                               style: FilledButton.styleFrom(
-                                backgroundColor: const Color(0xFF111111),
-                                foregroundColor: Colors.white,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                foregroundColor:
+                                    Theme.of(context).colorScheme.onPrimary,
                               ),
                               child: const Text('Yo‘q'),
                             ),
@@ -62,8 +64,10 @@ Future<void> showLogoutPrompt(BuildContext context) async {
                             child: FilledButton(
                               onPressed: () => Navigator.of(context).pop(true),
                               style: FilledButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: Colors.black,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.surface,
+                                foregroundColor:
+                                    Theme.of(context).colorScheme.onSurface,
                               ),
                               child: const Text('Ha'),
                             ),

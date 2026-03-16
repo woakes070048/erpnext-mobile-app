@@ -243,7 +243,7 @@ class _PinGlyph extends StatelessWidget {
     if (!animate) {
       return _GlyphSurface(
         shape: const CircleBorder(),
-        color: scheme.onSurface,
+        color: scheme.primary,
       );
     }
 
@@ -264,7 +264,7 @@ class _PinGlyph extends StatelessWidget {
                 scale: 1.55 - (0.6 * value),
                 child: _GlyphSurface(
                   shape: _polygonShape(),
-                  color: scheme.onSurface,
+                  color: scheme.primary,
                 ),
               ),
             ),
@@ -274,7 +274,7 @@ class _PinGlyph extends StatelessWidget {
                 scale: 0.74 + (0.26 * value),
                 child: _GlyphSurface(
                   shape: const CircleBorder(),
-                  color: scheme.onSurface,
+                  color: scheme.primary,
                 ),
               ),
             ),
@@ -378,7 +378,7 @@ class _PinDigitButtonState extends State<_PinDigitButton> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final idleColor = scheme.surfaceContainerHighest.withValues(alpha: 0.58);
+    final idleColor = scheme.surfaceContainerHigh.withValues(alpha: 0.78);
     final pressedColor = scheme.secondaryContainer.withValues(alpha: 0.78);
     final foreground = scheme.onSurface;
     return GestureDetector(
@@ -470,7 +470,7 @@ class _PinActionButtonState extends State<_PinActionButton> {
     final scheme = Theme.of(context).colorScheme;
     final idleColor = widget.emphasized
         ? scheme.primary.withValues(alpha: 0.82)
-        : scheme.surfaceContainerHighest.withValues(alpha: 0.58);
+        : scheme.surfaceContainerHigh.withValues(alpha: 0.78);
     final pressedColor = widget.emphasized
         ? scheme.primary.withValues(alpha: 0.96)
         : scheme.secondaryContainer.withValues(alpha: 0.82);

@@ -371,7 +371,7 @@ class _WerkaNotificationRow extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: highlighted
-              ? Theme.of(context).colorScheme.surfaceContainer
+              ? Theme.of(context).colorScheme.secondaryContainer
               : Colors.transparent,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
