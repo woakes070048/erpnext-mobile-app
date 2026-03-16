@@ -219,10 +219,28 @@ class _WerkaUnannouncedSupplierScreenState
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (context) {
+        final theme = Theme.of(context);
         return AlertDialog(
           title: const Text('Tasdiqlash'),
-          content: Text(
-            '${_selectedSupplier!.name} • ${_selectedItem!.name}\n${qty.toStringAsFixed(0)} ${_selectedItem!.uom}',
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _selectedSupplier!.name,
+                style: theme.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                _selectedItem!.name,
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '${qty.toStringAsFixed(0)} ${_selectedItem!.uom}',
+                style: theme.textTheme.bodySmall,
+              ),
+            ],
           ),
           actions: [
             Row(
@@ -381,47 +399,12 @@ class _WerkaUnannouncedSupplierScreenState
                           const SizedBox(height: 6),
                           TextField(
                             controller: _qtyController,
-                            keyboardType:
-                                const TextInputType.numberWithOptions(
+                            keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                             ),
                             decoration: InputDecoration(
                               hintText: '0',
                               suffixText: _selectedItem!.uom,
-                            ),
-                          ),
-                        ],
-                        if (_selectedSupplier != null && _selectedItem != null) ...[
-                          const SizedBox(height: 18),
-                          Card.filled(
-                            margin: EdgeInsets.zero,
-                            color: scheme.surfaceContainer,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _selectedSupplier!.name,
-                                    style: theme.textTheme.titleMedium,
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    _selectedItem!.name,
-                                    style: theme.textTheme.bodyMedium,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${_qtyController.text.trim().isEmpty ? '0' : _qtyController.text.trim()} ${_selectedItem!.uom}',
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: scheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ),
                           ),
                         ],
