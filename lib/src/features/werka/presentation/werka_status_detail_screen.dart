@@ -88,7 +88,7 @@ class _WerkaStatusDetailScreenState extends State<WerkaStatusDetailScreen> {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 0, 12, 0),
+                padding: const EdgeInsets.fromLTRB(14, 0, 16, 0),
                 child: FutureBuilder<List<DispatchRecord>>(
                   future: _future,
                   builder: (context, snapshot) {
@@ -212,20 +212,29 @@ class _WerkaStatusRecordRow extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              record.itemCode,
-              style: theme.textTheme.titleLarge,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    record.itemName.trim().isEmpty
+                        ? record.itemCode
+                        : record.itemName,
+                    style: theme.textTheme.titleLarge,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  record.createdLabel,
+                  style: theme.textTheme.bodySmall,
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              '${record.itemCode} • ${record.itemName}',
-              style: theme.textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Text(
               '${record.sentQty.toStringAsFixed(0)} ${record.uom}',
               style: theme.textTheme.headlineMedium,
@@ -244,11 +253,6 @@ class _WerkaStatusRecordRow extends StatelessWidget {
                 style: theme.textTheme.bodySmall,
               ),
             ],
-            const SizedBox(height: 10),
-            Text(
-              record.createdLabel,
-              style: theme.textTheme.bodySmall,
-            ),
           ],
         ),
       ),
