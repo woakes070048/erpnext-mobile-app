@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 enum WerkaDockTab {
   home,
   notifications,
+  recent,
   profile,
 }
 
@@ -81,11 +82,15 @@ class WerkaDock extends StatelessWidget {
             DockButton(
               icon: Icons.history_rounded,
               selectedIcon: Icons.history_rounded,
+              active: activeTab == WerkaDockTab.recent,
               compact: compact,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Werka recent keyingi bosqichda')),
+                if (activeTab == WerkaDockTab.recent) {
+                  return;
+                }
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  AppRoutes.werkaRecent,
+                  (route) => false,
                 );
               },
             ),

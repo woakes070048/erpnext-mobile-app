@@ -8,7 +8,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class WerkaCustomerIssueCustomerScreen extends StatefulWidget {
-  const WerkaCustomerIssueCustomerScreen({super.key});
+  const WerkaCustomerIssueCustomerScreen({
+    super.key,
+    this.prefill,
+  });
+
+  final WerkaCustomerIssuePrefillArgs? prefill;
 
   @override
   State<WerkaCustomerIssueCustomerScreen> createState() =>
@@ -30,6 +35,9 @@ class _WerkaCustomerIssueCustomerScreenState
   void initState() {
     super.initState();
     _customersFuture = MobileApi.instance.werkaCustomers();
+    if (widget.prefill != null) {
+      _applyPrefill(widget.prefill!);
+    }
   }
 
   @override
@@ -42,6 +50,56 @@ class _WerkaCustomerIssueCustomerScreenState
     final future = MobileApi.instance.werkaCustomers();
     setState(() => _customersFuture = future);
     await future;
+  }
+
+  Future<void> _applyPrefill(WerkaCustomerIssuePrefillArgs prefill) async {
+    setState(() {
+      _selectedCustomer = CustomerDirectoryEntry(
+        ref: prefill.customerRef,
+        name: prefill.customerName,
+        phone: '',
+      );
+      _selectedItem = null;
+      _customerItems = const <SupplierItem>[];
+      _loadingItems = true;
+      _qtyController.text = _formatQty(prefill.qty);
+    });
+    try {
+      final items = await MobileApi.instance.werkaCustomerItems(
+        customerRef: prefill.customerRef,
+      );
+      if (!mounted) {
+        return;
+      }
+      final selected = items.cast<SupplierItem?>().firstWhere(
+                (item) => item?.code == prefill.itemCode,
+                orElse: () => null,
+              ) ??
+          SupplierItem(
+            code: prefill.itemCode,
+            name: prefill.itemName,
+            uom: prefill.uom,
+            warehouse: '',
+          );
+      setState(() {
+        _customerItems = items;
+        _selectedItem = selected;
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _loadingItems = false);
+      }
+    }
+  }
+
+  String _formatQty(double qty) {
+    if (qty == qty.roundToDouble()) {
+      return qty.toStringAsFixed(0);
+    }
+    return qty
+        .toStringAsFixed(2)
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
   }
 
   Future<void> _pickCustomer() async {
@@ -470,6 +528,24 @@ class _WerkaCustomerIssueCustomerScreenState
       ),
     );
   }
+}
+
+class WerkaCustomerIssuePrefillArgs {
+  const WerkaCustomerIssuePrefillArgs({
+    required this.customerRef,
+    required this.customerName,
+    required this.itemCode,
+    required this.itemName,
+    required this.qty,
+    required this.uom,
+  });
+
+  final String customerRef;
+  final String customerName;
+  final String itemCode;
+  final String itemName;
+  final double qty;
+  final String uom;
 }
 
 class _WerkaCustomerIssueHeader extends StatelessWidget {

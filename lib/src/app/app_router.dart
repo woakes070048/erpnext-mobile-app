@@ -36,6 +36,7 @@ import '../features/werka/presentation/werka_home_screen.dart';
 import '../features/werka/presentation/werka_create_hub_screen.dart';
 import '../features/werka/presentation/werka_customer_issue_customer_screen.dart';
 import '../features/werka/presentation/werka_notifications_screen.dart';
+import '../features/werka/presentation/werka_recent_screen.dart';
 import '../features/werka/presentation/werka_unannounced_supplier_screen.dart';
 import '../features/werka/presentation/werka_status_detail_screen.dart';
 import '../features/werka/presentation/werka_status_breakdown_screen.dart';
@@ -60,6 +61,7 @@ class AppRoutes {
       '/werka-customer-issue-customer';
   static const String werkaUnannouncedSupplier = '/werka-unannounced-supplier';
   static const String werkaNotifications = '/werka-notifications';
+  static const String werkaRecent = '/werka-recent';
   static const String werkaStatusBreakdown = '/werka-status-breakdown';
   static const String werkaStatusDetail = '/werka-status-detail';
   static const String werkaDetail = '/werka-detail';
@@ -94,6 +96,7 @@ class AppRouter {
     AppRoutes.supplierRecent,
     AppRoutes.werkaHome,
     AppRoutes.werkaNotifications,
+    AppRoutes.werkaRecent,
     AppRoutes.adminHome,
     AppRoutes.adminActivity,
     AppRoutes.adminCreateHub,
@@ -162,11 +165,27 @@ class AppRouter {
       case AppRoutes.werkaCreateHub:
         return _buildRoute(settings, const WerkaCreateHubScreen());
       case AppRoutes.werkaCustomerIssueCustomer:
-        return _buildRoute(settings, const WerkaCustomerIssueCustomerScreen());
+        final WerkaCustomerIssuePrefillArgs? args =
+            settings.arguments is WerkaCustomerIssuePrefillArgs
+                ? settings.arguments as WerkaCustomerIssuePrefillArgs
+                : null;
+        return _buildRoute(
+          settings,
+          WerkaCustomerIssueCustomerScreen(prefill: args),
+        );
       case AppRoutes.werkaUnannouncedSupplier:
-        return _buildRoute(settings, const WerkaUnannouncedSupplierScreen());
+        final WerkaUnannouncedPrefillArgs? args =
+            settings.arguments is WerkaUnannouncedPrefillArgs
+                ? settings.arguments as WerkaUnannouncedPrefillArgs
+                : null;
+        return _buildRoute(
+          settings,
+          WerkaUnannouncedSupplierScreen(prefill: args),
+        );
       case AppRoutes.werkaNotifications:
         return _buildRoute(settings, const WerkaNotificationsScreen());
+      case AppRoutes.werkaRecent:
+        return _buildRoute(settings, const WerkaRecentScreen());
       case AppRoutes.werkaStatusBreakdown:
         final WerkaStatusKind kind = settings.arguments as WerkaStatusKind;
         return _buildRoute(
