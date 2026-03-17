@@ -40,16 +40,12 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
 
   Future<_CustomerHomePayload> _load() async {
     final results = await Future.wait<dynamic>([
-      MobileApi.instance.customerStatusDetails(CustomerStatusKind.pending),
-      MobileApi.instance.customerStatusDetails(CustomerStatusKind.confirmed),
-      MobileApi.instance.customerStatusDetails(CustomerStatusKind.rejected),
+      MobileApi.instance.customerSummary(),
       MobileApi.instance.customerHistory(),
     ]);
     return _CustomerHomePayload(
-      pendingItems: results[0] as List<DispatchRecord>,
-      confirmedItems: results[1] as List<DispatchRecord>,
-      rejectedItems: results[2] as List<DispatchRecord>,
-      historyItems: results[3] as List<DispatchRecord>,
+      summary: results[0] as CustomerHomeSummary,
+      historyItems: results[1] as List<DispatchRecord>,
     );
   }
 
@@ -108,27 +104,12 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
           }
 
           final payload = snapshot.data!;
-          final pendingItems = CustomerDeliveryRuntimeStore.instance
-              .applyStatusList(CustomerStatusKind.pending, payload.pendingItems);
-          final confirmedItems = CustomerDeliveryRuntimeStore.instance
-              .applyStatusList(
-                CustomerStatusKind.confirmed,
-                payload.confirmedItems,
-              );
-          final rejectedItems = CustomerDeliveryRuntimeStore.instance
-              .applyStatusList(
-                CustomerStatusKind.rejected,
-                payload.rejectedItems,
-              );
+          final summary = CustomerDeliveryRuntimeStore.instance
+              .applySummary(payload.summary);
           final previewItems = CustomerDeliveryRuntimeStore.instance
               .applyHistory(payload.historyItems)
               .take(3)
               .toList();
-          final summary = CustomerHomeSummary(
-            pendingCount: pendingItems.length,
-            confirmedCount: confirmedItems.length,
-            rejectedCount: rejectedItems.length,
-          );
 
           return RefreshIndicator.adaptive(
             onRefresh: _reload,
@@ -175,15 +156,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
 
 class _CustomerHomePayload {
   const _CustomerHomePayload({
-    required this.pendingItems,
-    required this.confirmedItems,
-    required this.rejectedItems,
+    required this.summary,
     required this.historyItems,
   });
 
-  final List<DispatchRecord> pendingItems;
-  final List<DispatchRecord> confirmedItems;
-  final List<DispatchRecord> rejectedItems;
+  final CustomerHomeSummary summary;
   final List<DispatchRecord> historyItems;
 }
 

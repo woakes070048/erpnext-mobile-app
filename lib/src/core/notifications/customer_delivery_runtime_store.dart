@@ -25,6 +25,42 @@ class CustomerDeliveryRuntimeStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  CustomerHomeSummary applySummary(CustomerHomeSummary summary) {
+    var pending = summary.pendingCount;
+    var confirmed = summary.confirmedCount;
+    var rejected = summary.rejectedCount;
+
+    for (final mutation in _activeMutations()) {
+      switch (mutation.fromStatus) {
+        case DispatchStatus.pending:
+          pending -= 1;
+        case DispatchStatus.accepted:
+          confirmed -= 1;
+        case DispatchStatus.rejected:
+          rejected -= 1;
+        default:
+          break;
+      }
+
+      switch (mutation.updated.status) {
+        case DispatchStatus.pending:
+          pending += 1;
+        case DispatchStatus.accepted:
+          confirmed += 1;
+        case DispatchStatus.rejected:
+          rejected += 1;
+        default:
+          break;
+      }
+    }
+
+    return CustomerHomeSummary(
+      pendingCount: pending < 0 ? 0 : pending,
+      confirmedCount: confirmed < 0 ? 0 : confirmed,
+      rejectedCount: rejected < 0 ? 0 : rejected,
+    );
+  }
+
   List<DispatchRecord> applyStatusList(
     CustomerStatusKind kind,
     List<DispatchRecord> items,
