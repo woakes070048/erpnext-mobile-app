@@ -753,7 +753,7 @@ class _PinDigitButtonState extends State<_PinDigitButton> {
       child: AnimatedContainer(
         duration: _pressed
             ? const Duration(milliseconds: 90)
-            : const Duration(milliseconds: 680),
+            : const Duration(milliseconds: 960),
         curve: _pressed ? AppMotion.standardDecelerate : Curves.easeOutCubic,
         width: 78,
         height: 78,
@@ -769,7 +769,7 @@ class _PinDigitButtonState extends State<_PinDigitButton> {
             AnimatedOpacity(
               duration: _pressed
                   ? const Duration(milliseconds: 90)
-                  : const Duration(milliseconds: 620),
+                  : const Duration(milliseconds: 900),
               curve: Curves.easeOutCubic,
               opacity: _pressed ? 1 : 0,
               child: Container(
@@ -863,7 +863,7 @@ class _PinActionButtonState extends State<_PinActionButton> {
       child: AnimatedContainer(
         duration: _pressed
             ? const Duration(milliseconds: 90)
-            : const Duration(milliseconds: 680),
+            : const Duration(milliseconds: 960),
         curve: _pressed ? AppMotion.standardDecelerate : Curves.easeOutCubic,
         width: 78,
         height: 78,
@@ -884,7 +884,7 @@ class _PinActionButtonState extends State<_PinActionButton> {
             AnimatedOpacity(
               duration: _pressed
                   ? const Duration(milliseconds: 90)
-                  : const Duration(milliseconds: 620),
+                  : const Duration(milliseconds: 900),
               curve: Curves.easeOutCubic,
               opacity: _pressed ? 1 : 0,
               child: Container(
