@@ -38,8 +38,12 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   }
 
   Future<_CustomerHomePayload> _load() async {
-    final summary = await MobileApi.instance.customerSummary();
-    final history = await MobileApi.instance.customerHistory();
+    final results = await Future.wait<dynamic>([
+      MobileApi.instance.customerSummary(),
+      MobileApi.instance.customerHistory(),
+    ]);
+    final summary = results[0] as CustomerHomeSummary;
+    final history = results[1] as List<DispatchRecord>;
     return _CustomerHomePayload(
       summary: summary,
       previewItems: history.take(3).toList(),
@@ -73,11 +77,13 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     }
   }
 
-  void _openStatus(CustomerStatusKind kind) {
-    Navigator.of(context).pushNamed(
+  Future<void> _openStatus(CustomerStatusKind kind) async {
+    await Navigator.of(context).pushNamed(
       AppRoutes.customerStatusDetail,
       arguments: kind,
     );
+    if (!mounted) return;
+    await _reload();
   }
 
   @override
