@@ -125,6 +125,23 @@ class _CustomerStatusDetailScreenState
                             ),
                           );
                         }
+                        final pendingItems = widget.kind == CustomerStatusKind.pending
+                            ? (snapshot.data ?? const <DispatchRecord>[])
+                            : const <DispatchRecord>[];
+                        final confirmedItems =
+                            widget.kind == CustomerStatusKind.confirmed
+                                ? (snapshot.data ?? const <DispatchRecord>[])
+                                : const <DispatchRecord>[];
+                        final rejectedItems =
+                            widget.kind == CustomerStatusKind.rejected
+                                ? (snapshot.data ?? const <DispatchRecord>[])
+                                : const <DispatchRecord>[];
+                        CustomerDeliveryRuntimeStore.instance
+                            .reconcileStatusLists(
+                              pendingItems: pendingItems,
+                              confirmedItems: confirmedItems,
+                              rejectedItems: rejectedItems,
+                            );
                         final items = CustomerDeliveryRuntimeStore.instance
                             .applyStatusList(
                               widget.kind,

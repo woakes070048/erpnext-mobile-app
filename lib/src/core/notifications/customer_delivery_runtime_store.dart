@@ -25,6 +25,25 @@ class CustomerDeliveryRuntimeStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  void reconcileStatusLists({
+    required List<DispatchRecord> pendingItems,
+    required List<DispatchRecord> confirmedItems,
+    required List<DispatchRecord> rejectedItems,
+  }) {
+    final serverById = <String, DispatchRecord>{
+      for (final item in pendingItems) item.id: item,
+      for (final item in confirmedItems) item.id: item,
+      for (final item in rejectedItems) item.id: item,
+    };
+    _reconcileWith(serverById);
+  }
+
+  @visibleForTesting
+  void clear() {
+    _mutations.clear();
+    notifyListeners();
+  }
+
   CustomerHomeSummary applySummary(CustomerHomeSummary summary) {
     var pending = summary.pendingCount;
     var confirmed = summary.confirmedCount;
@@ -108,6 +127,25 @@ class CustomerDeliveryRuntimeStore extends ChangeNotifier {
     final result = records.toList();
     result.sort((a, b) => b.createdLabel.compareTo(a.createdLabel));
     return result;
+  }
+
+  void _reconcileWith(Map<String, DispatchRecord> serverById) {
+    _mutations.removeWhere((id, mutation) {
+      final server = serverById[id];
+      if (server == null) {
+        return false;
+      }
+      return _signature(server) == _signature(mutation.updated);
+    });
+  }
+
+  String _signature(DispatchRecord record) {
+    return [
+      record.status.name,
+      record.sentQty.toStringAsFixed(4),
+      record.acceptedQty.toStringAsFixed(4),
+      record.note.trim(),
+    ].join('|');
   }
 }
 

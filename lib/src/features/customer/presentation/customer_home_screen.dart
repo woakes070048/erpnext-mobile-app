@@ -120,6 +120,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
           }
 
           final current = payload!;
+          CustomerDeliveryRuntimeStore.instance.reconcileStatusLists(
+            pendingItems: current.pendingItems,
+            confirmedItems: current.confirmedItems,
+            rejectedItems: current.rejectedItems,
+          );
           final pendingItems = CustomerDeliveryRuntimeStore.instance
               .applyStatusList(CustomerStatusKind.pending, current.pendingItems);
           final confirmedItems = CustomerDeliveryRuntimeStore.instance
