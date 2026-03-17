@@ -214,7 +214,6 @@ class _WerkaSummaryCard extends StatelessWidget {
                 arguments: WerkaStatusKind.pending,
               ),
             ),
-            const _WerkaSummaryDivider(),
             _WerkaSummaryRow(
               label: 'Tasdiqlangan',
               value: summary.confirmedCount.toString(),
@@ -223,7 +222,6 @@ class _WerkaSummaryCard extends StatelessWidget {
                 arguments: WerkaStatusKind.confirmed,
               ),
             ),
-            const _WerkaSummaryDivider(),
             _WerkaSummaryRow(
               label: 'Qaytarilgan',
               value: summary.returnedCount.toString(),
@@ -255,9 +253,10 @@ class _WerkaSummaryRow extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     return PressableScale(
+      borderRadius: 28,
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+        padding: const EdgeInsets.fromLTRB(18, 20, 18, 20),
         child: Row(
           children: [
             Expanded(
@@ -285,21 +284,6 @@ class _WerkaSummaryRow extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _WerkaSummaryDivider extends StatelessWidget {
-  const _WerkaSummaryDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return Divider(
-      height: 1,
-      thickness: 1,
-      indent: 18,
-      endIndent: 18,
-      color: AppTheme.cardBorder(context).withValues(alpha: 0.7),
     );
   }
 }
