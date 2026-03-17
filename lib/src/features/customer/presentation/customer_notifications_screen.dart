@@ -1,4 +1,3 @@
-import '../../../core/api/mobile_api.dart';
 import '../../../core/cache/json_cache_store.dart';
 import '../../../core/notifications/notification_hidden_store.dart';
 import '../../../core/notifications/notification_unread_store.dart';
@@ -8,6 +7,7 @@ import '../../../core/theme/app_motion.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/motion_widgets.dart';
 import '../../shared/models/app_models.dart';
+import '../state/customer_store.dart';
 import 'widgets/customer_dock.dart';
 import 'package:flutter/material.dart';
 
@@ -37,6 +37,7 @@ class _CustomerNotificationsScreenState
   @override
   void initState() {
     super.initState();
+    CustomerStore.instance.bootstrap();
     _future = _loadAndTrack();
     NotificationHiddenStore.instance.load().then((_) {
       if (mounted) {
@@ -171,7 +172,8 @@ class _CustomerNotificationsScreenState
   }
 
   Future<List<DispatchRecord>> _loadAndTrack() async {
-    final items = await MobileApi.instance.customerHistory();
+    await CustomerStore.instance.refresh();
+    final items = CustomerStore.instance.historyItems;
     final hidden = NotificationHiddenStore.instance.hiddenIdsForProfile(
       AppSession.instance.profile,
     );

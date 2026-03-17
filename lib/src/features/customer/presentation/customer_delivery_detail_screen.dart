@@ -1,9 +1,9 @@
 import '../../../core/api/mobile_api.dart';
-import '../../../core/notifications/customer_delivery_runtime_store.dart';
 import '../../../core/notifications/refresh_hub.dart';
 import '../../../core/widgets/app_shell.dart';
 import 'widgets/customer_dock.dart';
 import '../../shared/models/app_models.dart';
+import '../state/customer_store.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
@@ -129,7 +129,7 @@ class _CustomerDeliveryDetailScreenState
       setState(() {
         _future = Future<CustomerDeliveryDetail>.value(updated);
       });
-      CustomerDeliveryRuntimeStore.instance.recordTransition(
+      CustomerStore.instance.applyDetailTransition(
         before: current.record,
         after: updated.record,
       );

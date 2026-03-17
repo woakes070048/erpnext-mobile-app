@@ -1,8 +1,7 @@
 import '../../../app/app_router.dart';
-import '../../../core/api/mobile_api.dart';
-import '../../../core/notifications/customer_delivery_runtime_store.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../shared/models/app_models.dart';
+import '../state/customer_store.dart';
 import 'widgets/customer_dock.dart';
 import 'package:flutter/material.dart';
 
@@ -21,19 +20,16 @@ class CustomerStatusDetailScreen extends StatefulWidget {
 
 class _CustomerStatusDetailScreenState
     extends State<CustomerStatusDetailScreen> {
-  late Future<List<DispatchRecord>> _future;
   bool _didMutate = false;
 
   @override
   void initState() {
     super.initState();
-    _future = MobileApi.instance.customerStatusDetails(widget.kind);
+    CustomerStore.instance.bootstrap();
   }
 
   Future<void> _reload() async {
-    final future = MobileApi.instance.customerStatusDetails(widget.kind);
-    setState(() => _future = future);
-    await future;
+    await CustomerStore.instance.refresh();
   }
 
   Future<void> _openDetail(String deliveryNoteID) async {
@@ -103,53 +99,28 @@ class _CustomerStatusDetailScreenState
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(14, 0, 16, 0),
                 child: AnimatedBuilder(
-                  animation: CustomerDeliveryRuntimeStore.instance,
+                  animation: CustomerStore.instance,
                   builder: (context, _) {
-                    return FutureBuilder<List<DispatchRecord>>(
-                      future: _future,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState != ConnectionState.done) {
+                    final store = CustomerStore.instance;
+                    if (store.loading && !store.loaded) {
                           return const Center(
                             child: CircularProgressIndicator(),
                           );
-                        }
-                        if (snapshot.hasError) {
+                    }
+                    if (store.error != null && !store.loaded) {
                           return Center(
                             child: Card.filled(
                               margin: EdgeInsets.zero,
                               color: scheme.surfaceContainerLow,
                               child: Padding(
                                 padding: const EdgeInsets.all(18),
-                                child: Text('${snapshot.error}'),
+                                child: Text('${store.error}'),
                               ),
                             ),
                           );
-                        }
-                        final pendingItems = widget.kind == CustomerStatusKind.pending
-                            ? (snapshot.data ?? const <DispatchRecord>[])
-                            : const <DispatchRecord>[];
-                        final confirmedItems =
-                            widget.kind == CustomerStatusKind.confirmed
-                                ? (snapshot.data ?? const <DispatchRecord>[])
-                                : const <DispatchRecord>[];
-                        final rejectedItems =
-                            widget.kind == CustomerStatusKind.rejected
-                                ? (snapshot.data ?? const <DispatchRecord>[])
-                                : const <DispatchRecord>[];
-                        CustomerDeliveryRuntimeStore.instance
-                            .reconcileStatusLists(
-                              pendingItems: pendingItems,
-                              confirmedItems: confirmedItems,
-                              rejectedItems: rejectedItems,
-                            );
-                        CustomerDeliveryRuntimeStore.instance
-                            .setStatusSnapshot(widget.kind, snapshot.data ?? const <DispatchRecord>[]);
-                        final items = CustomerDeliveryRuntimeStore.instance
-                            .applyStatusList(
-                              widget.kind,
-                              snapshot.data ?? const <DispatchRecord>[],
-                            );
-                        if (items.isEmpty) {
+                    }
+                    final items = store.itemsForKind(widget.kind);
+                    if (items.isEmpty) {
                           return Center(
                             child: Card.filled(
                               margin: EdgeInsets.zero,
@@ -163,38 +134,36 @@ class _CustomerStatusDetailScreenState
                               ),
                             ),
                           );
-                        }
-                        return RefreshIndicator.adaptive(
-                          onRefresh: _reload,
-                          child: ListView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            padding: const EdgeInsets.only(bottom: 110),
-                            children: [
-                              Card.filled(
-                                margin: EdgeInsets.zero,
-                                color: scheme.surfaceContainerLow,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(28),
-                                ),
-                                child: Column(
-                                  children: [
-                                    for (int index = 0;
-                                        index < items.length;
-                                        index++) ...[
-                                      _CustomerStatusRecordRow(
-                                        record: items[index],
-                                        onTap: () => _openDetail(items[index].id),
-                                      ),
-                                      if (index != items.length - 1)
-                                        const Divider(height: 1, thickness: 1),
-                                    ],
-                                  ],
-                                ),
-                              ),
-                            ],
+                    }
+                    return RefreshIndicator.adaptive(
+                      onRefresh: _reload,
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(bottom: 110),
+                        children: [
+                          Card.filled(
+                            margin: EdgeInsets.zero,
+                            color: scheme.surfaceContainerLow,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
+                            ),
+                            child: Column(
+                              children: [
+                                for (int index = 0;
+                                    index < items.length;
+                                    index++) ...[
+                                  _CustomerStatusRecordRow(
+                                    record: items[index],
+                                    onTap: () => _openDetail(items[index].id),
+                                  ),
+                                  if (index != items.length - 1)
+                                    const Divider(height: 1, thickness: 1),
+                                ],
+                              ],
+                            ),
                           ),
-                        );
-                      },
+                        ],
+                      ),
                     );
                   },
                 ),
