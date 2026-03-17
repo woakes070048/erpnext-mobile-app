@@ -8,6 +8,7 @@ class CustomerDeliveryRuntimeStore extends ChangeNotifier {
       CustomerDeliveryRuntimeStore._();
 
   final Map<String, _CustomerDeliveryMutation> _mutations = {};
+  final Map<CustomerStatusKind, List<DispatchRecord>> _latestStatusLists = {};
 
   void recordIncoming(DispatchRecord record) {
     final id = record.id.trim();
@@ -54,13 +55,17 @@ class CustomerDeliveryRuntimeStore extends ChangeNotifier {
   @visibleForTesting
   void clear() {
     _mutations.clear();
+    _latestStatusLists.clear();
     notifyListeners();
   }
 
   CustomerHomeSummary applySummary(CustomerHomeSummary summary) {
-    var pending = summary.pendingCount;
-    var confirmed = summary.confirmedCount;
-    var rejected = summary.rejectedCount;
+    var pending = _latestStatusLists[CustomerStatusKind.pending]?.length ??
+        summary.pendingCount;
+    var confirmed = _latestStatusLists[CustomerStatusKind.confirmed]?.length ??
+        summary.confirmedCount;
+    var rejected = _latestStatusLists[CustomerStatusKind.rejected]?.length ??
+        summary.rejectedCount;
 
     for (final mutation in _activeMutations()) {
       if (mutation.before case final before?) {
@@ -93,6 +98,19 @@ class CustomerDeliveryRuntimeStore extends ChangeNotifier {
       confirmedCount: confirmed < 0 ? 0 : confirmed,
       rejectedCount: rejected < 0 ? 0 : rejected,
     );
+  }
+
+  void setStatusSnapshot(
+    CustomerStatusKind kind,
+    List<DispatchRecord> items,
+  ) {
+    final next = List<DispatchRecord>.unmodifiable(items);
+    final previous = _latestStatusLists[kind];
+    if (_sameRecords(previous, next)) {
+      return;
+    }
+    _latestStatusLists[kind] = next;
+    notifyListeners();
   }
 
   List<DispatchRecord> applyStatusList(
@@ -156,11 +174,27 @@ class CustomerDeliveryRuntimeStore extends ChangeNotifier {
 
   String _signature(DispatchRecord record) {
     return [
+      record.id,
       record.status.name,
       record.sentQty.toStringAsFixed(4),
       record.acceptedQty.toStringAsFixed(4),
       record.note.trim(),
     ].join('|');
+  }
+
+  bool _sameRecords(
+    List<DispatchRecord>? a,
+    List<DispatchRecord> b,
+  ) {
+    if (a == null || a.length != b.length) {
+      return false;
+    }
+    for (var index = 0; index < a.length; index++) {
+      if (_signature(a[index]) != _signature(b[index])) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 

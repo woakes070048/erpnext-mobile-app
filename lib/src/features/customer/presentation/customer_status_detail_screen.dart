@@ -142,6 +142,8 @@ class _CustomerStatusDetailScreenState
                               confirmedItems: confirmedItems,
                               rejectedItems: rejectedItems,
                             );
+                        CustomerDeliveryRuntimeStore.instance
+                            .setStatusSnapshot(widget.kind, snapshot.data ?? const <DispatchRecord>[]);
                         final items = CustomerDeliveryRuntimeStore.instance
                             .applyStatusList(
                               widget.kind,

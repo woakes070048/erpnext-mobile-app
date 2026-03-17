@@ -125,6 +125,18 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             confirmedItems: current.confirmedItems,
             rejectedItems: current.rejectedItems,
           );
+          CustomerDeliveryRuntimeStore.instance.setStatusSnapshot(
+            CustomerStatusKind.pending,
+            current.pendingItems,
+          );
+          CustomerDeliveryRuntimeStore.instance.setStatusSnapshot(
+            CustomerStatusKind.confirmed,
+            current.confirmedItems,
+          );
+          CustomerDeliveryRuntimeStore.instance.setStatusSnapshot(
+            CustomerStatusKind.rejected,
+            current.rejectedItems,
+          );
           final pendingItems = CustomerDeliveryRuntimeStore.instance
               .applyStatusList(CustomerStatusKind.pending, current.pendingItems);
           final confirmedItems = CustomerDeliveryRuntimeStore.instance
