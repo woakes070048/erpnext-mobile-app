@@ -251,35 +251,35 @@ class _PinGlyph extends StatelessWidget {
       case 0:
         return const _OrganicBlobBorder(
           lobes: 2,
-          amplitude: 0.16,
-          secondaryAmplitude: 0.05,
-          rotation: 0.7,
+          amplitude: 0.14,
+          secondaryAmplitude: 0.03,
+          rotation: 0.0,
           scaleX: 0.94,
           scaleY: 0.86,
         );
       case 1:
         return const _OrganicBlobBorder(
           lobes: 3,
-          amplitude: 0.18,
-          secondaryAmplitude: 0.04,
-          rotation: 0.2,
+          amplitude: 0.14,
+          secondaryAmplitude: 0.02,
+          rotation: 0.0,
           scaleX: 0.9,
           scaleY: 0.88,
         );
       case 2:
         return const _OrganicBlobBorder(
           lobes: 4,
-          amplitude: 0.15,
-          secondaryAmplitude: 0.05,
-          rotation: 0.45,
+          amplitude: 0.12,
+          secondaryAmplitude: 0.03,
+          rotation: 0.0,
           scaleX: 0.92,
           scaleY: 0.92,
         );
       default:
         return const _OrganicBlobBorder(
           lobes: 6,
-          amplitude: 0.11,
-          secondaryAmplitude: 0.03,
+          amplitude: 0.08,
+          secondaryAmplitude: 0.02,
           rotation: 0.0,
           scaleX: 0.94,
           scaleY: 0.94,
@@ -292,34 +292,34 @@ class _PinGlyph extends StatelessWidget {
       case 0:
         return const _OrganicBlobBorder(
           lobes: 2,
-          amplitude: 0.10,
-          secondaryAmplitude: 0.03,
-          rotation: 0.7,
+          amplitude: 0.08,
+          secondaryAmplitude: 0.02,
+          rotation: 0.0,
           scaleX: 0.97,
           scaleY: 0.93,
         );
       case 1:
         return const _OrganicBlobBorder(
           lobes: 3,
-          amplitude: 0.10,
-          secondaryAmplitude: 0.03,
-          rotation: 0.2,
+          amplitude: 0.08,
+          secondaryAmplitude: 0.02,
+          rotation: 0.0,
           scaleX: 0.95,
           scaleY: 0.93,
         );
       case 2:
         return const _OrganicBlobBorder(
           lobes: 4,
-          amplitude: 0.09,
-          secondaryAmplitude: 0.03,
-          rotation: 0.45,
+          amplitude: 0.07,
+          secondaryAmplitude: 0.02,
+          rotation: 0.0,
           scaleX: 0.97,
           scaleY: 0.97,
         );
       default:
         return const _OrganicBlobBorder(
           lobes: 6,
-          amplitude: 0.07,
+          amplitude: 0.05,
           secondaryAmplitude: 0.02,
           rotation: 0.0,
           scaleX: 0.98,
