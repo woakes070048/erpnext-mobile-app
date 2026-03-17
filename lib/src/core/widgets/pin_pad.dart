@@ -262,7 +262,7 @@ class _PinGlyph extends StatelessWidget {
           lobes: 3,
           amplitude: 0.18,
           secondaryAmplitude: 0.04,
-          rotation: -0.2,
+          rotation: 0.2,
           scaleX: 0.9,
           scaleY: 0.88,
         );
@@ -303,7 +303,7 @@ class _PinGlyph extends StatelessWidget {
           lobes: 3,
           amplitude: 0.10,
           secondaryAmplitude: 0.03,
-          rotation: -0.2,
+          rotation: 0.2,
           scaleX: 0.95,
           scaleY: 0.93,
         );
@@ -435,7 +435,7 @@ class _PinGlyph extends StatelessWidget {
           height: 36,
           child: Center(
             child: Transform.rotate(
-              angle: 0.34 * eased,
+              angle: -0.34 * eased,
               child: Transform.scale(
                 scale: 1.08 - (0.08 * eased),
                 child: _GlyphSurface(
