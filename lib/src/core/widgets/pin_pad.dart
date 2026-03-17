@@ -308,11 +308,11 @@ class _PinGlyph extends StatelessWidget {
     return TweenAnimationBuilder<double>(
       key: ValueKey<String>('glyph-$variant-$animateTick'),
       tween: Tween(begin: 0, end: 1),
-      duration: const Duration(milliseconds: 1680),
+      duration: const Duration(milliseconds: 1880),
       curve: AppMotion.standardDecelerate,
       builder: (context, value, _) {
         final eased = AppMotion.standardDecelerate.transform(value);
-        final size = 28.0 - (8.0 * eased);
+        final size = 30.0 - (10.0 * eased);
         return SizedBox(
           width: 28,
           height: 28,
