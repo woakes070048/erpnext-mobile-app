@@ -1,5 +1,5 @@
 import '../../../app/app_router.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_shell.dart';
 import '../../shared/models/app_models.dart';
 import '../state/werka_store.dart';
 import 'werka_customer_issue_customer_screen.dart';
@@ -82,47 +82,14 @@ class _WerkaRecentScreenState extends State<WerkaRecentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return AnimatedBuilder(
       animation: WerkaStore.instance,
-      builder: (context, _) => Scaffold(
-        extendBody: true,
-        backgroundColor: AppTheme.shellStart(context),
-        body: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Recent', style: theme.textTheme.headlineMedium),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Avvalgi harakatni prefill bilan qayta ishlating',
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 12, 0),
-                  child: _buildBody(theme),
-                ),
-              ),
-            ],
-          ),
-        ),
-        bottomNavigationBar: const SafeArea(
-          top: false,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: WerkaDock(activeTab: WerkaDockTab.recent),
-          ),
-        ),
+      builder: (context, _) => AppShell(
+        title: 'Recent',
+        subtitle: 'Avvalgi harakatni prefill bilan qayta ishlating',
+        bottom: const WerkaDock(activeTab: WerkaDockTab.recent),
+        contentPadding: const EdgeInsets.fromLTRB(10, 0, 12, 0),
+        child: _buildBody(Theme.of(context)),
       ),
     );
   }
