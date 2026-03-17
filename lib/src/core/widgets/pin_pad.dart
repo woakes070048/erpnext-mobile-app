@@ -284,17 +284,26 @@ class _PinGlyph extends StatelessWidget {
     return ShapeBorder.lerp(_midShape(), const CircleBorder(), local)!;
   }
 
+  double _sizeAt(double t) {
+    if (t < 0.34) {
+      final local = Curves.easeOut.transform(t / 0.34);
+      return 38.0 - (4.0 * local);
+    }
+    final local = AppMotion.standardDecelerate.transform((t - 0.34) / 0.66);
+    return 34.0 - (14.0 * local);
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     if (!filled) {
-      return const SizedBox(width: 32, height: 32);
+      return const SizedBox(width: 36, height: 36);
     }
 
     if (!animate) {
       return const SizedBox(
-        width: 32,
-        height: 32,
+        width: 36,
+        height: 36,
         child: Center(
           child: _GlyphSurface(
             shape: CircleBorder(),
@@ -312,10 +321,10 @@ class _PinGlyph extends StatelessWidget {
       curve: AppMotion.standardDecelerate,
       builder: (context, value, _) {
         final eased = AppMotion.standardDecelerate.transform(value);
-        final size = 34.0 - (14.0 * eased);
+        final size = _sizeAt(value);
         return SizedBox(
-          width: 32,
-          height: 32,
+          width: 36,
+          height: 36,
           child: Center(
             child: Transform.rotate(
               angle: 0.34 * eased,
