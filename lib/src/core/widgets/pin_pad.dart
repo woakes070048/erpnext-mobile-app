@@ -735,6 +735,7 @@ class _PinDigitButtonState extends State<_PinDigitButton> {
     final idleColor = scheme.surfaceContainerHigh.withValues(alpha: 0.78);
     final pressedColor = scheme.secondaryContainer.withValues(alpha: 0.78);
     final foreground = scheme.onSurface;
+    final overlayColor = scheme.secondaryContainer.withValues(alpha: 0.22);
     return GestureDetector(
       onTapDown: widget.enabled ? (_) => _press() : null,
       onTapUp: widget.enabled ? (_) => _release() : null,
@@ -764,15 +765,34 @@ class _PinDigitButtonState extends State<_PinDigitButton> {
               : idleColor.withValues(alpha: 0.28),
           borderRadius: BorderRadius.circular(_pressed ? 28 : 999),
         ),
-        alignment: Alignment.center,
-        child: Text(
-          widget.label,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: widget.enabled
-                    ? foreground
-                    : foreground.withValues(alpha: 0.35),
-                fontWeight: FontWeight.w500,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            AnimatedOpacity(
+              duration: _pressed
+                  ? const Duration(milliseconds: 90)
+                  : const Duration(milliseconds: 260),
+              curve: AppMotion.standardDecelerate,
+              opacity: _pressed ? 1 : 0,
+              child: Container(
+                width: 78,
+                height: 78,
+                decoration: BoxDecoration(
+                  color: overlayColor,
+                  borderRadius: BorderRadius.circular(28),
+                ),
               ),
+            ),
+            Text(
+              widget.label,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: widget.enabled
+                        ? foreground
+                        : foreground.withValues(alpha: 0.35),
+                    fontWeight: FontWeight.w500,
+                  ),
+            ),
+          ],
         ),
       ),
     );
@@ -821,6 +841,9 @@ class _PinActionButtonState extends State<_PinActionButton> {
         ? scheme.primary.withValues(alpha: 0.96)
         : scheme.secondaryContainer.withValues(alpha: 0.82);
     final foreground = widget.emphasized ? scheme.onPrimary : scheme.onSurface;
+    final overlayColor = widget.emphasized
+        ? scheme.onPrimary.withValues(alpha: 0.10)
+        : scheme.secondaryContainer.withValues(alpha: 0.22);
     return GestureDetector(
       onTapDown: widget.enabled ? (_) => _press() : null,
       onTapUp: widget.enabled ? (_) => _release() : null,
@@ -850,12 +873,32 @@ class _PinActionButtonState extends State<_PinActionButton> {
               : idleColor.withValues(alpha: 0.28),
           borderRadius: BorderRadius.circular(_pressed ? 28 : 999),
         ),
-        alignment: Alignment.center,
-        child: Icon(
-          widget.icon,
-          color:
-              widget.enabled ? foreground : foreground.withValues(alpha: 0.35),
-          size: 28,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            AnimatedOpacity(
+              duration: _pressed
+                  ? const Duration(milliseconds: 90)
+                  : const Duration(milliseconds: 260),
+              curve: AppMotion.standardDecelerate,
+              opacity: _pressed ? 1 : 0,
+              child: Container(
+                width: 78,
+                height: 78,
+                decoration: BoxDecoration(
+                  color: overlayColor,
+                  borderRadius: BorderRadius.circular(28),
+                ),
+              ),
+            ),
+            Icon(
+              widget.icon,
+              color: widget.enabled
+                  ? foreground
+                  : foreground.withValues(alpha: 0.35),
+              size: 28,
+            ),
+          ],
         ),
       ),
     );
