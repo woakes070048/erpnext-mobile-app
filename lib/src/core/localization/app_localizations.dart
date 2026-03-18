@@ -287,6 +287,7 @@ class AppLocalizations {
   String get werkaRoleName => _t('Omborchi', 'Werka', 'Кладовщик');
   String get customerRoleName => _t('Haridor', 'Customer', 'Покупатель');
   String get supplierRoleName => _t('Ta\'minotchi', 'Supplier', 'Поставщик');
+  String get adminRoleName => _t('Admin', 'Admin', 'Админ');
   String get submittedStatus => _t('Yuborilgan', 'Submitted', 'Отправлено');
   String get supplierHomeLoadFailed => _t(
       'Home yuklanmadi', 'Home failed to load', 'Не удалось загрузить главную');
@@ -294,6 +295,60 @@ class AppLocalizations {
       _t('Hozircha receipt yo‘q.', 'No receipts yet.', 'Пока нет приходов.');
   String get noSupplierShipmentsYet =>
       _t('Hali jo‘natishlar yo‘q.', 'No shipments yet.', 'Пока нет отправок.');
+  String get adminSummaryLoadFailed => _t(
+      'Admin summary yuklanmadi',
+      'Admin summary failed to load',
+      'Не удалось загрузить сводку администратора');
+  String get adminSettingsTitle =>
+      _t('Admin sozlamalari', 'Admin settings', 'Настройки администратора');
+  String get adminActivityTitle => _t('Harakatlar', 'Activity', 'Активность');
+  String get adminNoActivity =>
+      _t('Hali harakat yo‘q.', 'No activity yet.', 'Активности пока нет.');
+  String get adminCreateTitle => _t('Qo‘shish', 'Create', 'Создать');
+  String get adminSettingsLoadFailed => _t('Settings yuklanmadi',
+      'Settings failed to load', 'Не удалось загрузить настройки');
+  String get settingsSaved =>
+      _t('Sozlamalar saqlandi', 'Settings saved', 'Настройки сохранены');
+  String get erpConnectionTitle =>
+      _t('ERP ulanishi', 'ERP connection', 'ERP подключение');
+  String get erpConnectionSubtitle => _t(
+      'Core integratsiya va stock default sozlamalari',
+      'Core integration and stock defaults',
+      'Интеграция с ядром и значения по умолчанию для склада');
+  String get adminCreateSupplierTitle =>
+      _t('Ta\'minotchi qo‘shish', 'Add supplier', 'Добавить поставщика');
+  String get adminCreateSupplierSubtitle => _t(
+      'Ta\'minotchi yaratish va code boshqaruvi',
+      'Create a supplier and manage codes',
+      'Создание поставщика и управление кодами');
+  String get adminCreateCustomerTitle =>
+      _t('Haridor qo‘shish', 'Add customer', 'Добавить покупателя');
+  String get adminCreateCustomerSubtitle => _t(
+      'Haridor yaratish va jo‘natma qabul oqimi',
+      'Create a customer and manage receiving flow',
+      'Создание покупателя и управление потоком приемки');
+  String get adminCreateWerkaTitle =>
+      _t('Omborchi qo‘shish', 'Add Werka', 'Добавить кладовщика');
+  String get adminCreateWerkaSubtitle => _t(
+      'Omborchi phone va name sozlash',
+      'Configure warehouse worker phone and name',
+      'Настройка телефона и имени кладовщика');
+  String get adminErpSettingsTitle =>
+      _t('ERP sozlamalari', 'ERP settings', 'Настройки ERP');
+  String get adminErpSettingsSubtitle => _t(
+      'URL, key, secret va ombor sozlamalari',
+      'URL, key, secret, and warehouse settings',
+      'URL, key, secret и настройки склада');
+  String get adminCreateItemTitle =>
+      _t('Item qo‘shish', 'Add item', 'Добавить товар');
+  String get adminCreateItemSubtitle =>
+      _t('Yangi mahsulot yaratish', 'Create a new item', 'Создать новый товар');
+  String get adminSettingsSectionTitle =>
+      _t('Omborchi sozlamalari', 'Werka defaults', 'Настройки кладовщика');
+  String get adminSettingsSectionSubtitle => _t(
+      'Mobil oqimda ishlatiladigan contact qiymatlar',
+      'Contact values used by the mobile flow',
+      'Контактные значения, используемые в мобильном потоке');
   String get supplierAckTitle => _t('Ta\'minotchi tasdiqladi',
       'Supplier acknowledged', 'Поставщик подтвердил');
 

@@ -1,4 +1,5 @@
 import '../../../app/app_router.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/notifications/refresh_hub.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/motion_widgets.dart';
@@ -55,7 +56,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return AppShell(
-      title: 'Admin',
+      title: context.l10n.adminRoleName,
       subtitle: '',
       contentPadding: const EdgeInsets.fromLTRB(12, 0, 14, 0),
       bottom: const AdminDock(activeTab: AdminDockTab.home),
@@ -75,11 +76,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('Admin summary yuklanmadi: ${store.summaryError}'),
+                      Text(
+                          '${context.l10n.adminSummaryLoadFailed}: ${store.summaryError}'),
                       const SizedBox(height: 12),
                       FilledButton(
                         onPressed: _reload,
-                        child: const Text('Qayta urinish'),
+                        child: Text(context.l10n.retry),
                       ),
                     ],
                   ),
@@ -97,7 +99,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 SmoothAppear(
                   delay: const Duration(milliseconds: 20),
                   child: _AdminModulesSection(
-                    onTapSettings: () => _openAndReload(AppRoutes.adminSettings),
+                    onTapSettings: () =>
+                        _openAndReload(AppRoutes.adminSettings),
                     onTapSuppliers: () =>
                         _openAndReload(AppRoutes.adminSuppliers),
                     onTapWerka: () => _openAndReload(AppRoutes.adminWerka),
@@ -114,9 +117,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                     ),
                   ),
                 ],
-                ],
-              ),
-            );
+              ],
+            ),
+          );
         },
       ),
     );
@@ -146,8 +149,8 @@ class _AdminModulesSection extends StatelessWidget {
       child: Column(
         children: [
           _AdminModuleRow(
-            title: 'Settings',
-            subtitle: 'ERP va default sozlamalar',
+            title: context.l10n.adminErpSettingsTitle,
+            subtitle: context.l10n.erpConnectionSubtitle,
             onTap: onTapSettings,
           ),
           const _AdminSectionDivider(),
@@ -158,8 +161,8 @@ class _AdminModulesSection extends StatelessWidget {
           ),
           const _AdminSectionDivider(),
           _AdminModuleRow(
-            title: 'Werka',
-            subtitle: 'Omborchi phone va name',
+            title: context.l10n.adminCreateWerkaTitle,
+            subtitle: context.l10n.adminCreateWerkaSubtitle,
             onTap: onTapWerka,
           ),
         ],

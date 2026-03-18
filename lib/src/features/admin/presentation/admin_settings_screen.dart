@@ -1,4 +1,5 @@
 import '../../../core/api/mobile_api.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/motion_widgets.dart';
 import '../../shared/models/app_models.dart';
@@ -76,7 +77,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sozlamalar saqlandi')),
+        SnackBar(content: Text(context.l10n.settingsSaved)),
       );
     } finally {
       if (mounted) {
@@ -92,7 +93,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
         icon: Icons.arrow_back_rounded,
         onTap: () => Navigator.of(context).maybePop(),
       ),
-      title: 'Admin settings',
+      title: context.l10n.adminSettingsTitle,
       subtitle: '',
       contentPadding: const EdgeInsets.fromLTRB(12, 0, 14, 0),
       bottom: const AdminDock(activeTab: AdminDockTab.settings),
@@ -111,7 +112,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('Settings yuklanmadi: ${snapshot.error}'),
+                      Text(
+                          '${context.l10n.adminSettingsLoadFailed}: ${snapshot.error}'),
                       const SizedBox(height: 12),
                       FilledButton(
                         onPressed: () {
@@ -119,7 +121,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                             _future = MobileApi.instance.adminSettings();
                           });
                         },
-                        child: const Text('Qayta urinish'),
+                        child: Text(context.l10n.retry),
                       ),
                     ],
                   ),
@@ -144,8 +146,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                 SmoothAppear(
                   delay: const Duration(milliseconds: 20),
                   child: _SettingsSectionCard(
-                    title: 'ERP connection',
-                    subtitle: 'Core integration and stock defaults',
+                    title: context.l10n.erpConnectionTitle,
+                    subtitle: context.l10n.erpConnectionSubtitle,
                     child: Column(
                       children: [
                         _SettingsField(
@@ -180,8 +182,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                 SmoothAppear(
                   delay: const Duration(milliseconds: 60),
                   child: _SettingsSectionCard(
-                    title: 'Werka defaults',
-                    subtitle: 'Contact values used by the mobile flow',
+                    title: context.l10n.adminSettingsSectionTitle,
+                    subtitle: context.l10n.adminSettingsSectionSubtitle,
                     child: Column(
                       children: [
                         _SettingsField(
@@ -208,7 +210,9 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                   )
                                 : const Icon(Icons.check_rounded),
                             label: Text(
-                              saving ? 'Saqlanmoqda...' : 'Saqlash',
+                              saving
+                                  ? context.l10n.pinSaving
+                                  : context.l10n.save,
                             ),
                           ),
                         ),

@@ -1,4 +1,5 @@
 import '../../../app/app_router.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../../core/widgets/motion_widgets.dart';
@@ -11,7 +12,7 @@ class AdminCreateHubScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppShell(
-      title: 'Qo‘shish',
+      title: context.l10n.adminCreateTitle,
       subtitle: '',
       bottom: const AdminDock(activeTab: AdminDockTab.settings),
       child: ListView(
@@ -22,38 +23,38 @@ class AdminCreateHubScreen extends StatelessWidget {
             child: Column(
               children: [
                 _CreateHubRow(
-                  title: 'Supplier qo‘shish',
-                  subtitle: 'Supplier yaratish va code boshqaruvi',
+                  title: context.l10n.adminCreateSupplierTitle,
+                  subtitle: context.l10n.adminCreateSupplierSubtitle,
                   onTap: () => Navigator.of(context)
                       .pushNamed(AppRoutes.adminSupplierCreate),
                 ),
                 const Divider(height: 1, thickness: 1),
                 _CreateHubRow(
-                  title: 'Customer qo‘shish',
-                  subtitle: 'Customer yaratish va jo‘natma qabul oqimi',
+                  title: context.l10n.adminCreateCustomerTitle,
+                  subtitle: context.l10n.adminCreateCustomerSubtitle,
                   onTap: () => Navigator.of(context)
                       .pushNamed(AppRoutes.adminCustomerCreate),
                 ),
                 const Divider(height: 1, thickness: 1),
                 _CreateHubRow(
-                  title: 'Werka qo‘shish',
-                  subtitle: 'Omborchi phone va name sozlash',
+                  title: context.l10n.adminCreateWerkaTitle,
+                  subtitle: context.l10n.adminCreateWerkaSubtitle,
                   onTap: () =>
                       Navigator.of(context).pushNamed(AppRoutes.adminWerka),
                 ),
                 const Divider(height: 1, thickness: 1),
                 _CreateHubRow(
-                  title: 'ERP sozlamalari',
-                  subtitle: 'URL, key, secret va ombor sozlamalari',
+                  title: context.l10n.adminErpSettingsTitle,
+                  subtitle: context.l10n.adminErpSettingsSubtitle,
                   onTap: () =>
                       Navigator.of(context).pushNamed(AppRoutes.adminSettings),
                 ),
                 const Divider(height: 1, thickness: 1),
                 _CreateHubRow(
-                  title: 'Item qo‘shish',
-                  subtitle: 'Yangi mahsulot yaratish',
-                  onTap: () =>
-                      Navigator.of(context).pushNamed(AppRoutes.adminItemCreate),
+                  title: context.l10n.adminCreateItemTitle,
+                  subtitle: context.l10n.adminCreateItemSubtitle,
+                  onTap: () => Navigator.of(context)
+                      .pushNamed(AppRoutes.adminItemCreate),
                 ),
               ],
             ),

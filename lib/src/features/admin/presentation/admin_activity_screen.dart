@@ -1,6 +1,7 @@
 import '../../../core/notifications/notification_hidden_store.dart';
 import '../../../core/notifications/refresh_hub.dart';
 import '../../../core/session/app_session.dart';
+import '../../../core/localization/app_localizations.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../shared/models/app_models.dart';
 import '../state/admin_store.dart';
@@ -31,22 +32,22 @@ class _AdminActivityScreenState extends State<AdminActivityScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Tozalash'),
-        content: const Text('Hamma yozuvlarni tozalaysizmi?'),
+        title: Text(context.l10n.clearTitle),
+        content: Text(context.l10n.clearAllNotificationsPrompt),
         actions: [
           Row(
             children: [
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Yo‘q'),
+                  child: Text(context.l10n.no),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: FilledButton(
                   onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('Ha'),
+                  child: Text(context.l10n.yes),
                 ),
               ),
             ],
@@ -65,8 +66,7 @@ class _AdminActivityScreenState extends State<AdminActivityScreen> {
     if (!mounted) {
       return;
     }
-    setState(() {
-    });
+    setState(() {});
   }
 
   @override
@@ -93,7 +93,7 @@ class _AdminActivityScreenState extends State<AdminActivityScreen> {
   @override
   Widget build(BuildContext context) {
     return AppShell(
-      title: 'Harakatlar',
+      title: context.l10n.adminActivityTitle,
       subtitle: '',
       contentPadding: const EdgeInsets.fromLTRB(12, 0, 14, 0),
       actions: [
@@ -110,25 +110,27 @@ class _AdminActivityScreenState extends State<AdminActivityScreen> {
           final hidden = NotificationHiddenStore.instance.hiddenIdsForProfile(
             AppSession.instance.profile,
           );
-          final items =
-              (store.activityItems)
-                  .where((item) => !hidden.contains(item.id))
-                  .toList();
+          final items = (store.activityItems)
+              .where((item) => !hidden.contains(item.id))
+              .toList();
           if (store.loadingActivity && !store.loadedActivity && items.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (store.activityError != null && !store.loadedActivity && items.isEmpty) {
+          if (store.activityError != null &&
+              !store.loadedActivity &&
+              items.isEmpty) {
             return Center(
               child: Card.filled(
                 margin: EdgeInsets.zero,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Harakatlar yuklanmadi: ${store.activityError}'),
+                    Text(
+                        '${context.l10n.adminActivityTitle} yuklanmadi: ${store.activityError}'),
                     const SizedBox(height: 12),
                     FilledButton(
                       onPressed: _reload,
-                      child: const Text('Qayta urinish'),
+                      child: Text(context.l10n.retry),
                     ),
                   ],
                 ),
@@ -141,7 +143,7 @@ class _AdminActivityScreenState extends State<AdminActivityScreen> {
               child: Card.filled(
                 margin: EdgeInsets.zero,
                 child: Text(
-                  'Hali harakat yo‘q.',
+                  context.l10n.adminNoActivity,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
