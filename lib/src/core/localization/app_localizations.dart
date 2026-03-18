@@ -9,7 +9,6 @@ class AppLocalizations {
     Locale('uz'),
     Locale('en'),
     Locale('ru'),
-    Locale('zh'),
   ];
 
   static AppLocalizations of(BuildContext context) {
@@ -24,7 +23,6 @@ class AppLocalizations {
 
   bool get isUzbek => locale.languageCode == 'uz';
   bool get isRussian => locale.languageCode == 'ru';
-  bool get isChinese => locale.languageCode == 'zh';
 
   String _t(String uz, String en, String ru) {
     if (isUzbek) return uz;
@@ -88,11 +86,6 @@ class AppLocalizations {
   String get uzbek => _t('O‘zbekcha', 'Uzbek', 'Узбекский');
   String get english => _t('English', 'English', 'Английский');
   String get russian => _t('Ruscha', 'Russian', 'Русский');
-  String get chinese => isUzbek
-      ? 'Xitoycha'
-      : isRussian
-          ? 'Китайский'
-          : 'Chinese';
   String get selectedImageNotice => _t(
         'Yangi rasm tanlandi. Saqlashni bossangiz profil yangilanadi.',
         'A new image was selected. Save to update the profile.',
