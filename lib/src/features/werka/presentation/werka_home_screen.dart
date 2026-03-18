@@ -112,6 +112,7 @@ class _WerkaHomeScreenState extends State<WerkaHomeScreen>
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (store.homeError != null && !store.loadedHome) {
+                  final l10n = context.l10n;
                   return RefreshIndicator.adaptive(
                     onRefresh: _reload,
                     child: ListView(
@@ -126,7 +127,7 @@ class _WerkaHomeScreenState extends State<WerkaHomeScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Pending list yuklanmadi',
+                                  l10n.recordsLoadFailed,
                                   style:
                                       Theme.of(context).textTheme.titleMedium,
                                 ),
@@ -140,7 +141,7 @@ class _WerkaHomeScreenState extends State<WerkaHomeScreen>
                                   width: double.infinity,
                                   child: OutlinedButton(
                                     onPressed: _reload,
-                                    child: const Text('Qayta urinish'),
+                                    child: Text(l10n.retry),
                                   ),
                                 ),
                               ],
@@ -208,7 +209,7 @@ class _WerkaSummaryCard extends StatelessWidget {
         child: Column(
           children: [
             _WerkaSummaryRow(
-              label: 'Jarayonda',
+              label: context.l10n.pendingStatus,
               value: summary.pendingCount.toString(),
               onTap: () => Navigator.of(context).pushNamed(
                 AppRoutes.werkaStatusBreakdown,
@@ -217,7 +218,7 @@ class _WerkaSummaryCard extends StatelessWidget {
             ),
             const _WerkaSummaryDivider(),
             _WerkaSummaryRow(
-              label: 'Tasdiqlangan',
+              label: context.l10n.confirmedStatus,
               value: summary.confirmedCount.toString(),
               onTap: () => Navigator.of(context).pushNamed(
                 AppRoutes.werkaStatusBreakdown,
@@ -226,7 +227,7 @@ class _WerkaSummaryCard extends StatelessWidget {
             ),
             const _WerkaSummaryDivider(),
             _WerkaSummaryRow(
-              label: 'Qaytarilgan',
+              label: context.l10n.returnedStatus,
               value: summary.returnedCount.toString(),
               onTap: () => Navigator.of(context).pushNamed(
                 AppRoutes.werkaStatusBreakdown,
@@ -343,7 +344,7 @@ class _WerkaPendingSection extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'Jarayondagi mahsulotlar',
+                      context.l10n.inProgressItemsTitle,
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),

@@ -134,6 +134,8 @@ class AppLocalizations {
   String get pendingStatus => isUzbek ? 'Jarayonda' : 'In progress';
   String get confirmedStatus => isUzbek ? 'Tasdiqlangan' : 'Confirmed';
   String get returnedStatus => isUzbek ? 'Qaytarilgan' : 'Returned';
+  String get inProgressItemsTitle =>
+      isUzbek ? 'Jarayondagi mahsulotlar' : 'Items in progress';
   String get recordsLoadFailed =>
       isUzbek ? 'Yozuvlar yuklanmadi' : 'Failed to load records';
   String get noRecordsYet => isUzbek
