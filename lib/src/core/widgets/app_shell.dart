@@ -137,16 +137,18 @@ class _AppShellIconActionState extends State<AppShellIconAction> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return AnimatedScale(
       duration: AppMotion.fast,
       curve: AppMotion.smooth,
       scale: _pressed ? 0.95 : 1,
       child: Material(
         color: Colors.transparent,
+        shape: const CircleBorder(),
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          splashColor: const Color(0x33212121),
-          highlightColor: const Color(0x14212121),
+          customBorder: const CircleBorder(),
+          splashColor: scheme.primary.withValues(alpha: 0.10),
+          highlightColor: scheme.primary.withValues(alpha: 0.06),
           onTapDown: (_) => setState(() => _pressed = true),
           onTapUp: (_) => setState(() => _pressed = false),
           onTapCancel: () => setState(() => _pressed = false),
@@ -154,18 +156,20 @@ class _AppShellIconActionState extends State<AppShellIconAction> {
           child: AnimatedContainer(
             duration: AppMotion.fast,
             curve: AppMotion.smooth,
-            height: 48,
-            width: 48,
+            height: 52,
+            width: 52,
             decoration: BoxDecoration(
-              color: AppTheme.actionSurface(context),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppTheme.cardBorder(context)),
+              color: scheme.secondaryContainer.withValues(alpha: 0.82),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: scheme.outlineVariant.withValues(alpha: 0.55),
+              ),
             ),
             child: Center(
               child: widget.iconWidget ??
                   Icon(
                     widget.icon,
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: scheme.onSecondaryContainer,
                   ),
             ),
           ),
