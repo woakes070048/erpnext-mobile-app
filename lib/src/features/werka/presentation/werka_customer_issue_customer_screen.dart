@@ -1,6 +1,7 @@
 import '../../../app/app_router.dart';
 import '../../../core/api/mobile_api.dart';
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/notifications/refresh_hub.dart';
 import '../../../core/notifications/werka_runtime_store.dart';
 import '../../../core/search/search_normalizer.dart';
 import '../../../core/theme/app_theme.dart';
@@ -306,6 +307,7 @@ class _WerkaCustomerIssueCustomerScreenState
         createdLabel: created.createdLabel,
       );
       WerkaRuntimeStore.instance.recordCreatedPending(record);
+      RefreshHub.instance.emit('werka');
       Navigator.of(context).pushNamedAndRemoveUntil(
         AppRoutes.werkaSuccess,
         (route) => route.isFirst,

@@ -1,5 +1,6 @@
 import '../../../app/app_router.dart';
 import '../../../core/api/mobile_api.dart';
+import '../../../core/notifications/refresh_hub.dart';
 import '../../../core/notifications/werka_runtime_store.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../shared/models/app_models.dart';
@@ -177,6 +178,7 @@ class _WerkaDetailScreenState extends State<WerkaDetailScreen> {
         before: widget.record,
         after: accepted,
       );
+      RefreshHub.instance.emit('werka');
       if (!mounted) {
         return;
       }
