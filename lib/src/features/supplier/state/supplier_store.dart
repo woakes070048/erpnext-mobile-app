@@ -38,7 +38,34 @@ class SupplierStore extends ChangeNotifier {
   Object? get summaryError => _summaryError;
   Object? get historyError => _historyError;
 
-  SupplierHomeSummary get summary => _summary;
+  SupplierHomeSummary get summary {
+    if (loadedHistory) {
+      var pending = 0;
+      var submitted = 0;
+      var returned = 0;
+      for (final item in _historyItems) {
+        switch (item.status) {
+          case DispatchStatus.pending:
+          case DispatchStatus.draft:
+            pending += 1;
+          case DispatchStatus.accepted:
+            submitted += 1;
+          case DispatchStatus.partial:
+          case DispatchStatus.rejected:
+          case DispatchStatus.cancelled:
+            returned += 1;
+        }
+      }
+      return SupplierRuntimeStore.instance.applySummary(
+        SupplierHomeSummary(
+          pendingCount: pending,
+          submittedCount: submitted,
+          returnedCount: returned,
+        ),
+      );
+    }
+    return SupplierRuntimeStore.instance.applySummary(_summary);
+  }
   List<DispatchRecord> get historyItems => _historyItems;
   List<SupplierStatusBreakdownEntry> breakdownItems(SupplierStatusKind kind) =>
       _breakdownItems[kind] ?? const <SupplierStatusBreakdownEntry>[];

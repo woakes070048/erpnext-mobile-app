@@ -27,7 +27,6 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    SupplierStore.instance.bootstrapSummary();
     SupplierStore.instance.bootstrapHistory();
     RefreshHub.instance.addListener(_handlePushRefresh);
   }
@@ -58,7 +57,7 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen>
   }
 
   Future<void> _reload() async {
-    await SupplierStore.instance.refreshAll();
+    await SupplierStore.instance.refreshHistory();
   }
 
   @override
@@ -107,10 +106,10 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen>
         animation: SupplierStore.instance,
         builder: (context, _) {
           final store = SupplierStore.instance;
-          if (store.loadingSummary && !store.loadedSummary) {
+          if (store.loadingHistory && !store.loadedHistory) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (store.summaryError != null && !store.loadedSummary) {
+          if (store.historyError != null && !store.loadedHistory) {
             final scheme = Theme.of(context).colorScheme;
             return AppRefreshIndicator(
               onRefresh: _reload,
@@ -134,7 +133,7 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen>
                               style: Theme.of(context).textTheme.titleMedium),
                           const SizedBox(height: 8),
                           Text(
-                            '${store.summaryError}',
+                            '${store.historyError}',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                           const SizedBox(height: 14),
