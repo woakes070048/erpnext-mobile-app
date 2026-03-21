@@ -11,7 +11,8 @@ import 'package:flutter/foundation.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  if (defaultTargetPlatform != TargetPlatform.android) {
+  if (defaultTargetPlatform != TargetPlatform.android &&
+      defaultTargetPlatform != TargetPlatform.iOS) {
     return;
   }
   await Firebase.initializeApp();
@@ -23,26 +24,56 @@ class PushMessagingService {
   static final PushMessagingService instance = PushMessagingService._();
   bool _initialized = false;
 
+  bool get _supportsRemotePush =>
+      defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS;
+
+  String get _platformName {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return 'android';
+      case TargetPlatform.iOS:
+        return 'ios';
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.linux:
+      case TargetPlatform.macOS:
+      case TargetPlatform.windows:
+        return defaultTargetPlatform.name;
+    }
+  }
+
   Future<void> initialize() async {
-    if (_initialized || defaultTargetPlatform != TargetPlatform.android) {
+    if (_initialized || !_supportsRemotePush) {
       return;
     }
 
-    debugPrint('push initialize start');
+    debugPrint('push initialize start platform=$_platformName');
     await Firebase.initializeApp();
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-    await FirebaseMessaging.instance.requestPermission();
+    final messaging = FirebaseMessaging.instance;
+    await messaging.requestPermission();
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      await messaging.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      final apnsToken = await messaging.getAPNSToken();
+      debugPrint(
+        'push initialize apns token=${maskPushToken(apnsToken ?? '')}',
+      );
+    }
 
     await syncCurrentToken();
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
+    messaging.onTokenRefresh.listen((token) async {
       debugPrint(
-        'push token refresh token=${maskPushToken(token)}',
+        'push token refresh platform=$_platformName token=${maskPushToken(token)}',
       );
       if (AppSession.instance.isLoggedIn) {
         await MobileApi.instance.registerPushToken(
           tokenValue: token,
-          platform: 'android',
+          platform: _platformName,
         );
       }
     });
@@ -95,41 +126,47 @@ class PushMessagingService {
     });
 
     _initialized = true;
-    debugPrint('push initialize complete');
+    debugPrint('push initialize complete platform=$_platformName');
   }
 
   Future<void> syncCurrentToken() async {
     final profile = AppSession.instance.profile;
     debugPrint(
       'push sync start logged_in=${AppSession.instance.isLoggedIn} '
+      'platform=$_platformName '
       'role=${profile?.role.name ?? 'none'} '
       'ref=${profile?.ref ?? ''}',
     );
-    if (defaultTargetPlatform != TargetPlatform.android ||
-        !AppSession.instance.isLoggedIn) {
+    if (!_supportsRemotePush || !AppSession.instance.isLoggedIn) {
       debugPrint('push sync skipped: unsupported platform or not logged in');
       return;
     }
-    final token = await FirebaseMessaging.instance.getToken();
+    final messaging = FirebaseMessaging.instance;
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      final apnsToken = await messaging.getAPNSToken();
+      debugPrint(
+        'push sync apns token=${maskPushToken(apnsToken ?? '')}',
+      );
+    }
+    final token = await messaging.getToken();
     if (token == null || token.trim().isEmpty) {
       debugPrint('push sync skipped: Firebase token is empty');
       return;
     }
     debugPrint(
-      'push sync obtained token=${maskPushToken(token)}',
+      'push sync obtained platform=$_platformName token=${maskPushToken(token)}',
     );
     await MobileApi.instance.registerPushToken(
       tokenValue: token,
-      platform: 'android',
+      platform: _platformName,
     );
     debugPrint(
-      'push sync stored token=${maskPushToken(token)}',
+      'push sync stored platform=$_platformName token=${maskPushToken(token)}',
     );
   }
 
   Future<void> unregisterCurrentToken() async {
-    if (defaultTargetPlatform != TargetPlatform.android ||
-        !AppSession.instance.isLoggedIn) {
+    if (!_supportsRemotePush || !AppSession.instance.isLoggedIn) {
       debugPrint('push unregister skipped: unsupported platform or not logged in');
       return;
     }
@@ -139,7 +176,7 @@ class PushMessagingService {
       return;
     }
     debugPrint(
-      'push unregister token=${maskPushToken(token)}',
+      'push unregister platform=$_platformName token=${maskPushToken(token)}',
     );
     await MobileApi.instance.unregisterPushToken(token);
   }
