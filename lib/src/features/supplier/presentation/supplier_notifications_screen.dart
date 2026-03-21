@@ -9,6 +9,7 @@ import '../../../core/session/app_session.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/m3_confirm_dialog.dart';
 import '../../../core/widgets/motion_widgets.dart';
+import '../../../core/widgets/top_refresh_scroll_physics.dart';
 import '../../shared/models/app_models.dart';
 import '../state/supplier_store.dart';
 import 'widgets/supplier_dock.dart';
@@ -210,108 +211,126 @@ class _SupplierNotificationsScreenState
             return const Center(child: CircularProgressIndicator());
           }
           if (store.historyError != null && !store.loadedHistory && items.isEmpty) {
-            return ListView(
-              physics: const ClampingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 116),
-              children: [
-                const SizedBox(height: 120),
-                Card.filled(
-                  margin: EdgeInsets.zero,
-                  child: Padding(
-                    padding: const EdgeInsets.all(18),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          context.l10n.notificationsLoadFailed,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '${store.historyError}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        const SizedBox(height: 14),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: _reload,
-                            child: Text(context.l10n.retry),
+            return AppRefreshIndicator(
+              onRefresh: _reload,
+              allowRefreshOnShortContent: true,
+              child: ListView(
+                physics: const TopRefreshScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 116),
+                children: [
+                  const SizedBox(height: 120),
+                  Card.filled(
+                    margin: EdgeInsets.zero,
+                    child: Padding(
+                      padding: const EdgeInsets.all(18),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.l10n.notificationsLoadFailed,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 8),
+                          Text(
+                            '${store.historyError}',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          const SizedBox(height: 14),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton(
+                              onPressed: _reload,
+                              child: Text(context.l10n.retry),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            );
-          }
-
-          if (items.isEmpty) {
-            return Center(
-              child: Text(
-                context.l10n.noNotifications,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                ],
               ),
             );
           }
 
-          return NotificationListener<ScrollNotification>(
-            onNotification: _handleScrollNotification,
-            child: ListView(
-              physics: const ClampingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 116),
-              children: [
-                TweenAnimationBuilder<double>(
-                  tween: Tween<double>(
-                    begin: 1.0,
-                    end: 1.0 + _cardStretch,
-                  ),
-                  duration: const Duration(milliseconds: 110),
-                  curve: Curves.easeOutCubic,
-                  builder: (context, scaleY, child) {
-                    return Transform.scale(
-                      scaleY: scaleY,
-                      alignment: Alignment.bottomCenter,
-                      child: child,
-                    );
-                  },
-                  child: Card.filled(
-                    margin: EdgeInsets.zero,
-                    color: Theme.of(context).colorScheme.surfaceContainerLow,
-                    clipBehavior: Clip.antiAlias,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    child: Column(
-                      children: [
-                        for (int index = 0;
-                            index < orderedItems.length;
-                            index++) ...[
-                          _SupplierNotificationRow(
-                            record: orderedItems[index],
-                            highlighted: _highlightedUnreadIds
-                                .contains(orderedItems[index].id),
-                            onTap: () => _openDetail(orderedItems[index].id),
+          if (items.isEmpty) {
+            return AppRefreshIndicator(
+              onRefresh: _reload,
+              allowRefreshOnShortContent: true,
+              child: ListView(
+                physics: const TopRefreshScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 116),
+                children: [
+                  const SizedBox(height: 120),
+                  Center(
+                    child: Text(
+                      context.l10n.noNotifications,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
-                          if (index != orderedItems.length - 1)
-                            Divider(
-                              height: 1,
-                              thickness: 1,
-                              indent: 18,
-                              endIndent: 18,
-                              color: Theme.of(context)
-                                  .dividerColor
-                                  .withValues(alpha: 0.55),
-                            ),
-                        ],
-                      ],
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
+            );
+          }
+
+          return AppRefreshIndicator(
+            onRefresh: _reload,
+            child: NotificationListener<ScrollNotification>(
+              onNotification: _handleScrollNotification,
+              child: ListView(
+                physics: const TopRefreshScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 116),
+                children: [
+                  TweenAnimationBuilder<double>(
+                    tween: Tween<double>(
+                      begin: 1.0,
+                      end: 1.0 + _cardStretch,
+                    ),
+                    duration: const Duration(milliseconds: 110),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, scaleY, child) {
+                      return Transform.scale(
+                        scaleY: scaleY,
+                        alignment: Alignment.bottomCenter,
+                        child: child,
+                      );
+                    },
+                    child: Card.filled(
+                      margin: EdgeInsets.zero,
+                      color: Theme.of(context).colorScheme.surfaceContainerLow,
+                      clipBehavior: Clip.antiAlias,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      child: Column(
+                        children: [
+                          for (int index = 0;
+                              index < orderedItems.length;
+                              index++) ...[
+                            _SupplierNotificationRow(
+                              record: orderedItems[index],
+                              highlighted: _highlightedUnreadIds
+                                  .contains(orderedItems[index].id),
+                              onTap: () => _openDetail(orderedItems[index].id),
+                            ),
+                            if (index != orderedItems.length - 1)
+                              Divider(
+                                height: 1,
+                                thickness: 1,
+                                indent: 18,
+                                endIndent: 18,
+                                color: Theme.of(context)
+                                    .dividerColor
+                                    .withValues(alpha: 0.55),
+                              ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },

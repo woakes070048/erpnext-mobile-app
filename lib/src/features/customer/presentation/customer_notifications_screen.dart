@@ -8,6 +8,7 @@ import '../../../core/theme/app_motion.dart';
 import '../../../core/widgets/app_shell.dart';
 import '../../../core/widgets/m3_confirm_dialog.dart';
 import '../../../core/widgets/motion_widgets.dart';
+import '../../../core/widgets/top_refresh_scroll_physics.dart';
 import '../../shared/models/app_models.dart';
 import '../state/customer_store.dart';
 import 'widgets/customer_dock.dart';
@@ -198,33 +199,52 @@ class _CustomerNotificationsScreenState
           return const Center(child: CircularProgressIndicator.adaptive());
         }
         if (store.error != null && !store.loaded && items.isEmpty) {
-          return Center(
-            child: _NotificationPanel(
-              child: Text('${store.error}'),
+          return AppRefreshIndicator(
+            onRefresh: _reload,
+            allowRefreshOnShortContent: true,
+            child: ListView(
+              physics: const TopRefreshScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
+              children: [
+                _NotificationPanel(
+                  child: Text('${store.error}'),
+                ),
+              ],
             ),
           );
         }
         if (items.isEmpty) {
-          return Center(
-            child: _NotificationPanel(
-              child: Text(context.l10n.noRecordsYet),
+          return AppRefreshIndicator(
+            onRefresh: _reload,
+            allowRefreshOnShortContent: true,
+            child: ListView(
+              physics: const TopRefreshScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
+              children: [
+                _NotificationPanel(
+                  child: Text(context.l10n.noRecordsYet),
+                ),
+              ],
             ),
           );
         }
 
-        return ListView(
-          physics: const ClampingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
-          children: [
-            SmoothAppear(
-              delay: const Duration(milliseconds: 20),
-              child: _NotificationSection(
-                items: orderedItems,
-                highlightedUnreadIds: _highlightedUnreadIds,
-                onTapRecord: _openDetail,
+        return AppRefreshIndicator(
+          onRefresh: _reload,
+          child: ListView(
+            physics: const TopRefreshScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
+            children: [
+              SmoothAppear(
+                delay: const Duration(milliseconds: 20),
+                child: _NotificationSection(
+                  items: orderedItems,
+                  highlightedUnreadIds: _highlightedUnreadIds,
+                  onTapRecord: _openDetail,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );
