@@ -183,7 +183,7 @@ class _AppShellIconActionState extends State<AppShellIconAction> {
   }
 }
 
-class AppRefreshIndicator extends StatefulWidget {
+class AppRefreshIndicator extends StatelessWidget {
   const AppRefreshIndicator({
     super.key,
     required this.onRefresh,
@@ -207,16 +207,6 @@ class AppRefreshIndicator extends StatefulWidget {
   final RefreshIndicatorTriggerMode triggerMode;
   final bool allowRefreshOnShortContent;
 
-  @override
-  State<AppRefreshIndicator> createState() => _AppRefreshIndicatorState();
-}
-
-class _AppRefreshIndicatorState extends State<AppRefreshIndicator> {
-  bool _showOverlay = false;
-  int _statusToken = 0;
-  bool _gestureActive = false;
-  bool _gestureAllowsRefresh = true;
-  bool _gestureDirectionResolved = false;
   static const double _edgeTolerance = 0.5;
 
   bool _isNearTop(ScrollMetrics metrics) {
@@ -230,114 +220,11 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator> {
   }
 
   bool _canRefreshFromMetrics(ScrollMetrics metrics) {
-    return widget.allowRefreshOnShortContent || _contentCanActuallyScroll(metrics);
-  }
-
-  void _handleStatusChange(RefreshIndicatorStatus? status) {
-    _statusToken++;
-    final token = _statusToken;
-
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      if (status == RefreshIndicatorStatus.snap ||
-          status == RefreshIndicatorStatus.refresh) {
-        _showOverlay = true;
-      }
-    });
-
-    if (status == RefreshIndicatorStatus.done ||
-        status == RefreshIndicatorStatus.canceled ||
-        status == RefreshIndicatorStatus.drag ||
-        status == RefreshIndicatorStatus.armed ||
-        status == null) {
-      Future<void>.delayed(AppMotion.fast, () {
-        if (!mounted || token != _statusToken) {
-          return;
-        }
-        setState(() {
-          _showOverlay = false;
-        });
-      });
-    }
-  }
-
-  bool _handleRefreshScrollNotification(ScrollNotification notification) {
-    if (widget.triggerMode != RefreshIndicatorTriggerMode.onEdge) {
-      return false;
-    }
-
-    if (notification is ScrollStartNotification) {
-      if (!_canRefreshFromMetrics(notification.metrics)) {
-        _gestureActive = false;
-        _gestureAllowsRefresh = false;
-        _gestureDirectionResolved = false;
-        return true;
-      }
-      _gestureActive = notification.dragDetails != null;
-      _gestureAllowsRefresh = _isNearTop(notification.metrics);
-      _gestureDirectionResolved = false;
-      return false;
-    }
-
-    if (!_isNearTop(notification.metrics)) {
-      _gestureAllowsRefresh = false;
-      if (notification is ScrollEndNotification) {
-        _gestureActive = false;
-        _gestureAllowsRefresh = true;
-        _gestureDirectionResolved = false;
-      }
-      return true;
-    }
-
-    if (!_gestureActive || !_gestureAllowsRefresh) {
-      if (notification is ScrollEndNotification) {
-        _gestureActive = false;
-        _gestureAllowsRefresh = true;
-        _gestureDirectionResolved = false;
-      }
-      return !_gestureAllowsRefresh;
-    }
-
-    if (!_gestureDirectionResolved &&
-        (notification is ScrollUpdateNotification ||
-            notification is OverscrollNotification)) {
-      double? dragDelta;
-      if (notification is ScrollUpdateNotification) {
-        dragDelta =
-            notification.dragDetails?.delta.dy ??
-            (notification.scrollDelta == null
-                ? null
-                : -notification.scrollDelta!);
-      } else if (notification is OverscrollNotification) {
-        dragDelta =
-            notification.dragDetails?.delta.dy ?? -notification.overscroll;
-      }
-
-      if (dragDelta != null) {
-        if (dragDelta < 0.0) {
-          _gestureAllowsRefresh = false;
-          return true;
-        }
-        if (dragDelta > 0.0) {
-          _gestureDirectionResolved = true;
-        }
-      }
-    }
-
-    if (notification is ScrollEndNotification) {
-      _gestureActive = false;
-      _gestureAllowsRefresh = true;
-      _gestureDirectionResolved = false;
-    }
-
-    return false;
+    return allowRefreshOnShortContent || _contentCanActuallyScroll(metrics);
   }
 
   bool _refreshNotificationPredicate(ScrollNotification notification) {
-    if (!widget.notificationPredicate(notification)) {
+    if (!notificationPredicate(notification)) {
       return false;
     }
     if (!_canRefreshFromMetrics(notification.metrics)) {
@@ -357,74 +244,15 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-
-    return Stack(
-      children: [
-        RefreshIndicator.noSpinner(
-          onRefresh: widget.onRefresh,
-          onStatusChange: _handleStatusChange,
-          notificationPredicate: _refreshNotificationPredicate,
-          semanticsLabel: widget.semanticsLabel,
-          semanticsValue: widget.semanticsValue,
-          triggerMode: widget.triggerMode,
-          child: NotificationListener<ScrollNotification>(
-            onNotification: _handleRefreshScrollNotification,
-            child: widget.child,
-          ),
-        ),
-        Positioned.fill(
-          child: IgnorePointer(
-            child: SafeArea(
-              bottom: false,
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: AnimatedSlide(
-                  duration: AppMotion.fast,
-                  curve: AppMotion.smooth,
-                  offset: _showOverlay ? Offset.zero : const Offset(0, -0.15),
-                  child: AnimatedOpacity(
-                    duration: AppMotion.fast,
-                    curve: AppMotion.smooth,
-                    opacity: _showOverlay ? 1 : 0,
-                    child: AnimatedScale(
-                      duration: AppMotion.fast,
-                      curve: AppMotion.smooth,
-                      scale: _showOverlay ? 1 : 0.98,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: Card.filled(
-                          margin: EdgeInsets.zero,
-                          color: scheme.surfaceContainerHighest.withValues(
-                            alpha: 0.96,
-                          ),
-                          clipBehavior: Clip.antiAlias,
-                          shape: const StadiumBorder(),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 12,
-                            ),
-                            child: SizedBox(
-                              height: 18,
-                              width: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.4,
-                                color: scheme.primary,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
+    return RefreshIndicator.adaptive(
+      onRefresh: onRefresh,
+      displacement: displacement,
+      edgeOffset: edgeOffset,
+      notificationPredicate: _refreshNotificationPredicate,
+      semanticsLabel: semanticsLabel,
+      semanticsValue: semanticsValue,
+      triggerMode: triggerMode,
+      child: child,
     );
   }
 }
