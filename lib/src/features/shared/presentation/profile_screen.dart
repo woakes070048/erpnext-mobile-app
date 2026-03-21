@@ -358,9 +358,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ? const CustomerDock(activeTab: CustomerDockTab.profile)
                       : const AdminDock(activeTab: AdminDockTab.profile),
           contentPadding: const EdgeInsets.fromLTRB(12, 0, 14, 0),
-          child: AppRefreshIndicator(
+          child: RefreshIndicator.adaptive(
             onRefresh: _refreshProfile,
-            allowRefreshOnShortContent: true,
             child: ListView(
               physics: const TopRefreshScrollPhysics(),
               padding: EdgeInsets.zero,
@@ -369,8 +368,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                   delay: const Duration(milliseconds: 20),
                   child: _ProfilePanel(
                     child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
