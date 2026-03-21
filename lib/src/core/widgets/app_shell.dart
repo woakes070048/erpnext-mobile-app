@@ -318,6 +318,13 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator> {
     return false;
   }
 
+  bool _refreshNotificationPredicate(ScrollNotification notification) {
+    if (!widget.notificationPredicate(notification)) {
+      return false;
+    }
+    return _isNearTop(notification.metrics);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -328,7 +335,7 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator> {
         RefreshIndicator.noSpinner(
           onRefresh: widget.onRefresh,
           onStatusChange: _handleStatusChange,
-          notificationPredicate: widget.notificationPredicate,
+          notificationPredicate: _refreshNotificationPredicate,
           semanticsLabel: widget.semanticsLabel,
           semanticsValue: widget.semanticsValue,
           triggerMode: widget.triggerMode,
