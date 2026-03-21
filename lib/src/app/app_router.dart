@@ -117,6 +117,34 @@ class AppRouter {
     AppRoutes.customerNotifications,
   };
 
+  static const Set<String> edgeSwipeBackRoutes = {
+    AppRoutes.notificationDetail,
+    AppRoutes.customerStatusDetail,
+    AppRoutes.customerDetail,
+    AppRoutes.pinSetupEntry,
+    AppRoutes.pinSetupConfirm,
+    AppRoutes.supplierStatusBreakdown,
+    AppRoutes.supplierSubmittedCategoryDetail,
+    AppRoutes.supplierStatusDetail,
+    AppRoutes.supplierQty,
+    AppRoutes.werkaStatusBreakdown,
+    AppRoutes.werkaStatusDetail,
+    AppRoutes.werkaDetail,
+    AppRoutes.werkaCustomerDeliveryDetail,
+    AppRoutes.werkaCustomerIssueCustomer,
+    AppRoutes.werkaUnannouncedSupplier,
+    AppRoutes.adminSettings,
+    AppRoutes.adminSupplierCreate,
+    AppRoutes.adminCustomerCreate,
+    AppRoutes.adminCustomerDetail,
+    AppRoutes.adminInactiveSuppliers,
+    AppRoutes.adminItemCreate,
+    AppRoutes.adminSupplierDetail,
+    AppRoutes.adminSupplierItemsView,
+    AppRoutes.adminSupplierItemsAdd,
+    AppRoutes.adminWerka,
+  };
+
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case AppRoutes.login:
@@ -302,7 +330,7 @@ class AppRouter {
   }
 
   static PageRoute<dynamic> _buildRoute(RouteSettings settings, Widget child) {
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+    if (_shouldUseEdgeSwipeBack(settings)) {
       return CupertinoPageRoute<dynamic>(
         settings: settings,
         builder: (context) {
@@ -322,7 +350,7 @@ class AppRouter {
     RouteSettings settings,
     Widget child,
   ) {
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+    if (_shouldUseEdgeSwipeBack(settings)) {
       return CupertinoPageRoute<dynamic>(
         settings: settings,
         builder: (context) {
@@ -336,5 +364,11 @@ class AppRouter {
         return child;
       },
     );
+  }
+
+  static bool _shouldUseEdgeSwipeBack(RouteSettings settings) {
+    return !kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.iOS &&
+        edgeSwipeBackRoutes.contains(settings.name);
   }
 }
