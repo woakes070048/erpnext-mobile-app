@@ -215,6 +215,7 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator> {
   bool _gestureActive = false;
   bool _gestureAllowsRefresh = true;
   bool _gestureDirectionResolved = false;
+  static const double _edgeTolerance = 0.5;
 
   void _handleStatusChange(RefreshIndicatorStatus? status) {
     _statusToken++;
@@ -253,7 +254,10 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator> {
 
     if (notification is ScrollStartNotification) {
       _gestureActive = notification.dragDetails != null;
-      _gestureAllowsRefresh = notification.metrics.extentBefore == 0.0;
+      _gestureAllowsRefresh =
+          notification.metrics.extentBefore <= _edgeTolerance &&
+          notification.metrics.pixels <=
+              notification.metrics.minScrollExtent + _edgeTolerance;
       _gestureDirectionResolved = false;
       return false;
     }
@@ -270,16 +274,23 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator> {
     if (!_gestureDirectionResolved &&
         (notification is ScrollUpdateNotification ||
             notification is OverscrollNotification)) {
-      if (notification.metrics.extentBefore != 0.0) {
+      if (notification.metrics.extentBefore > _edgeTolerance ||
+          notification.metrics.pixels >
+              notification.metrics.minScrollExtent + _edgeTolerance) {
         _gestureAllowsRefresh = false;
         return true;
       }
 
       double? dragDelta;
       if (notification is ScrollUpdateNotification) {
-        dragDelta = notification.dragDetails?.delta.dy;
+        dragDelta =
+            notification.dragDetails?.delta.dy ??
+            (notification.scrollDelta == null
+                ? null
+                : -notification.scrollDelta!);
       } else if (notification is OverscrollNotification) {
-        dragDelta = notification.dragDetails?.delta.dy;
+        dragDelta =
+            notification.dragDetails?.delta.dy ?? -notification.overscroll;
       }
 
       if (dragDelta != null) {
