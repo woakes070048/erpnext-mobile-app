@@ -85,8 +85,8 @@ private final class AccordLiquidDockHostController: UITabBarController, UITabBar
     NSLayoutConstraint.activate([
       contentController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
       contentController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-      contentController.view.topAnchor.constraint(equalTo: view.topAnchor),
-      contentController.view.bottomAnchor.constraint(equalTo: tabBar.topAnchor),
+      contentController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+      contentController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
     ])
     contentController.didMove(toParent: self)
 
