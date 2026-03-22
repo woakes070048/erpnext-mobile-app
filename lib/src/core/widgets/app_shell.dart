@@ -418,6 +418,9 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator> {
     final scheme = Theme.of(context).colorScheme;
     final progress = (_pullExtent / _triggerDistance).clamp(0.0, 1.0);
     final visible = _refreshing || _pullExtent > 0.0;
+    final contentTranslateY = _refreshing
+        ? 0.0
+        : _pullExtent.clamp(0.0, widget.displacement + 12.0).toDouble();
     final translateY = _refreshing
         ? widget.edgeOffset + 12.0
         : widget.edgeOffset + (widget.displacement * progress) - 28.0;
@@ -428,7 +431,10 @@ class _AppRefreshIndicatorState extends State<AppRefreshIndicator> {
         onNotification: _handleScrollNotification,
         child: Stack(
           children: [
-            widget.child,
+            Transform.translate(
+              offset: Offset(0, contentTranslateY),
+              child: widget.child,
+            ),
             if (visible)
               Positioned(
                 top: 0,
