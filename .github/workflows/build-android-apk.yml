@@ -145,7 +145,14 @@ jobs:
 
       - name: Select Xcode 26
         run: |
-          sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer
+          SELECTED_XCODE_APP="$(find /Applications -maxdepth 1 -type d \( -name 'Xcode_26*.app' -o -name 'Xcode-26*.app' -o -name 'Xcode26*.app' \) | sort -V | tail -n 1)"
+          if [ -z "${SELECTED_XCODE_APP}" ]; then
+            echo "Xcode 26 not found on runner. Available Xcode apps:" >&2
+            find /Applications -maxdepth 1 -type d -name 'Xcode*.app' | sort >&2 || true
+            exit 1
+          fi
+          echo "Selected Xcode app: ${SELECTED_XCODE_APP}"
+          sudo xcode-select -s "${SELECTED_XCODE_APP}/Contents/Developer"
           xcodebuild -version
 
       - name: Install dependencies
