@@ -183,7 +183,7 @@ class _AppShellIconActionState extends State<AppShellIconAction> {
   }
 }
 
-class AppRefreshIndicator extends StatelessWidget {
+class AppRefreshIndicator extends StatefulWidget {
   const AppRefreshIndicator({
     super.key,
     required this.onRefresh,
@@ -207,6 +207,13 @@ class AppRefreshIndicator extends StatelessWidget {
   final RefreshIndicatorTriggerMode triggerMode;
   final bool allowRefreshOnShortContent;
 
+  @override
+  State<AppRefreshIndicator> createState() => _AppRefreshIndicatorState();
+}
+
+class _AppRefreshIndicatorState extends State<AppRefreshIndicator> {
+  ScrollPosition? _lastPosition;
+
   static const double _edgeTolerance = 0.5;
 
   bool _isNearTop(ScrollMetrics metrics) {
@@ -220,11 +227,15 @@ class AppRefreshIndicator extends StatelessWidget {
   }
 
   bool _canRefreshFromMetrics(ScrollMetrics metrics) {
-    return allowRefreshOnShortContent || _contentCanActuallyScroll(metrics);
+    return widget.allowRefreshOnShortContent || _contentCanActuallyScroll(metrics);
   }
 
   bool _refreshNotificationPredicate(ScrollNotification notification) {
-    if (!notificationPredicate(notification)) {
+    final notificationContext = notification.context;
+    if (notificationContext != null) {
+      _lastPosition = Scrollable.maybeOf(notificationContext)?.position;
+    }
+    if (!widget.notificationPredicate(notification)) {
       return false;
     }
     if (!_canRefreshFromMetrics(notification.metrics)) {
@@ -242,17 +253,37 @@ class AppRefreshIndicator extends StatelessWidget {
     return true;
   }
 
+  Future<void> _handleRefresh() async {
+    _settleTopEdge();
+    await widget.onRefresh();
+    _settleTopEdge();
+  }
+
+  void _settleTopEdge() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final position = _lastPosition;
+      if (!mounted || position == null || !position.hasPixels) {
+        return;
+      }
+      final target = position.minScrollExtent;
+      if ((position.pixels - target).abs() <= _edgeTolerance) {
+        return;
+      }
+      position.jumpTo(target);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: onRefresh,
-      displacement: displacement,
-      edgeOffset: edgeOffset,
+      onRefresh: _handleRefresh,
+      displacement: widget.displacement,
+      edgeOffset: widget.edgeOffset,
       notificationPredicate: _refreshNotificationPredicate,
-      semanticsLabel: semanticsLabel,
-      semanticsValue: semanticsValue,
-      triggerMode: triggerMode,
-      child: child,
+      semanticsLabel: widget.semanticsLabel,
+      semanticsValue: widget.semanticsValue,
+      triggerMode: widget.triggerMode,
+      child: widget.child,
     );
   }
 }
