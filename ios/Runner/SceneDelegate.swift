@@ -48,7 +48,8 @@ private let accordShellBackgroundColor = UIColor(
 private final class AccordLiquidDockPlaceholderController: UIViewController {
   override func loadView() {
     view = UIView()
-    view.backgroundColor = accordShellBackgroundColor
+    view.backgroundColor = .clear
+    view.isOpaque = false
   }
 }
 
@@ -126,6 +127,9 @@ private final class AccordLiquidDockHostController: UITabBarController, UITabBar
 
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
+    if contentController.view.superview === view {
+      view.bringSubviewToFront(contentController.view)
+    }
     tabBar.superview?.clipsToBounds = false
     tabBar.superview?.layer.masksToBounds = false
     view.bringSubviewToFront(tabBar)
