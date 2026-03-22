@@ -25,7 +25,6 @@ class WerkaRecentScreen extends StatefulWidget {
 
 class _WerkaRecentScreenState extends State<WerkaRecentScreen>
     with WidgetsBindingObserver {
-  final ScrollController _scrollController = ScrollController();
   double _cardStretch = 0.0;
   double _cardPull = 0.0;
   int _refreshVersion = 0;
@@ -46,7 +45,6 @@ class _WerkaRecentScreenState extends State<WerkaRecentScreen>
       WidgetsBinding.instance.removeObserver(this);
       RefreshHub.instance.removeListener(_handlePushRefresh);
     }
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -75,23 +73,7 @@ class _WerkaRecentScreenState extends State<WerkaRecentScreen>
     if (widget.loader != null) {
       return;
     }
-    _settleTopEdge();
     await WerkaStore.instance.refreshHistory();
-    _settleTopEdge();
-  }
-
-  void _settleTopEdge() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_scrollController.hasClients) {
-        return;
-      }
-      final position = _scrollController.position;
-      final target = position.minScrollExtent;
-      if ((position.pixels - target).abs() <= 0.5) {
-        return;
-      }
-      _scrollController.jumpTo(target);
-    });
   }
 
   bool _usesCustomerFlow(DispatchRecord record) {
@@ -226,7 +208,6 @@ class _WerkaRecentScreenState extends State<WerkaRecentScreen>
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
       child: ListView(
-        controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(
           parent: ClampingScrollPhysics(),
         ),

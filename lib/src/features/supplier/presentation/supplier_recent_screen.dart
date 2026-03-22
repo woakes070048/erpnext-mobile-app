@@ -19,7 +19,6 @@ class SupplierRecentScreen extends StatefulWidget {
 
 class _SupplierRecentScreenState extends State<SupplierRecentScreen>
     with WidgetsBindingObserver {
-  final ScrollController _scrollController = ScrollController();
   int _refreshVersion = 0;
   double _cardStretch = 0.0;
   double _cardPull = 0.0;
@@ -36,7 +35,6 @@ class _SupplierRecentScreenState extends State<SupplierRecentScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     RefreshHub.instance.removeListener(_handlePushRefresh);
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -59,23 +57,7 @@ class _SupplierRecentScreenState extends State<SupplierRecentScreen>
   }
 
   Future<void> _reload() async {
-    _settleTopEdge();
     await SupplierStore.instance.refreshHistory();
-    _settleTopEdge();
-  }
-
-  void _settleTopEdge() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_scrollController.hasClients) {
-        return;
-      }
-      final position = _scrollController.position;
-      final target = position.minScrollExtent;
-      if ((position.pixels - target).abs() <= 0.5) {
-        return;
-      }
-      _scrollController.jumpTo(target);
-    });
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
@@ -124,7 +106,6 @@ class _SupplierRecentScreenState extends State<SupplierRecentScreen>
             return AppRefreshIndicator(
               onRefresh: _reload,
               child: ListView(
-                controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 children: [
@@ -177,7 +158,6 @@ class _SupplierRecentScreenState extends State<SupplierRecentScreen>
             child: NotificationListener<ScrollNotification>(
               onNotification: _handleScrollNotification,
               child: ListView(
-                controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(
                   parent: ClampingScrollPhysics(),
                 ),

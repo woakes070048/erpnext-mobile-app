@@ -25,7 +25,6 @@ class SupplierNotificationsScreen extends StatefulWidget {
 
 class _SupplierNotificationsScreenState
     extends State<SupplierNotificationsScreen> with WidgetsBindingObserver {
-  final ScrollController _scrollController = ScrollController();
   Set<String> _highlightedUnreadIds = <String>{};
   int _refreshVersion = 0;
   double _cardStretch = 0.0;
@@ -76,7 +75,6 @@ class _SupplierNotificationsScreenState
     WidgetsBinding.instance.removeObserver(this);
     SupplierStore.instance.removeListener(_handleStoreChanged);
     RefreshHub.instance.removeListener(_handlePushRefresh);
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -150,24 +148,8 @@ class _SupplierNotificationsScreenState
   }
 
   Future<void> _reload() async {
-    _settleTopEdge();
     await SupplierStore.instance.refreshHistory();
     await _syncFromStore();
-    _settleTopEdge();
-  }
-
-  void _settleTopEdge() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_scrollController.hasClients) {
-        return;
-      }
-      final position = _scrollController.position;
-      final target = position.minScrollExtent;
-      if ((position.pixels - target).abs() <= 0.5) {
-        return;
-      }
-      _scrollController.jumpTo(target);
-    });
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
@@ -234,7 +216,6 @@ class _SupplierNotificationsScreenState
               onRefresh: _reload,
               allowRefreshOnShortContent: true,
               child: ListView(
-                controller: _scrollController,
                 physics: const TopRefreshScrollPhysics(),
                 padding: EdgeInsets.fromLTRB(0, 0, 0, bottomPadding),
                 children: [
@@ -277,7 +258,6 @@ class _SupplierNotificationsScreenState
               onRefresh: _reload,
               allowRefreshOnShortContent: true,
               child: ListView(
-                controller: _scrollController,
                 physics: const TopRefreshScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 116),
                 children: [
@@ -301,7 +281,6 @@ class _SupplierNotificationsScreenState
             child: NotificationListener<ScrollNotification>(
               onNotification: _handleScrollNotification,
               child: ListView(
-                controller: _scrollController,
                 physics: const TopRefreshScrollPhysics(),
                 padding: EdgeInsets.fromLTRB(0, 0, 0, bottomPadding),
                 children: [
