@@ -5,6 +5,8 @@ import '../../../../core/widgets/common_widgets.dart';
 import '../../../../core/widgets/logout_prompt.dart';
 import 'package:flutter/material.dart';
 
+const String _werkaDockIndicatorHeroTag = 'werka-dock-active-indicator';
+
 enum WerkaDockTab {
   home,
   notifications,
@@ -41,6 +43,7 @@ class WerkaDock extends StatelessWidget {
               icon: Icons.home_outlined,
               selectedIcon: Icons.home_rounded,
               active: activeTab == WerkaDockTab.home,
+              activeHeroTag: _werkaDockIndicatorHeroTag,
               compact: compact,
               onTap: () {
                 if (activeTab == WerkaDockTab.home) {
@@ -56,6 +59,7 @@ class WerkaDock extends StatelessWidget {
               icon: Icons.notifications_outlined,
               selectedIcon: Icons.notifications_rounded,
               active: activeTab == WerkaDockTab.notifications,
+              activeHeroTag: _werkaDockIndicatorHeroTag,
               compact: compact,
               showBadge: showBadge,
               onTap: () {
@@ -83,6 +87,7 @@ class WerkaDock extends StatelessWidget {
               icon: Icons.history_rounded,
               selectedIcon: Icons.history_rounded,
               active: activeTab == WerkaDockTab.recent,
+              activeHeroTag: _werkaDockIndicatorHeroTag,
               compact: compact,
               onTap: () {
                 if (activeTab == WerkaDockTab.recent) {
@@ -98,6 +103,7 @@ class WerkaDock extends StatelessWidget {
               icon: Icons.account_circle_outlined,
               selectedIcon: Icons.account_circle_rounded,
               active: activeTab == WerkaDockTab.profile,
+              activeHeroTag: _werkaDockIndicatorHeroTag,
               compact: compact,
               onHoldComplete: activeTab == WerkaDockTab.profile
                   ? () => showLogoutPrompt(context)

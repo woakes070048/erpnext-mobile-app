@@ -282,6 +282,7 @@ class DockButton extends StatefulWidget {
     this.holdDuration = const Duration(seconds: 1),
     this.compact = false,
     this.showBadge = false,
+    this.activeHeroTag,
   });
 
   final IconData? icon;
@@ -295,6 +296,7 @@ class DockButton extends StatefulWidget {
   final Duration holdDuration;
   final bool compact;
   final bool showBadge;
+  final Object? activeHeroTag;
 
   @override
   State<DockButton> createState() => _DockButtonState();
@@ -371,6 +373,36 @@ class _DockButtonState extends State<DockButton> {
                 widget.iconWidget ??
                 Icon(widget.selectedIcon ?? widget.icon))
             : (widget.iconWidget ?? Icon(widget.icon));
+    final Widget activeIndicator = AnimatedContainer(
+      duration: AppMotion.medium,
+      curve: AppMotion.smooth,
+      height: 42,
+      width: widget.active ? 68 : 42,
+      decoration: BoxDecoration(
+        color: widget.active ? scheme.secondaryContainer : Colors.transparent,
+        borderRadius: BorderRadius.circular(999),
+      ),
+    );
+    final Widget animatedIndicator = widget.active &&
+            !widget.primary &&
+            widget.activeHeroTag != null
+        ? Hero(
+            tag: widget.activeHeroTag!,
+            flightShuttleBuilder: (
+              flightContext,
+              animation,
+              flightDirection,
+              fromHeroContext,
+              toHeroContext,
+            ) {
+              return Material(
+                type: MaterialType.transparency,
+                child: toHeroContext.widget,
+              );
+            },
+            child: activeIndicator,
+          )
+        : activeIndicator;
 
     return AnimatedScale(
       duration: AppMotion.fast,
@@ -448,18 +480,7 @@ class _DockButtonState extends State<DockButton> {
                     alignment: Alignment.center,
                     children: [
                       if (!widget.primary)
-                        AnimatedContainer(
-                          duration: AppMotion.medium,
-                          curve: AppMotion.smooth,
-                          height: 42,
-                          width: widget.active ? 68 : 42,
-                          decoration: BoxDecoration(
-                            color: widget.active
-                                ? scheme.secondaryContainer
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                        ),
+                        animatedIndicator,
                       IconTheme(
                         data: IconThemeData(color: foreground, size: iconSize),
                         child: iconChild,

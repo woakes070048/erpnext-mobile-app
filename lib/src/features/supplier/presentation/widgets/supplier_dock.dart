@@ -5,6 +5,8 @@ import '../../../../core/widgets/common_widgets.dart';
 import '../../../../core/widgets/logout_prompt.dart';
 import 'package:flutter/material.dart';
 
+const String _supplierDockIndicatorHeroTag = 'supplier-dock-active-indicator';
+
 enum SupplierDockTab {
   home,
   notifications,
@@ -43,6 +45,7 @@ class SupplierDock extends StatelessWidget {
               icon: Icons.home_outlined,
               selectedIcon: Icons.home_rounded,
               active: activeTab == SupplierDockTab.home,
+              activeHeroTag: _supplierDockIndicatorHeroTag,
               compact: compact,
               onTap: () {
                 if (activeTab == SupplierDockTab.home && !centerActive) {
@@ -58,6 +61,7 @@ class SupplierDock extends StatelessWidget {
               icon: Icons.notifications_outlined,
               selectedIcon: Icons.notifications_rounded,
               active: activeTab == SupplierDockTab.notifications,
+              activeHeroTag: _supplierDockIndicatorHeroTag,
               compact: compact,
               showBadge: showBadge,
               onTap: () {
@@ -88,6 +92,7 @@ class SupplierDock extends StatelessWidget {
               icon: Icons.history_outlined,
               selectedIcon: Icons.history_rounded,
               active: activeTab == SupplierDockTab.recent,
+              activeHeroTag: _supplierDockIndicatorHeroTag,
               compact: compact,
               onTap: () {
                 if (activeTab == SupplierDockTab.recent) {
@@ -103,6 +108,7 @@ class SupplierDock extends StatelessWidget {
               icon: Icons.account_circle_outlined,
               selectedIcon: Icons.account_circle_rounded,
               active: activeTab == SupplierDockTab.profile,
+              activeHeroTag: _supplierDockIndicatorHeroTag,
               compact: compact,
               onHoldComplete: activeTab == SupplierDockTab.profile
                   ? () => showLogoutPrompt(context)

@@ -3,6 +3,8 @@ import '../../../../core/widgets/common_widgets.dart';
 import '../../../../core/widgets/logout_prompt.dart';
 import 'package:flutter/material.dart';
 
+const String _adminDockIndicatorHeroTag = 'admin-dock-active-indicator';
+
 enum AdminDockTab {
   home,
   suppliers,
@@ -33,6 +35,7 @@ class AdminDock extends StatelessWidget {
           icon: Icons.home_outlined,
           selectedIcon: Icons.home_rounded,
           active: activeTab == AdminDockTab.home,
+          activeHeroTag: _adminDockIndicatorHeroTag,
           compact: compact,
           onTap: () {
             if (activeTab == AdminDockTab.home) return;
@@ -44,6 +47,7 @@ class AdminDock extends StatelessWidget {
           icon: Icons.groups_outlined,
           selectedIcon: Icons.groups_rounded,
           active: activeTab == AdminDockTab.suppliers,
+          activeHeroTag: _adminDockIndicatorHeroTag,
           compact: compact,
           onTap: () {
             if (activeTab == AdminDockTab.suppliers) return;
@@ -72,6 +76,7 @@ class AdminDock extends StatelessWidget {
           icon: Icons.history_outlined,
           selectedIcon: Icons.history_rounded,
           active: activeTab == AdminDockTab.activity,
+          activeHeroTag: _adminDockIndicatorHeroTag,
           compact: compact,
           onTap: () {
             if (activeTab == AdminDockTab.activity) return;
@@ -85,6 +90,7 @@ class AdminDock extends StatelessWidget {
           icon: Icons.account_circle_outlined,
           selectedIcon: Icons.account_circle_rounded,
           active: activeTab == AdminDockTab.profile,
+          activeHeroTag: _adminDockIndicatorHeroTag,
           compact: compact,
           onHoldComplete: activeTab == AdminDockTab.profile
               ? () => showLogoutPrompt(context)
