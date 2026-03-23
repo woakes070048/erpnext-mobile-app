@@ -55,30 +55,30 @@ class AppLocalizations {
   String get nicknameHint => _t('O‘zingizga ko‘rinadigan ism',
       'The name visible to you', 'Имя, видимое только вам');
   String get securityTitle => _t('Xavfsizlik', 'Security', 'Безопасность');
-  String get pinEnabled => _t('4 xonali PIN yoqilgan',
-      'A 4-digit PIN is enabled', '4-значный PIN включен');
+  String get pinEnabled =>
+      _t('PIN yoqilgan', 'PIN enabled', 'PIN включен');
   String get pinDisabled => _t(
-      'App uchun 4 xonali PIN o‘rnating',
-      'Set a 4-digit PIN for the app',
-      'Установите 4-значный PIN для приложения');
+      'PIN o‘rnating',
+      'Set PIN',
+      'Установите PIN');
   String get pinSaving => _t('Saqlanmoqda...', 'Saving...', 'Сохранение...');
   String get pinSet => _t('PIN o‘rnatish', 'Set PIN', 'Установить PIN');
   String get pinChange => _t('PIN almashtirish', 'Change PIN', 'Изменить PIN');
   String get pinRemove => _t('PIN o‘chirish', 'Remove PIN', 'Удалить PIN');
   String get biometricEnableTitle => _t(
-        'Biometrik autentifikatsiyani yoqish',
-        'Enable biometric authentication',
-        'Включить биометрическую аутентификацию',
+        'Biometrik autentifikatsiya',
+        'Biometric authentication',
+        'Биометрическая аутентификация',
       );
   String get biometricEnabledBody => _t(
-        'Yoqilgan. App Face ID yoki fingerprint bilan tez ochiladi.',
-        'Enabled. The app can be unlocked quickly with Face ID or fingerprint.',
-        'Включено. Приложение можно быстро разблокировать с помощью Face ID или отпечатка пальца.',
+        'Yoqilgan',
+        'Enabled',
+        'Включено',
       );
   String get biometricDisabledBody => _t(
-        'O‘chirilgan. Face ID yoki fingerprint bilan tez ochish ishlamaydi.',
-        'Disabled. Fast unlock with Face ID or fingerprint is off.',
-        'Выключено. Быстрая разблокировка с помощью Face ID или отпечатка пальца недоступна.',
+        'O‘chirilgan',
+        'Disabled',
+        'Выключено',
       );
   String get languageTitle => _t('Til', 'Language', 'Язык');
   String get languageBody => _t('Ilova tilini tanlang',

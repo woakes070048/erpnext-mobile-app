@@ -540,6 +540,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
+                        const SizedBox(height: 18),
+                        _LanguagePreferenceRow(
+                          currentLocale: LocaleController.instance.locale,
+                        ),
                         const SizedBox(height: 24),
                         Divider(
                           height: 1,
@@ -577,10 +581,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                             label: l10n.pinRemove,
                           ),
                         ],
-                        const SizedBox(height: 16),
-                        _LanguagePreferenceRow(
-                          currentLocale: LocaleController.instance.locale,
-                        ),
                         const SizedBox(height: 16),
                         _BiometricPreferenceRow(
                           enabled: biometricEnabled,
