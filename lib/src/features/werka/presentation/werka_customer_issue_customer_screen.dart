@@ -354,7 +354,7 @@ class _WerkaCustomerIssueCustomerScreenState
                 children: [
                   _WerkaCustomerIssueHeader(theme: theme),
                   const SizedBox(height: 20),
-                  AppRetryState(onRetry: _reloadCustomers, padding: EdgeInsets.zero),
+                  AppRetryState(onRetry: _reloadCustomers),
                 ],
               );
             }

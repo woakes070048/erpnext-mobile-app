@@ -328,7 +328,7 @@ class _WerkaUnannouncedSupplierScreenState
                 children: [
                   _WerkaUnannouncedHeader(theme: theme),
                   const SizedBox(height: 20),
-                  AppRetryState(onRetry: _reloadSuppliers, padding: EdgeInsets.zero),
+                  AppRetryState(onRetry: _reloadSuppliers),
                 ],
               );
             }

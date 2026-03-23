@@ -366,7 +366,6 @@ class _NotificationDetailScreenState extends State<NotificationDetailScreen> {
           if (snapshot.hasError) {
             return AppRetryState(
               onRetry: () async => _reload(),
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
             );
           }
 

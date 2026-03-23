@@ -6,7 +6,7 @@ class AppRetryState extends StatelessWidget {
   const AppRetryState({
     super.key,
     required this.onRetry,
-    this.padding = const EdgeInsets.fromLTRB(20, 120, 20, 24),
+    this.padding = const EdgeInsets.fromLTRB(20, 170, 20, 24),
   });
 
   final Future<void> Function() onRetry;

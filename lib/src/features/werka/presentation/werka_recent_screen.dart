@@ -269,7 +269,6 @@ class _RecentMessageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppRetryState(
       onRetry: onPressed,
-      padding: const EdgeInsets.fromLTRB(20, 120, 20, 24),
     );
   }
 }

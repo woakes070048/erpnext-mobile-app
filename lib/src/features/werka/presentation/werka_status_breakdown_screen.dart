@@ -118,7 +118,6 @@ class _WerkaStatusBreakdownScreenState
                         store.breakdownItems(widget.kind).isEmpty) {
                       return AppRetryState(
                         onRetry: _reload,
-                        padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
                       );
                     }
 
