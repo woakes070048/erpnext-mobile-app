@@ -110,7 +110,10 @@ class _SupplierRecentScreenState extends State<SupplierRecentScreen>
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 children: [
-                  AppRetryState(onRetry: _reload),
+                  AppRetryState(
+                    onRetry: _reload,
+                    padding: const EdgeInsets.fromLTRB(20, 142, 20, 24),
+                  ),
                 ],
               ),
             );
