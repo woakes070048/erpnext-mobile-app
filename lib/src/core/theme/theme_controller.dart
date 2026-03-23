@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum AppThemeVariant {
   classic,
   earthy,
+  blush,
 }
 
 class ThemeController extends ChangeNotifier {
@@ -25,8 +26,11 @@ class ThemeController extends ChangeNotifier {
     final saved = prefs.getString(prefsKey);
     final savedVariant = prefs.getString(variantPrefsKey);
     _themeMode = saved == 'light' ? ThemeMode.light : ThemeMode.dark;
-    _variant =
-        savedVariant == 'classic' ? AppThemeVariant.classic : AppThemeVariant.earthy;
+    _variant = savedVariant == 'classic'
+        ? AppThemeVariant.classic
+        : savedVariant == 'blush'
+            ? AppThemeVariant.blush
+            : AppThemeVariant.earthy;
     notifyListeners();
   }
 
@@ -50,7 +54,11 @@ class ThemeController extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
       variantPrefsKey,
-      nextVariant == AppThemeVariant.classic ? 'classic' : 'earthy',
+      nextVariant == AppThemeVariant.classic
+          ? 'classic'
+          : nextVariant == AppThemeVariant.blush
+              ? 'blush'
+              : 'earthy',
     );
   }
 }
