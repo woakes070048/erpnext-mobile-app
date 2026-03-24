@@ -26,7 +26,6 @@ class _AppLoadingIndicatorState extends State<AppLoadingIndicator>
   static const List<_LoaderShapeKind> _shapeCycle = <_LoaderShapeKind>[
     _LoaderShapeKind.clover,
     _LoaderShapeKind.arrow,
-    _LoaderShapeKind.pill,
     _LoaderShapeKind.diamond,
     _LoaderShapeKind.ghostish,
     _LoaderShapeKind.verySunny,
@@ -57,15 +56,6 @@ class _AppLoadingIndicatorState extends State<AppLoadingIndicator>
           rotation: 0,
           scaleX: 0.9,
           scaleY: 0.94,
-        );
-      case _LoaderShapeKind.pill:
-        return const _LoaderBlobBorder(
-          lobes: 2,
-          amplitude: 0.09,
-          secondaryAmplitude: 0,
-          rotation: 0,
-          scaleX: 0.9,
-          scaleY: 0.98,
         );
       case _LoaderShapeKind.diamond:
         return const _LoaderBlobBorder(
@@ -167,7 +157,6 @@ class _AppLoadingIndicatorState extends State<AppLoadingIndicator>
 enum _LoaderShapeKind {
   clover,
   arrow,
-  pill,
   diamond,
   ghostish,
   verySunny,

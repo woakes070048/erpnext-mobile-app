@@ -264,7 +264,6 @@ enum _PinShapeKind {
   clover,
   arrow,
   square,
-  pill,
   pentagon,
   diamond,
   verySunny,
@@ -309,15 +308,6 @@ class _PinGlyph extends StatelessWidget {
       case _PinShapeKind.square:
         return RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(9),
-        );
-      case _PinShapeKind.pill:
-        return const _OrganicBlobBorder(
-          lobes: 2,
-          amplitude: 0.09,
-          secondaryAmplitude: 0.0,
-          rotation: 0.0,
-          scaleX: 0.9,
-          scaleY: 0.98,
         );
       case _PinShapeKind.pentagon:
         return const _OrganicBlobBorder(
@@ -383,15 +373,6 @@ class _PinGlyph extends StatelessWidget {
       case _PinShapeKind.square:
         return RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-        );
-      case _PinShapeKind.pill:
-        return const _OrganicBlobBorder(
-          lobes: 2,
-          amplitude: 0.055,
-          secondaryAmplitude: 0.0,
-          rotation: 0.0,
-          scaleX: 0.95,
-          scaleY: 0.99,
         );
       case _PinShapeKind.pentagon:
         return const _OrganicBlobBorder(
