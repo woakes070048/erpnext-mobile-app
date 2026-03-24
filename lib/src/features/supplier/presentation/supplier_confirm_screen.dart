@@ -73,91 +73,162 @@ class _SupplierConfirmScreenState extends State<SupplierConfirmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final scheme = theme.colorScheme;
+    final detailRows = <({String label, String value})>[
+      (label: 'Mahsulot', value: widget.args.item.code),
+      (label: 'Nomi', value: widget.args.item.name),
+      (
+        label: 'Miqdor',
+        value: '${widget.args.qty.toStringAsFixed(2)} ${widget.args.item.uom}',
+      ),
+      if (widget.args.item.warehouse.trim().isNotEmpty)
+        (label: 'Ombor', value: widget.args.item.warehouse),
+    ];
     return AppShell(
+      leading: AppShellIconAction(
+        icon: Icons.arrow_back_rounded,
+        onTap: _submitting ? () {} : () => Navigator.of(context).maybePop(),
+      ),
       title: 'Tasdiqlash',
       subtitle: '',
+      contentPadding: const EdgeInsets.fromLTRB(10, 0, 12, 0),
       bottom: AbsorbPointer(
         absorbing: _submitting,
         child: const SupplierDock(activeTab: null, centerActive: true),
       ),
       child: ListView(
-        padding: EdgeInsets.zero,
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         children: [
-          Text.rich(
-            TextSpan(
-              style: textTheme.titleMedium,
-              children: [
-                const TextSpan(text: 'Mahsulot: '),
-                TextSpan(
-                  text: widget.args.item.code,
-                  style: textTheme.titleLarge,
-                ),
-              ],
+          Card.filled(
+            margin: EdgeInsets.zero,
+            color: scheme.surfaceContainerLow,
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(28),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text.rich(
-            TextSpan(
-              style: textTheme.titleMedium,
-              children: [
-                const TextSpan(text: 'Nomi: '),
-                TextSpan(
-                  text: widget.args.item.name,
-                  style: textTheme.titleLarge,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text.rich(
-            TextSpan(
-              style: textTheme.titleMedium,
-              children: [
-                const TextSpan(text: 'Miqdor: '),
-                TextSpan(
-                  text:
-                      '${widget.args.qty.toStringAsFixed(2)} ${widget.args.item.uom}',
-                  style: textTheme.titleLarge,
-                ),
-              ],
-            ),
-          ),
-          if (widget.args.item.warehouse.trim().isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text.rich(
-              TextSpan(
-                style: textTheme.titleMedium,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const TextSpan(text: 'Ombor: '),
-                  TextSpan(
-                    text: widget.args.item.warehouse,
-                    style: textTheme.titleLarge,
+                  Text(
+                    widget.args.item.name,
+                    style: textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.args.item.code,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Card.filled(
+                    margin: EdgeInsets.zero,
+                    color: scheme.surfaceContainer,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Column(
+                      children: [
+                        for (int index = 0; index < detailRows.length; index++) ...[
+                          _ConfirmDetailRow(
+                            label: detailRows[index].label,
+                            value: detailRows[index].value,
+                            isFirst: index == 0,
+                            isLast: index == detailRows.length - 1,
+                          ),
+                          if (index != detailRows.length - 1)
+                            Divider(
+                              height: 1,
+                              thickness: 1,
+                              indent: 16,
+                              endIndent: 16,
+                              color: scheme.outlineVariant.withValues(alpha: 0.55),
+                            ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: _submitting ? null : _handleSubmit,
+                      child: _submitting
+                          ? const SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2.2),
+                            )
+                          : const Text('Ha, jo‘natishni saqlash'),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed:
+                          _submitting ? null : () => Navigator.of(context).pop(),
+                      child: const Text('Orqaga qaytish'),
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-          const SizedBox(height: 18),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _submitting ? null : _handleSubmit,
-              child: _submitting
-                  ? const SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2.2),
-                    )
-                  : const Text('Ha, jo‘natishni saqlash'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ConfirmDetailRow extends StatelessWidget {
+  const _ConfirmDetailRow({
+    required this.label,
+    required this.value,
+    required this.isFirst,
+    required this.isLast,
+  });
+
+  final String label;
+  final String value;
+  final bool isFirst;
+  final bool isLast;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(isFirst ? 24 : 0),
+          topRight: Radius.circular(isFirst ? 24 : 0),
+          bottomLeft: Radius.circular(isLast ? 24 : 0),
+          bottomRight: Radius.circular(isLast ? 24 : 0),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
             ),
           ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: _submitting ? null : () => Navigator.of(context).pop(),
-              child: const Text('Orqaga qaytish'),
+          const SizedBox(width: 16),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: theme.textTheme.titleMedium,
             ),
           ),
         ],
