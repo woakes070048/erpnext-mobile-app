@@ -73,6 +73,7 @@ class CustomerDeliveryRuntimeStore extends ChangeNotifier {
             pending -= 1;
           case DispatchStatus.accepted:
             confirmed -= 1;
+          case DispatchStatus.partial:
           case DispatchStatus.rejected:
             rejected -= 1;
           default:
@@ -85,6 +86,7 @@ class CustomerDeliveryRuntimeStore extends ChangeNotifier {
           pending += 1;
         case DispatchStatus.accepted:
           confirmed += 1;
+        case DispatchStatus.partial:
         case DispatchStatus.rejected:
           rejected += 1;
         default:
@@ -116,16 +118,20 @@ class CustomerDeliveryRuntimeStore extends ChangeNotifier {
     CustomerStatusKind kind,
     List<DispatchRecord> items,
   ) {
-    final target = switch (kind) {
-      CustomerStatusKind.pending => DispatchStatus.pending,
-      CustomerStatusKind.confirmed => DispatchStatus.accepted,
-      CustomerStatusKind.rejected => DispatchStatus.rejected,
-    };
     final byId = <String, DispatchRecord>{
       for (final item in items) item.id: item,
     };
     for (final mutation in _activeMutations()) {
-      if (mutation.updated.status == target) {
+      final matchesTarget = switch (kind) {
+        CustomerStatusKind.pending =>
+          mutation.updated.status == DispatchStatus.pending,
+        CustomerStatusKind.confirmed =>
+          mutation.updated.status == DispatchStatus.accepted,
+        CustomerStatusKind.rejected =>
+          mutation.updated.status == DispatchStatus.rejected ||
+              mutation.updated.status == DispatchStatus.partial,
+      };
+      if (matchesTarget) {
         byId[mutation.updated.id] = mutation.updated;
       } else {
         byId.remove(mutation.updated.id);
@@ -157,7 +163,8 @@ class CustomerDeliveryRuntimeStore extends ChangeNotifier {
 
   List<DispatchRecord> _sorted(Iterable<DispatchRecord> records) {
     final result = records.toList();
-    result.sort((a, b) => compareCreatedLabelsDesc(a.createdLabel, b.createdLabel));
+    result.sort(
+        (a, b) => compareCreatedLabelsDesc(a.createdLabel, b.createdLabel));
     return result;
   }
 

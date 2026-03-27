@@ -55,12 +55,8 @@ class AppLocalizations {
   String get nicknameHint => _t('O‘zingizga ko‘rinadigan ism',
       'The name visible to you', 'Имя, видимое только вам');
   String get securityTitle => _t('Xavfsizlik', 'Security', 'Безопасность');
-  String get pinEnabled =>
-      _t('PIN yoqilgan', 'PIN enabled', 'PIN включен');
-  String get pinDisabled => _t(
-      'PIN o‘rnating',
-      'Set PIN',
-      'Установите PIN');
+  String get pinEnabled => _t('PIN yoqilgan', 'PIN enabled', 'PIN включен');
+  String get pinDisabled => _t('PIN o‘rnating', 'Set PIN', 'Установите PIN');
   String get pinSaving => _t('Saqlanmoqda...', 'Saving...', 'Сохранение...');
   String get pinSet => _t('PIN o‘rnatish', 'Set PIN', 'Установить PIN');
   String get pinChange => _t('PIN almashtirish', 'Change PIN', 'Изменить PIN');
@@ -84,8 +80,8 @@ class AppLocalizations {
   String get languageBody => _t('Ilova tilini tanlang',
       'Choose the app language', 'Выберите язык приложения');
   String get themeTitle => _t('Tema', 'Theme', 'Тема');
-  String get themeBody => _t('Rang uslubini tanlang',
-      'Choose the color style', 'Выберите цветовой стиль');
+  String get themeBody => _t('Rang uslubini tanlang', 'Choose the color style',
+      'Выберите цветовой стиль');
   String get themeClassicLabel => _t('Klassik', 'Classic', 'Классика');
   String get themeEarthLabel => _t('Qumli', 'Earthy', 'Песочная');
   String get themeBlushLabel => _t('Atirgul', 'Blush', 'Розовая');
@@ -398,13 +394,22 @@ class AppLocalizations {
       _t('Muhokamani ochish', 'Open discussion', 'Открыть обсуждение');
   String get responseTitle => _t('Javob', 'Response', 'Ответ');
   String get rejectTitle => _t('Rad etish', 'Reject', 'Отклонить');
+  String get partialAcceptTitle =>
+      _t('Qisman qabul', 'Partial acceptance', 'Частичное принятие');
+  String get partialAcceptAction =>
+      _t('Qisman qabul qilish', 'Accept partially', 'Принять частично');
+  String get reportIssueTitle =>
+      _t('Muammo bildirish', 'Report issue', 'Сообщить о проблеме');
+  String get reportIssueAction =>
+      _t('Muammo bildirish', 'Report issue', 'Сообщить о проблеме');
   String get reasonLabel => _t('Sabab', 'Reason', 'Причина');
+  String get returnedQtyLabel =>
+      _t('Qaytarilgan miqdor', 'Returned quantity', 'Возвращаемое количество');
   String get rejectReasonRequired => _t(
       'Sabab tanlang yoki kamida 3 harf izoh yozing',
       'Select a reason or enter at least 3 characters',
       'Выберите причину или введите минимум 3 символа');
-  String get rejectReasonDefective =>
-      _t('Yaroqsiz', 'Defective', 'Брак');
+  String get rejectReasonDefective => _t('Yaroqsiz', 'Defective', 'Брак');
   String get rejectReasonWrongItem =>
       _t('Noto‘g‘ri mahsulot', 'Wrong item', 'Неверный товар');
   String get rejectReasonQtyMismatch =>

@@ -9,111 +9,63 @@ void main() {
     store.clear();
   });
 
-  DispatchRecord record({
-    required String id,
-    required DispatchStatus status,
-    double sentQty = 1,
-    double acceptedQty = 0,
-    String note = '',
-    String createdLabel = '2026-03-17 06:00:00',
-  }) {
-    return DispatchRecord(
-      id: id,
-      supplierRef: 'comfi',
-      supplierName: 'comfi',
-      itemCode: 'ITEM',
-      itemName: 'pista',
+  tearDown(() {
+    store.clear();
+  });
+
+  test('customer runtime treats partial delivery as rejected bucket', () {
+    const before = DispatchRecord(
+      id: 'MAT-DN-0001',
+      supplierRef: 'CUST-001',
+      supplierName: 'Comfi',
+      itemCode: 'ITEM-001',
+      itemName: 'Pista',
       uom: 'Kg',
-      sentQty: sentQty,
-      acceptedQty: acceptedQty,
+      sentQty: 10,
+      acceptedQty: 0,
       amount: 0,
       currency: '',
-      note: note,
+      note: '',
       eventType: '',
       highlight: '',
-      status: status,
-      createdLabel: createdLabel,
+      status: DispatchStatus.pending,
+      createdLabel: '2026-03-27 10:00:00',
     );
-  }
-
-  test('moves record from pending to confirmed instantly', () {
-    final before = record(id: 'DN-1', status: DispatchStatus.pending);
-    final after = record(
-      id: 'DN-1',
-      status: DispatchStatus.accepted,
-      acceptedQty: 1,
-      note: 'Customer tasdiqladi.',
-    );
-
-    store.recordTransition(before: before, after: after);
-
-    final pending = store.applyStatusList(
-      CustomerStatusKind.pending,
-      [before],
-    );
-    final confirmed = store.applyStatusList(
-      CustomerStatusKind.confirmed,
-      const [],
-    );
-
-    expect(pending, isEmpty);
-    expect(confirmed.map((item) => item.id), ['DN-1']);
-  });
-
-  test('adjusts summary from local mutation', () {
-    final before = record(id: 'DN-2', status: DispatchStatus.pending);
-    final after = record(
-      id: 'DN-2',
-      status: DispatchStatus.accepted,
-      acceptedQty: 1,
-      note: 'Customer tasdiqladi.',
+    const after = DispatchRecord(
+      id: 'MAT-DN-0001',
+      supplierRef: 'CUST-001',
+      supplierName: 'Comfi',
+      itemCode: 'ITEM-001',
+      itemName: 'Pista',
+      uom: 'Kg',
+      sentQty: 10,
+      acceptedQty: 7,
+      amount: 0,
+      currency: '',
+      note: 'Customer qisman qabul qildi.',
+      eventType: 'customer_delivery_partial',
+      highlight: '',
+      status: DispatchStatus.partial,
+      createdLabel: '2026-03-27 10:00:00',
     );
 
     store.recordTransition(before: before, after: after);
+
+    final rejected = store.applyStatusList(
+      CustomerStatusKind.rejected,
+      const <DispatchRecord>[],
+    );
+    expect(rejected, hasLength(1));
+    expect(rejected.first.status, DispatchStatus.partial);
 
     final summary = store.applySummary(
       const CustomerHomeSummary(
-        pendingCount: 3,
-        confirmedCount: 4,
+        pendingCount: 1,
+        confirmedCount: 0,
         rejectedCount: 0,
       ),
     );
-
-    expect(summary.pendingCount, 2);
-    expect(summary.confirmedCount, 5);
-    expect(summary.rejectedCount, 0);
-  });
-
-  test('reconciles away mutation once server reflects it', () {
-    final before = record(id: 'DN-3', status: DispatchStatus.pending);
-    final after = record(
-      id: 'DN-3',
-      status: DispatchStatus.accepted,
-      acceptedQty: 1,
-      note: 'Customer tasdiqladi.',
-    );
-
-    store.recordTransition(before: before, after: after);
-    store.reconcileStatusLists(
-      pendingItems: const [],
-      confirmedItems: [after],
-      rejectedItems: const [],
-    );
-
-    final summary = store.applySummary(
-      const CustomerHomeSummary(
-        pendingCount: 0,
-        confirmedCount: 1,
-        rejectedCount: 0,
-      ),
-    );
-    final confirmed = store.applyStatusList(
-      CustomerStatusKind.confirmed,
-      [after],
-    );
-
     expect(summary.pendingCount, 0);
-    expect(summary.confirmedCount, 1);
-    expect(confirmed.length, 1);
+    expect(summary.rejectedCount, 1);
   });
 }

@@ -59,164 +59,25 @@ class _CustomerDeliveryDetailScreenState
     await _reload();
   }
 
-  Future<void> _respond(bool approve) async {
-    final l10n = context.l10n;
-    String reason = '';
-    if (!approve) {
-      final commentController = TextEditingController();
-      String? selectedReason;
-      final bool? confirmed = await showDialog<bool>(
-        context: context,
-        barrierColor: Colors.black.withValues(alpha: 0.28),
-        builder: (context) {
-          final reasons = _rejectReasons(l10n);
-          return StatefulBuilder(
-            builder: (context, setLocalState) {
-              final trimmedComment = commentController.text.trim();
-              final hasReason = (selectedReason ?? '').trim().isNotEmpty;
-              final hasLongEnoughComment =
-                  trimmedComment.runes.length >= _minRejectCommentLength;
-              final canConfirm = hasReason || hasLongEnoughComment;
-              return BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Dialog(
-                  insetPadding: const EdgeInsets.symmetric(horizontal: 28),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(22),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.rejectTitle,
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
-                        const SizedBox(height: 16),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            l10n.reasonLabel,
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        ...reasons.map(
-                          (item) => InkWell(
-                            borderRadius: BorderRadius.circular(16),
-                            onTap: () {
-                              setLocalState(() {
-                                selectedReason =
-                                    selectedReason == item ? null : item;
-                              });
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    selectedReason == item
-                                        ? Icons.check_circle_rounded
-                                        : Icons.radio_button_unchecked_rounded,
-                                    size: 22,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      item,
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: commentController,
-                          minLines: 2,
-                          maxLines: 4,
-                          onChanged: (_) => setLocalState(() {}),
-                          decoration: InputDecoration(
-                            labelText: l10n.extraCommentLabel,
-                            hintText: l10n.optionalReasonHint,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(false),
-                                child: Text(l10n.no),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: FilledButton(
-                                onPressed: canConfirm
-                                    ? () => Navigator.of(context).pop(true)
-                                    : null,
-                                child: Text(l10n.yes),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      );
-      if (confirmed != true) {
-        return;
-      }
-      final trimmedComment = commentController.text.trim();
-      if ((selectedReason ?? '').trim().isEmpty &&
-          trimmedComment.runes.length < _minRejectCommentLength) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.rejectReasonRequired)),
-        );
-        return;
-      }
-      final selected = (selectedReason ?? '').trim();
-      if (selected.isNotEmpty) {
-        reason = selected;
-        if (trimmedComment.isNotEmpty) {
-          reason = '$reason. $trimmedComment';
-        }
-      } else {
-        reason = trimmedComment;
-      }
-    } else {
-      final bool? confirmed = await showM3ConfirmDialog(
-        context: context,
-        title: l10n.confirmTitle,
-        message: l10n.confirmQuestion,
-        cancelLabel: l10n.no,
-        confirmLabel: l10n.yes,
-      );
-      if (confirmed != true) {
-        return;
-      }
-    }
-
+  Future<void> _sendResponse({
+    bool? approve,
+    CustomerDeliveryResponseMode? mode,
+    double? acceptedQty,
+    double? returnedQty,
+    String reason = '',
+    String comment = '',
+  }) async {
     final current = await _future;
     setState(() => _submitting = true);
     try {
       final updated = await MobileApi.instance.customerRespondDelivery(
         deliveryNoteID: widget.deliveryNoteID,
         approve: approve,
+        mode: mode,
+        acceptedQty: acceptedQty,
+        returnedQty: returnedQty,
         reason: reason,
+        comment: comment,
       );
       if (!mounted) return;
       setState(() {
@@ -231,13 +92,251 @@ class _CustomerDeliveryDetailScreenState
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.responseSendFailed(error))),
+        SnackBar(content: Text(context.l10n.responseSendFailed(error))),
       );
     } finally {
       if (mounted) {
         setState(() => _submitting = false);
       }
     }
+  }
+
+  Future<_CustomerReturnInput?> _showReturnDialog({
+    required String title,
+    required double sentQty,
+    required String uom,
+    required bool allowFullReturn,
+  }) async {
+    final l10n = context.l10n;
+    final qtyController = TextEditingController();
+    final commentController = TextEditingController();
+    String? selectedReason;
+    return showDialog<_CustomerReturnInput>(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.28),
+      builder: (context) {
+        final reasons = _rejectReasons(l10n);
+        return StatefulBuilder(
+          builder: (context, setLocalState) {
+            final trimmedComment = commentController.text.trim();
+            final hasReason = (selectedReason ?? '').trim().isNotEmpty;
+            final hasLongEnoughComment =
+                trimmedComment.runes.length >= _minRejectCommentLength;
+            final parsedReturnedQty = _parseQty(qtyController.text);
+            final validQty = parsedReturnedQty != null &&
+                parsedReturnedQty > 0 &&
+                (allowFullReturn
+                    ? parsedReturnedQty <= sentQty
+                    : parsedReturnedQty < sentQty);
+            final canConfirm = validQty && (hasReason || hasLongEnoughComment);
+            return BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Dialog(
+                insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(22),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: qtyController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        onChanged: (_) => setLocalState(() {}),
+                        decoration: InputDecoration(
+                          labelText: l10n.returnedQtyLabel,
+                          hintText: '${sentQty.toStringAsFixed(2)} $uom',
+                          suffixText: uom,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          l10n.reasonLabel,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ...reasons.map(
+                        (item) => InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () {
+                            setLocalState(() {
+                              selectedReason =
+                                  selectedReason == item ? null : item;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  selectedReason == item
+                                      ? Icons.check_circle_rounded
+                                      : Icons.radio_button_unchecked_rounded,
+                                  size: 22,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    item,
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: commentController,
+                        minLines: 2,
+                        maxLines: 4,
+                        onChanged: (_) => setLocalState(() {}),
+                        decoration: InputDecoration(
+                          labelText: l10n.extraCommentLabel,
+                          hintText: l10n.optionalReasonHint,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => Navigator.of(context).pop(null),
+                              child: Text(l10n.no),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: FilledButton(
+                              onPressed: canConfirm
+                                  ? () {
+                                      Navigator.of(context).pop(
+                                        _CustomerReturnInput(
+                                          returnedQty: parsedReturnedQty,
+                                          reason: (selectedReason ?? '').trim(),
+                                          comment: trimmedComment,
+                                        ),
+                                      );
+                                    }
+                                  : null,
+                              child: Text(l10n.yes),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  double? _parseQty(String raw) {
+    final normalized = raw.trim().replaceAll(',', '.');
+    if (normalized.isEmpty) {
+      return null;
+    }
+    return double.tryParse(normalized);
+  }
+
+  Future<void> _approveAll() async {
+    final l10n = context.l10n;
+    final bool? confirmed = await showM3ConfirmDialog(
+      context: context,
+      title: l10n.confirmTitle,
+      message: l10n.confirmQuestion,
+      cancelLabel: l10n.no,
+      confirmLabel: l10n.yes,
+    );
+    if (confirmed != true) {
+      return;
+    }
+    await _sendResponse(
+      approve: true,
+      mode: CustomerDeliveryResponseMode.acceptAll,
+    );
+  }
+
+  Future<void> _rejectAll() async {
+    final l10n = context.l10n;
+    final detail = await _future;
+    final input = await _showReturnDialog(
+      title: l10n.rejectTitle,
+      sentQty: detail.record.sentQty,
+      uom: detail.record.uom,
+      allowFullReturn: true,
+    );
+    if (input == null) {
+      return;
+    }
+    await _sendResponse(
+      approve: false,
+      mode: CustomerDeliveryResponseMode.rejectAll,
+      returnedQty: detail.record.sentQty,
+      reason: input.reason,
+      comment: input.comment,
+    );
+  }
+
+  Future<void> _acceptPartial() async {
+    final l10n = context.l10n;
+    final detail = await _future;
+    final input = await _showReturnDialog(
+      title: l10n.partialAcceptTitle,
+      sentQty: detail.record.sentQty,
+      uom: detail.record.uom,
+      allowFullReturn: false,
+    );
+    if (input == null) {
+      return;
+    }
+    final acceptedQty = detail.record.sentQty - input.returnedQty;
+    await _sendResponse(
+      mode: CustomerDeliveryResponseMode.acceptPartial,
+      acceptedQty: acceptedQty,
+      returnedQty: input.returnedQty,
+      reason: input.reason,
+      comment: input.comment,
+    );
+  }
+
+  Future<void> _reportClaim() async {
+    final l10n = context.l10n;
+    final detail = await _future;
+    final input = await _showReturnDialog(
+      title: l10n.reportIssueTitle,
+      sentQty: detail.record.sentQty,
+      uom: detail.record.uom,
+      allowFullReturn: true,
+    );
+    if (input == null) {
+      return;
+    }
+    await _sendResponse(
+      mode: CustomerDeliveryResponseMode.claimAfterAccept,
+      returnedQty: input.returnedQty,
+      reason: input.reason,
+      comment: input.comment,
+    );
   }
 
   @override
@@ -338,6 +437,7 @@ class _CustomerDeliveryDetailScreenState
                         ),
                       ],
                       if (record.status == DispatchStatus.accepted ||
+                          record.status == DispatchStatus.partial ||
                           record.status == DispatchStatus.rejected) ...[
                         Divider(
                           height: 1,
@@ -361,7 +461,10 @@ class _CustomerDeliveryDetailScreenState
                           ),
                         ),
                       ],
-                      if (detail.canApprove || detail.canReject) ...[
+                      if (detail.canApprove ||
+                          detail.canReject ||
+                          detail.canPartiallyAccept ||
+                          detail.canReportClaim) ...[
                         Divider(
                           height: 1,
                           thickness: 1,
@@ -375,25 +478,13 @@ class _CustomerDeliveryDetailScreenState
                         ),
                         Padding(
                           padding: const EdgeInsets.all(18),
-                          child: Row(
+                          child: Column(
                             children: [
-                              if (detail.canReject)
-                                Expanded(
-                                  child: OutlinedButton(
-                                    onPressed: _submitting
-                                        ? null
-                                        : () => _respond(false),
-                                    child: Text(context.l10n.rejectAction),
-                                  ),
-                                ),
-                              if (detail.canReject && detail.canApprove)
-                                const SizedBox(width: 12),
                               if (detail.canApprove)
-                                Expanded(
+                                SizedBox(
+                                  width: double.infinity,
                                   child: FilledButton(
-                                    onPressed: _submitting
-                                        ? null
-                                        : () => _respond(true),
+                                    onPressed: _submitting ? null : _approveAll,
                                     child: Text(
                                       _submitting
                                           ? context.l10n.sending
@@ -401,6 +492,43 @@ class _CustomerDeliveryDetailScreenState
                                     ),
                                   ),
                                 ),
+                              if (detail.canApprove &&
+                                  (detail.canPartiallyAccept ||
+                                      detail.canReject))
+                                const SizedBox(height: 12),
+                              if (detail.canPartiallyAccept)
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: FilledButton.tonal(
+                                    onPressed:
+                                        _submitting ? null : _acceptPartial,
+                                    child: Text(
+                                      context.l10n.partialAcceptAction,
+                                    ),
+                                  ),
+                                ),
+                              if (detail.canPartiallyAccept && detail.canReject)
+                                const SizedBox(height: 12),
+                              if (detail.canReject)
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: OutlinedButton(
+                                    onPressed: _submitting ? null : _rejectAll,
+                                    child: Text(context.l10n.rejectAction),
+                                  ),
+                                ),
+                              if (detail.canReportClaim) ...[
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: FilledButton.tonal(
+                                    onPressed:
+                                        _submitting ? null : _reportClaim,
+                                    child: Text(
+                                      context.l10n.reportIssueAction,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ),
@@ -428,6 +556,18 @@ class _CustomerDeliveryDetailScreenState
         return AppLocalizations.of(context).pendingLabel;
     }
   }
+}
+
+class _CustomerReturnInput {
+  const _CustomerReturnInput({
+    required this.returnedQty,
+    required this.reason,
+    required this.comment,
+  });
+
+  final double returnedQty;
+  final String reason;
+  final String comment;
 }
 
 class _CustomerDetailSectionHeader extends StatelessWidget {
