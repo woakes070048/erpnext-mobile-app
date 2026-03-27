@@ -106,6 +106,8 @@ class _CustomerDeliveryDetailScreenState
     required double sentQty,
     required String uom,
     required bool allowFullReturn,
+    required bool requireQtyEntry,
+    String? qtyLabel,
   }) async {
     final l10n = context.l10n;
     final qtyController = TextEditingController();
@@ -123,11 +125,12 @@ class _CustomerDeliveryDetailScreenState
             final hasLongEnoughComment =
                 trimmedComment.runes.length >= _minRejectCommentLength;
             final parsedReturnedQty = _parseQty(qtyController.text);
-            final validQty = parsedReturnedQty != null &&
-                parsedReturnedQty > 0 &&
-                (allowFullReturn
-                    ? parsedReturnedQty <= sentQty
-                    : parsedReturnedQty < sentQty);
+            final validQty = !requireQtyEntry ||
+                (parsedReturnedQty != null &&
+                    parsedReturnedQty > 0 &&
+                    (allowFullReturn
+                        ? parsedReturnedQty <= sentQty
+                        : parsedReturnedQty < sentQty));
             final canConfirm = validQty && (hasReason || hasLongEnoughComment);
             return BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -147,19 +150,21 @@ class _CustomerDeliveryDetailScreenState
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       const SizedBox(height: 16),
-                      TextField(
-                        controller: qtyController,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
+                      if (requireQtyEntry) ...[
+                        TextField(
+                          controller: qtyController,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          onChanged: (_) => setLocalState(() {}),
+                          decoration: InputDecoration(
+                            labelText: qtyLabel ?? l10n.returnedQtyLabel,
+                            hintText: '${sentQty.toStringAsFixed(2)} $uom',
+                            suffixText: uom,
+                          ),
                         ),
-                        onChanged: (_) => setLocalState(() {}),
-                        decoration: InputDecoration(
-                          labelText: l10n.returnedQtyLabel,
-                          hintText: '${sentQty.toStringAsFixed(2)} $uom',
-                          suffixText: uom,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 16),
+                      ],
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -227,7 +232,9 @@ class _CustomerDeliveryDetailScreenState
                                   ? () {
                                       Navigator.of(context).pop(
                                         _CustomerReturnInput(
-                                          returnedQty: parsedReturnedQty,
+                                          returnedQty: requireQtyEntry
+                                              ? (parsedReturnedQty ?? sentQty)
+                                              : sentQty,
                                           reason: (selectedReason ?? '').trim(),
                                           comment: trimmedComment,
                                         ),
@@ -284,6 +291,7 @@ class _CustomerDeliveryDetailScreenState
       sentQty: detail.record.sentQty,
       uom: detail.record.uom,
       allowFullReturn: true,
+      requireQtyEntry: false,
     );
     if (input == null) {
       return;
@@ -305,6 +313,8 @@ class _CustomerDeliveryDetailScreenState
       sentQty: detail.record.sentQty,
       uom: detail.record.uom,
       allowFullReturn: false,
+      requireQtyEntry: true,
+      qtyLabel: l10n.returningQtyLabel,
     );
     if (input == null) {
       return;
@@ -327,6 +337,7 @@ class _CustomerDeliveryDetailScreenState
       sentQty: detail.record.sentQty,
       uom: detail.record.uom,
       allowFullReturn: true,
+      requireQtyEntry: true,
     );
     if (input == null) {
       return;

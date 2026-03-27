@@ -403,6 +403,8 @@ class AppLocalizations {
   String get reportIssueAction =>
       _t('Muammo bildirish', 'Report issue', 'Сообщить о проблеме');
   String get reasonLabel => _t('Sabab', 'Reason', 'Причина');
+  String get returningQtyLabel => _t('Qaytarilayotgan miqdor',
+      'Returning quantity', 'Возвращаемое количество');
   String get returnedQtyLabel =>
       _t('Qaytarilgan miqdor', 'Returned quantity', 'Возвращаемое количество');
   String get rejectReasonRequired => _t(
