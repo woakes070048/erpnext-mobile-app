@@ -87,7 +87,9 @@ class _CustomerDeliveryDetailScreenState
         before: current.record,
         after: updated.record,
       );
-      RefreshHub.instance.emit('customer');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        RefreshHub.instance.emit('customer');
+      });
       Navigator.of(context).pop(true);
     } catch (error) {
       if (!mounted) return;

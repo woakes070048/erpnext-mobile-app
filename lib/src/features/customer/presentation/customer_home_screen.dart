@@ -52,7 +52,12 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       return;
     }
     _refreshVersion = RefreshHub.instance.version;
-    _reload();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      _reload();
+    });
   }
 
   Future<void> _openDetail(String deliveryNoteID) async {

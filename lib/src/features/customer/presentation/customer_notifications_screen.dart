@@ -37,6 +37,7 @@ class _CustomerNotificationsScreenState
   List<DispatchRecord>? _cachedItems;
   Set<String> _highlightedUnreadIds = <String>{};
   int _refreshVersion = 0;
+  bool _syncScheduled = false;
 
   @override
   void initState() {
@@ -166,7 +167,17 @@ class _CustomerNotificationsScreenState
     if (!mounted) {
       return;
     }
-    _syncFromStore();
+    if (_syncScheduled) {
+      return;
+    }
+    _syncScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncScheduled = false;
+      if (!mounted) {
+        return;
+      }
+      _syncFromStore();
+    });
   }
 
   void _handlePushRefresh() {
@@ -177,7 +188,12 @@ class _CustomerNotificationsScreenState
       return;
     }
     _refreshVersion = RefreshHub.instance.version;
-    _reload();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      _reload();
+    });
   }
 
   @override
@@ -190,7 +206,9 @@ class _CustomerNotificationsScreenState
         final hidden = NotificationHiddenStore.instance.hiddenIdsForProfile(
           AppSession.instance.profile,
         );
-        final items = ((store.loaded ? store.historyItems : (_cachedItems ?? <DispatchRecord>[])))
+        final items = ((store.loaded
+                ? store.historyItems
+                : (_cachedItems ?? <DispatchRecord>[])))
             .where((item) => !hidden.contains(item.id))
             .toList();
         final orderedItems = [
