@@ -772,12 +772,12 @@ class _ThemePreferenceRow extends StatelessWidget {
                 child: TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0, end: 1),
                   duration: AppMotion.slow,
-                  curve: AppMotion.emphasizedDecelerate,
+                  curve: AppMotion.easeOut,
                   builder: (context, value, child) {
                     return Opacity(
                       opacity: value,
                       child: Transform.translate(
-                        offset: Offset(0, 20 * (1 - value)),
+                        offset: Offset(0, 28 * (1 - value)),
                         child: child,
                       ),
                     );
@@ -816,7 +816,8 @@ class _ThemePreferenceRow extends StatelessWidget {
                               contentPadding: EdgeInsets.zero,
                               title: Text(l10n.themeClassicLabel),
                               trailing: variant == AppThemeVariant.classic
-                                  ? Icon(Icons.check_rounded, color: scheme.primary)
+                                  ? Icon(Icons.check_rounded,
+                                      color: scheme.primary)
                                   : null,
                               onTap: () => Navigator.of(context)
                                   .pop(AppThemeVariant.classic),
@@ -825,7 +826,8 @@ class _ThemePreferenceRow extends StatelessWidget {
                               contentPadding: EdgeInsets.zero,
                               title: Text(l10n.themeEarthLabel),
                               trailing: variant == AppThemeVariant.earthy
-                                  ? Icon(Icons.check_rounded, color: scheme.primary)
+                                  ? Icon(Icons.check_rounded,
+                                      color: scheme.primary)
                                   : null,
                               onTap: () => Navigator.of(context)
                                   .pop(AppThemeVariant.earthy),
@@ -834,7 +836,8 @@ class _ThemePreferenceRow extends StatelessWidget {
                               contentPadding: EdgeInsets.zero,
                               title: Text(l10n.themeBlushLabel),
                               trailing: variant == AppThemeVariant.blush
-                                  ? Icon(Icons.check_rounded, color: scheme.primary)
+                                  ? Icon(Icons.check_rounded,
+                                      color: scheme.primary)
                                   : null,
                               onTap: () => Navigator.of(context)
                                   .pop(AppThemeVariant.blush),
@@ -843,16 +846,18 @@ class _ThemePreferenceRow extends StatelessWidget {
                               contentPadding: EdgeInsets.zero,
                               title: Text(l10n.themeMossLabel),
                               trailing: variant == AppThemeVariant.moss
-                                  ? Icon(Icons.check_rounded, color: scheme.primary)
+                                  ? Icon(Icons.check_rounded,
+                                      color: scheme.primary)
                                   : null,
-                              onTap: () =>
-                                  Navigator.of(context).pop(AppThemeVariant.moss),
+                              onTap: () => Navigator.of(context)
+                                  .pop(AppThemeVariant.moss),
                             ),
                             ListTile(
                               contentPadding: EdgeInsets.zero,
                               title: Text(l10n.themeLavenderLabel),
                               trailing: variant == AppThemeVariant.lavender
-                                  ? Icon(Icons.check_rounded, color: scheme.primary)
+                                  ? Icon(Icons.check_rounded,
+                                      color: scheme.primary)
                                   : null,
                               onTap: () => Navigator.of(context)
                                   .pop(AppThemeVariant.lavender),
@@ -861,19 +866,21 @@ class _ThemePreferenceRow extends StatelessWidget {
                               contentPadding: EdgeInsets.zero,
                               title: Text(l10n.themeSlateLabel),
                               trailing: variant == AppThemeVariant.slate
-                                  ? Icon(Icons.check_rounded, color: scheme.primary)
+                                  ? Icon(Icons.check_rounded,
+                                      color: scheme.primary)
                                   : null,
-                              onTap: () =>
-                                  Navigator.of(context).pop(AppThemeVariant.slate),
+                              onTap: () => Navigator.of(context)
+                                  .pop(AppThemeVariant.slate),
                             ),
                             ListTile(
                               contentPadding: EdgeInsets.zero,
                               title: Text(l10n.themeOceanLabel),
                               trailing: variant == AppThemeVariant.ocean
-                                  ? Icon(Icons.check_rounded, color: scheme.primary)
+                                  ? Icon(Icons.check_rounded,
+                                      color: scheme.primary)
                                   : null,
-                              onTap: () =>
-                                  Navigator.of(context).pop(AppThemeVariant.ocean),
+                              onTap: () => Navigator.of(context)
+                                  .pop(AppThemeVariant.ocean),
                             ),
                           ],
                         ),
@@ -931,7 +938,7 @@ class _ThemePreferenceRow extends StatelessWidget {
                                   ? l10n.themeSlateLabel
                                   : variant == AppThemeVariant.ocean
                                       ? l10n.themeOceanLabel
-                      : l10n.themeEarthLabel,
+                                      : l10n.themeEarthLabel,
               style: Theme.of(context).textTheme.labelLarge,
             ),
           ),

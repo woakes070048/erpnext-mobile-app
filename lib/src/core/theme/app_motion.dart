@@ -13,6 +13,7 @@ class AppMotion {
   static const Curve emphasized = Curves.easeInOutCubicEmphasized;
   static const Curve emphasizedAccelerate = Easing.emphasizedAccelerate;
   static const Curve emphasizedDecelerate = Easing.emphasizedDecelerate;
+  static const Curve easeOut = Curves.easeOutCubic;
   static const Curve smooth = Easing.standard;
   static const Curve settle = Easing.emphasizedDecelerate;
   static const Curve pageIn = Easing.emphasizedDecelerate;
