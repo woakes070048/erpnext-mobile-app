@@ -6,6 +6,7 @@ APP_ROOT="$SCRIPT_DIR"
 CORE_URL="${CORE_URL:-http://127.0.0.1:8081}"
 TUNNEL_NAME="${TUNNEL_NAME:-accord-vision-core}"
 PUBLIC_HOSTNAME="${PUBLIC_HOSTNAME:-core.wspace.sbs}"
+SKIP_PUBLIC_HEALTHCHECK="${SKIP_PUBLIC_HEALTHCHECK:-0}"
 TUNNEL_LOG="$APP_ROOT/.core_domain_tunnel.log"
 TUNNEL_PID="$APP_ROOT/.core_domain_tunnel.pid"
 TUNNEL_URL_FILE="$APP_ROOT/.core_domain_url"
@@ -49,6 +50,17 @@ EOF
 rm -f "$TUNNEL_LOG"
 setsid cloudflared tunnel --config "$TUNNEL_CONFIG" run "$TUNNEL_NAME" >"$TUNNEL_LOG" 2>&1 < /dev/null &
 echo $! >"$TUNNEL_PID"
+
+if [ "$SKIP_PUBLIC_HEALTHCHECK" = "1" ]; then
+	sleep 0.5
+	if kill -0 "$(cat "$TUNNEL_PID")" 2>/dev/null; then
+		printf 'https://%s\n' "$PUBLIC_HOSTNAME" >"$TUNNEL_URL_FILE"
+		cat "$TUNNEL_URL_FILE"
+		exit 0
+	fi
+	echo "domain tunnel exited early; see $TUNNEL_LOG" >&2
+	exit 1
+fi
 
 for _ in $(seq 1 80); do
 	if curl -fsS "https://$PUBLIC_HOSTNAME/healthz" >/dev/null 2>&1; then
