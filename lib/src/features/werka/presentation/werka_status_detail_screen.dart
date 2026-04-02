@@ -57,6 +57,7 @@ class _WerkaStatusDetailScreenState extends State<WerkaStatusDetailScreen> {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final showFlutterBackButton = !useNativeBackButton(context);
+    final headerLeftPadding = showFlutterBackButton ? 20.0 : 84.0;
     return Scaffold(
       extendBody: true,
       backgroundColor: AppTheme.shellStart(context),
@@ -65,7 +66,7 @@ class _WerkaStatusDetailScreenState extends State<WerkaStatusDetailScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+              padding: EdgeInsets.fromLTRB(headerLeftPadding, 18, 20, 18),
               child: Row(
                 children: [
                   if (showFlutterBackButton) ...[
@@ -75,9 +76,15 @@ class _WerkaStatusDetailScreenState extends State<WerkaStatusDetailScreen> {
                     const SizedBox(width: 14),
                   ],
                   Expanded(
-                    child: Text(
-                      _title,
-                      style: theme.textTheme.headlineMedium,
+                    child: SizedBox(
+                      height: 52,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          _title,
+                          style: theme.textTheme.headlineMedium,
+                        ),
+                      ),
                     ),
                   ),
                 ],
