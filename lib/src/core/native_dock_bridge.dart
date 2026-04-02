@@ -13,8 +13,13 @@ class NativeDockBridge extends NavigatorObserver with ChangeNotifier {
   bool _initialized = false;
   bool _nativeReady = false;
   NativeDockState? _pendingState;
+  NativeDockState? _lastVisibleState;
   final Map<String, VoidCallback> _tapHandlers = <String, VoidCallback>{};
   final Map<String, VoidCallback> _holdHandlers = <String, VoidCallback>{};
+  final Map<String, VoidCallback> _lastVisibleTapHandlers =
+      <String, VoidCallback>{};
+  final Map<String, VoidCallback> _lastVisibleHoldHandlers =
+      <String, VoidCallback>{};
 
   static bool get isSupportedPlatform =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
@@ -46,6 +51,15 @@ class NativeDockBridge extends NavigatorObserver with ChangeNotifier {
             .where((item) => item.onHoldComplete != null)
             .map((item) => MapEntry(item.id, item.onHoldComplete!)),
       );
+    if (state.visible) {
+      _lastVisibleState = state;
+      _lastVisibleTapHandlers
+        ..clear()
+        ..addAll(_tapHandlers);
+      _lastVisibleHoldHandlers
+        ..clear()
+        ..addAll(_holdHandlers);
+    }
     _scheduleSync();
   }
 
@@ -60,35 +74,25 @@ class NativeDockBridge extends NavigatorObserver with ChangeNotifier {
   }
 
   @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    super.didPush(route, previousRoute);
-    _refreshVisibleRoute();
-  }
-
-  @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     super.didPop(route, previousRoute);
-    _refreshVisibleRoute();
+    _restoreLastVisibleDock();
   }
 
-  @override
-  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    super.didRemove(route, previousRoute);
-    _refreshVisibleRoute();
-  }
-
-  @override
-  void didReplace({
-    Route<dynamic>? newRoute,
-    Route<dynamic>? oldRoute,
-  }) {
-    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
-    _refreshVisibleRoute();
-  }
-
-  void _refreshVisibleRoute() {
-    clearFromBuild();
+  void _restoreLastVisibleDock() {
+    final state = _lastVisibleState;
+    if (state == null) {
+      return;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pendingState = state;
+      _tapHandlers
+        ..clear()
+        ..addAll(_lastVisibleTapHandlers);
+      _holdHandlers
+        ..clear()
+        ..addAll(_lastVisibleHoldHandlers);
+      unawaited(_sync());
       notifyListeners();
     });
   }
