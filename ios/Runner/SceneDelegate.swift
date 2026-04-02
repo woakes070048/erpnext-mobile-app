@@ -383,6 +383,12 @@ private final class NativeDockChannelBridge: NSObject {
         self.onStateChanged(state)
       }
       result(nil)
+    case "isSystemDockSupported":
+      if #available(iOS 26.0, *) {
+        result(true)
+      } else {
+        result(false)
+      }
     default:
       result(FlutterMethodNotImplemented)
     }

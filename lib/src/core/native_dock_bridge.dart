@@ -14,6 +14,7 @@ class NativeDockBridge extends NavigatorObserver with ChangeNotifier {
   bool _initialized = false;
   bool _nativeReady = false;
   bool _systemDockSupported = false;
+  bool _supportCheckInFlight = false;
   NativeDockState? _pendingState;
   NativeDockState? _lastVisibleState;
   final Map<String, VoidCallback> _tapHandlers = <String, VoidCallback>{};
@@ -38,11 +39,15 @@ class NativeDockBridge extends NavigatorObserver with ChangeNotifier {
     }
     _initialized = true;
     _channel.setMethodCallHandler(_handleMethodCall);
+    _querySupport();
   }
 
   void register(NativeDockState state) {
     if (!isSupportedPlatform) {
       return;
+    }
+    if (!_nativeReady && !_supportCheckInFlight) {
+      _querySupport();
     }
     _pendingState = state;
     _tapHandlers
@@ -132,6 +137,25 @@ class NativeDockBridge extends NavigatorObserver with ChangeNotifier {
         (_pendingState ?? const NativeDockState.hidden()).toMap(),
       );
     } catch (_) {}
+  }
+
+  Future<void> _querySupport() async {
+    if (!_initialized || _supportCheckInFlight) {
+      return;
+    }
+    _supportCheckInFlight = true;
+    try {
+      final supported =
+          await _channel.invokeMethod<bool>('isSystemDockSupported') ?? false;
+      _nativeReady = true;
+      _systemDockSupported = supported;
+      notifyListeners();
+      _scheduleSync();
+    } catch (_) {
+      // Native dock bridge may not be ready on the very first frame.
+    } finally {
+      _supportCheckInFlight = false;
+    }
   }
 
   Future<dynamic> _handleMethodCall(MethodCall call) async {
