@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -24,8 +23,7 @@ class NativeBackButtonBridge extends NavigatorObserver {
     _scheduleSync();
   }
 
-  static bool get _isSupportedPlatform =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+  static bool get _isSupportedPlatform => false;
 
   static bool shouldUseNativeBackButton(BuildContext context) {
     if (!_isSupportedPlatform) {

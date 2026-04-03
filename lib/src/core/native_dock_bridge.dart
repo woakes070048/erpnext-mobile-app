@@ -28,8 +28,7 @@ class NativeDockBridge extends NavigatorObserver with ChangeNotifier {
   final Map<String, NativeDockItem> _lastVisibleItemsById =
       <String, NativeDockItem>{};
 
-  static bool get isSupportedPlatform =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+  static bool get isSupportedPlatform => false;
 
   bool get isReady => _nativeReady;
   bool get supportsSystemDock => _systemDockSupported;
@@ -186,7 +185,8 @@ class NativeDockBridge extends NavigatorObserver with ChangeNotifier {
         final id = call.arguments as String?;
         if (id != null) {
           final item = _itemsById[id] ?? _lastVisibleItemsById[id];
-          final navigator = NativeBackButtonBridge.instance.navigatorKey.currentState;
+          final navigator =
+              NativeBackButtonBridge.instance.navigatorKey.currentState;
           if (item != null &&
               navigator != null &&
               item.routeName != null &&

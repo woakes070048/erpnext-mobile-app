@@ -2,6 +2,8 @@ import Flutter
 import UIKit
 
 class SceneDelegate: FlutterSceneDelegate {
+  private var deviceInfoBridge: DeviceInfoChannelBridge?
+
   override func scene(
     _ scene: UIScene,
     willConnectTo session: UISceneSession,
@@ -9,19 +11,9 @@ class SceneDelegate: FlutterSceneDelegate {
   ) {
     super.scene(scene, willConnectTo: session, options: connectionOptions)
 
-    guard
-      let window,
-      let flutterViewController = window.rootViewController as? FlutterViewController,
-      !(window.rootViewController is NativeTabBarController)
-    else {
-      return
+    if let window, let flutterViewController = window.rootViewController as? FlutterViewController {
+      deviceInfoBridge = DeviceInfoChannelBridge(messenger: flutterViewController.binaryMessenger)
     }
-
-    let navigationController = NativeBackNavigationController(
-      flutterViewController: flutterViewController
-    )
-    window.rootViewController = navigationController
-    window.makeKeyAndVisible()
   }
 }
 
