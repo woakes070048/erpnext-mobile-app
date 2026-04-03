@@ -62,6 +62,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     return AppShell(
       title: context.l10n.adminRoleName,
       subtitle: '',
+      preferNativeTitle: true,
       contentPadding: const EdgeInsets.fromLTRB(12, 0, 14, 0),
       bottom: const AdminDock(activeTab: AdminDockTab.home),
       child: AnimatedBuilder(

@@ -69,6 +69,7 @@ class _SupplierHomeScreenState extends State<SupplierHomeScreen>
     return AppShell(
       title: context.l10n.supplierRoleName,
       subtitle: '',
+      preferNativeTitle: true,
       actions: [
         AnimatedBuilder(
           animation: NotificationUnreadStore.instance,

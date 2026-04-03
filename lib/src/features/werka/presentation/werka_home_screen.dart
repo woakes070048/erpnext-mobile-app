@@ -68,6 +68,7 @@ class _WerkaHomeScreenState extends State<WerkaHomeScreen>
     return AppShell(
       title: context.l10n.werkaRoleName,
       subtitle: '',
+      preferNativeTitle: true,
       actions: [
         AnimatedBuilder(
           animation: NotificationUnreadStore.instance,

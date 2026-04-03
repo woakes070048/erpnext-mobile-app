@@ -38,7 +38,26 @@ class NativeBackButtonBridge extends NavigatorObserver {
   }
 
   static bool useNativeNavigationTitle(BuildContext context, String title) {
-    final useNative = shouldUseNativeBackButton(context);
+    return useNativeNavigationTitleWhenPossible(
+      context,
+      title,
+      allowWithoutBackButton: false,
+    );
+  }
+
+  static bool useNativeNavigationTitleWhenPossible(
+    BuildContext context,
+    String title, {
+    required bool allowWithoutBackButton,
+  }) {
+    if (!_isSupportedPlatform) {
+      return false;
+    }
+    final navigator = Navigator.maybeOf(context);
+    final visible = navigator?.canPop() ?? false;
+    final useNative = visible || allowWithoutBackButton;
+    instance._syncVisibleFromBuild(visible);
+    instance._syncNavigationBarVisibleFromBuild(useNative);
     instance._syncThemeFromBuild(Theme.of(context).brightness == Brightness.dark);
     instance._syncTitleFromBuild(useNative ? title : null);
     return useNative;
@@ -113,6 +132,21 @@ class NativeBackButtonBridge extends NavigatorObserver {
   Future<void> _setVisible(bool visible) async {
     try {
       await _channel.invokeMethod('setBackButtonVisible', visible);
+    } catch (_) {}
+  }
+
+  void _syncNavigationBarVisibleFromBuild(bool visible) {
+    if (!_initialized) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_setNavigationBarVisible(visible));
+    });
+  }
+
+  Future<void> _setNavigationBarVisible(bool visible) async {
+    try {
+      await _channel.invokeMethod('setNavigationBarVisible', visible);
     } catch (_) {}
   }
 

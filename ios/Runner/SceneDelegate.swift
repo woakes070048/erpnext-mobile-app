@@ -28,6 +28,7 @@ class SceneDelegate: FlutterSceneDelegate {
 final class NativeBackNavigationController: UINavigationController {
   private let rootFlutterViewController: FlutterViewController
   private var backButtonVisible = false
+  private var navigationBarVisible = false
   private var backGestureActive = false
   private lazy var dockController = NativeTabBarController(
     messenger: flutterBinaryMessenger
@@ -36,6 +37,9 @@ final class NativeBackNavigationController: UINavigationController {
     messenger: flutterBinaryMessenger,
     onVisibilityChanged: { [weak self] visible in
       self?.setBackButtonVisible(visible)
+    },
+    onNavigationBarVisibilityChanged: { [weak self] visible in
+      self?.setNavigationBarVisible(visible)
     },
     onTitleChanged: { [weak self] title in
       self?.setNavigationTitle(title)
@@ -124,7 +128,7 @@ final class NativeBackNavigationController: UINavigationController {
 
     guard let buttonView = currentBackButtonView() else {
       topViewController?.navigationItem.leftBarButtonItem = nil
-      setNavigationBarHidden(true, animated: false)
+      setNavigationBarHidden(!(navigationBarVisible || backButtonVisible), animated: false)
       return
     }
     UIView.animate(
@@ -136,10 +140,19 @@ final class NativeBackNavigationController: UINavigationController {
       buttonView.transform = CGAffineTransform(scaleX: 0.90, y: 0.90)
     } completion: { _ in
       self.topViewController?.navigationItem.leftBarButtonItem = nil
-      self.setNavigationBarHidden(true, animated: false)
+      self.setNavigationBarHidden(!(self.navigationBarVisible || self.backButtonVisible), animated: false)
       buttonView.alpha = 1
       buttonView.transform = .identity
     }
+  }
+
+  private func setNavigationBarVisible(_ visible: Bool) {
+    navigationBarVisible = visible
+    if !visible {
+      topViewController?.navigationItem.title = nil
+      navigationBar.topItem?.title = nil
+    }
+    setNavigationBarHidden(!(navigationBarVisible || backButtonVisible), animated: false)
   }
 
   private func setBackGestureActive(_ active: Bool) {
@@ -222,6 +235,7 @@ final class NativeBackNavigationController: UINavigationController {
 private final class NativeBackButtonChannelBridge: NSObject {
   private let channel: FlutterMethodChannel
   private let onVisibilityChanged: (Bool) -> Void
+  private let onNavigationBarVisibilityChanged: (Bool) -> Void
   private let onTitleChanged: (String?) -> Void
   private let onThemeChanged: (Bool) -> Void
   private let onGestureChanged: (Bool) -> Void
@@ -229,6 +243,7 @@ private final class NativeBackButtonChannelBridge: NSObject {
   init(
     messenger: FlutterBinaryMessenger,
     onVisibilityChanged: @escaping (Bool) -> Void,
+    onNavigationBarVisibilityChanged: @escaping (Bool) -> Void,
     onTitleChanged: @escaping (String?) -> Void,
     onThemeChanged: @escaping (Bool) -> Void,
     onGestureChanged: @escaping (Bool) -> Void
@@ -238,6 +253,7 @@ private final class NativeBackButtonChannelBridge: NSObject {
       binaryMessenger: messenger
     )
     self.onVisibilityChanged = onVisibilityChanged
+    self.onNavigationBarVisibilityChanged = onNavigationBarVisibilityChanged
     self.onTitleChanged = onTitleChanged
     self.onThemeChanged = onThemeChanged
     self.onGestureChanged = onGestureChanged
@@ -256,6 +272,12 @@ private final class NativeBackButtonChannelBridge: NSObject {
       let visible = (call.arguments as? Bool) ?? false
       DispatchQueue.main.async {
         self.onVisibilityChanged(visible)
+      }
+      result(nil)
+    case "setNavigationBarVisible":
+      let visible = (call.arguments as? Bool) ?? false
+      DispatchQueue.main.async {
+        self.onNavigationBarVisibilityChanged(visible)
       }
       result(nil)
     case "setBackButtonTitle":

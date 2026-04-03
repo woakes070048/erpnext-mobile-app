@@ -17,6 +17,7 @@ class AppShell extends StatelessWidget {
     this.contentPadding = const EdgeInsets.fromLTRB(4, 0, 6, 0),
     this.bottomPadding = const EdgeInsets.symmetric(horizontal: 20),
     this.animateOnEnter = true,
+    this.preferNativeTitle = false,
   });
 
   final String title;
@@ -28,10 +29,17 @@ class AppShell extends StatelessWidget {
   final EdgeInsets contentPadding;
   final EdgeInsets bottomPadding;
   final bool animateOnEnter;
+  final bool preferNativeTitle;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final useNativeTitle = NativeBackButtonBridge
+        .useNativeNavigationTitleWhenPossible(
+      context,
+      title,
+      allowWithoutBackButton: preferNativeTitle,
+    );
     final shouldHideLeading =
         leading != null && NativeBackButtonBridge.shouldUseNativeBackButton(context);
     final preserveNativeDock =
@@ -58,13 +66,17 @@ class AppShell extends StatelessWidget {
         ),
         child: SafeArea(
           bottom: false,
-          child: _buildAnimatedContent(theme, shouldHideLeading),
+          child: _buildAnimatedContent(theme, shouldHideLeading, useNativeTitle),
         ),
       ),
     );
   }
 
-  Widget _buildAnimatedContent(ThemeData theme, bool shouldHideLeading) {
+  Widget _buildAnimatedContent(
+    ThemeData theme,
+    bool shouldHideLeading,
+    bool useNativeTitle,
+  ) {
     final content = Column(
       children: [
         Padding(
@@ -76,24 +88,26 @@ class AppShell extends StatelessWidget {
                 leading!,
                 const SizedBox(width: 14),
               ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: theme.textTheme.headlineMedium,
-                    ),
-                    if (subtitle.trim().isNotEmpty) ...[
-                      const SizedBox(height: 6),
+              if (!useNativeTitle)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        subtitle,
-                        style: theme.textTheme.bodyMedium,
+                        title,
+                        style: theme.textTheme.headlineMedium,
                       ),
+                      if (subtitle.trim().isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          subtitle,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
+              if (useNativeTitle) const Spacer(),
               if (actions != null) ...actions!,
             ],
           ),

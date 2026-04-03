@@ -132,6 +132,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       title: context.l10n.customerRoleName,
       subtitle: '',
       animateOnEnter: false,
+      preferNativeTitle: true,
       contentPadding: const EdgeInsets.fromLTRB(12, 0, 14, 0),
       bottom: const CustomerDock(activeTab: CustomerDockTab.home),
       child: content,
