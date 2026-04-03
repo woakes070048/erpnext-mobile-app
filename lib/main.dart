@@ -31,6 +31,7 @@ Future<void> main() async {
   await _runStartupStep('security', SecurityController.instance.load);
   await _runStartupStep('theme', ThemeController.instance.load);
   await _runStartupStep('locale', LocaleController.instance.load);
+  await _runStartupStep('platform helper', PlatformHelper.load);
   runApp(
     DevicePreview(
       enabled: AppPreview.enabled,

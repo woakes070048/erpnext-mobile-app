@@ -30,6 +30,9 @@ final class NativeBackNavigationController: UINavigationController {
   private var backButtonVisible = false
   private var navigationBarVisible = false
   private var backGestureActive = false
+  private lazy var deviceInfoBridge = DeviceInfoChannelBridge(
+    messenger: flutterBinaryMessenger
+  )
   private lazy var dockController = NativeTabBarController(
     messenger: flutterBinaryMessenger
   )
@@ -69,6 +72,7 @@ final class NativeBackNavigationController: UINavigationController {
   override func viewDidLoad() {
     super.viewDidLoad()
     _ = backBridge
+    _ = deviceInfoBridge
     navigationBar.prefersLargeTitles = false
     applyNavigationAppearance(isDark: true)
     topViewController?.navigationItem.leftBarButtonItem = makeBackBarButtonItem()
@@ -554,5 +558,31 @@ private struct NativeDockItem: Equatable {
     primary = arguments["primary"] as? Bool ?? false
     showBadge = arguments["showBadge"] as? Bool ?? false
     supportsLongPress = arguments["supportsLongPress"] as? Bool ?? false
+  }
+}
+
+private final class DeviceInfoChannelBridge: NSObject {
+  private let channel: FlutterMethodChannel
+
+  init(messenger: FlutterBinaryMessenger) {
+    self.channel = FlutterMethodChannel(
+      name: "accord/device_info",
+      binaryMessenger: messenger
+    )
+    super.init()
+    channel.setMethodCallHandler(handleMethodCall)
+  }
+
+  private func handleMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    switch call.method {
+    case "isIOSSimulator":
+      #if targetEnvironment(simulator)
+      result(true)
+      #else
+      result(false)
+      #endif
+    default:
+      result(FlutterMethodNotImplemented)
+    }
   }
 }

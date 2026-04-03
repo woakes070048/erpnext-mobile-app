@@ -8,6 +8,7 @@ import 'local_notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -28,6 +29,10 @@ class PushMessagingService {
       defaultTargetPlatform == TargetPlatform.android ||
       defaultTargetPlatform == TargetPlatform.iOS;
 
+  bool get _shouldInitializePushOnThisDevice =>
+      defaultTargetPlatform == TargetPlatform.android ||
+      (defaultTargetPlatform == TargetPlatform.iOS && !PlatformHelper.isIOSSimulator);
+
   String get _platformName {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -43,7 +48,7 @@ class PushMessagingService {
   }
 
   Future<void> initialize() async {
-    if (_initialized || !_supportsRemotePush) {
+    if (_initialized || !_supportsRemotePush || !_shouldInitializePushOnThisDevice) {
       return;
     }
 
@@ -179,5 +184,32 @@ class PushMessagingService {
       'push unregister platform=$_platformName token=${maskPushToken(token)}',
     );
     await MobileApi.instance.unregisterPushToken(token);
+  }
+}
+
+class PlatformHelper {
+  const PlatformHelper._();
+
+  static bool get isIOSSimulator {
+    if (defaultTargetPlatform != TargetPlatform.iOS) {
+      return false;
+    }
+    return _isIOSSimulator;
+  }
+
+  static bool _isIOSSimulator = false;
+
+  static Future<void> load() async {
+    if (defaultTargetPlatform != TargetPlatform.iOS || kIsWeb) {
+      _isIOSSimulator = false;
+      return;
+    }
+    const channel = MethodChannel('accord/device_info');
+    try {
+      _isIOSSimulator =
+          (await channel.invokeMethod<bool>('isIOSSimulator')) ?? false;
+    } catch (_) {
+      _isIOSSimulator = false;
+    }
   }
 }
