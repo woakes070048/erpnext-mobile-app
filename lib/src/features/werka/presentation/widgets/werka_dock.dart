@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 enum WerkaDockTab {
   home,
   notifications,
-  recent,
   profile,
 }
 
@@ -93,26 +92,6 @@ class WerkaDock extends StatelessWidget {
             },
           ),
           trailing: [
-            DockButton(
-              nativeId: 'werka_recent',
-              nativeSymbol: 'clock',
-              nativeSelectedSymbol: 'clock.fill',
-              nativeRouteName: AppRoutes.werkaRecent,
-              nativeReplaceStack: true,
-              icon: Icons.history_rounded,
-              selectedIcon: Icons.history_rounded,
-              active: activeTab == WerkaDockTab.recent,
-              compact: compact,
-              onTap: () {
-                if (activeTab == WerkaDockTab.recent) {
-                  return;
-                }
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  AppRoutes.werkaRecent,
-                  (route) => false,
-                );
-              },
-            ),
             DockButton(
               nativeId: 'werka_profile',
               nativeSymbol: 'person.crop.circle',
