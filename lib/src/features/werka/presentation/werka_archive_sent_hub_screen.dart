@@ -43,8 +43,6 @@ class _WerkaArchiveSentHubScreenState extends State<WerkaArchiveSentHubScreen> {
   Set<int> _activeMonths = <int>{};
   Set<int> _activeYears = <int>{};
 
-  bool get _anyCalendarOpen => _dailyOpen || _monthlyOpen || _yearlyOpen;
-
   void _toggleSection(WerkaArchivePeriod period) {
     setState(() {
       final currentlyOpen = switch (period) {
@@ -298,9 +296,6 @@ class _WerkaArchiveSentHubScreenState extends State<WerkaArchiveSentHubScreen> {
     return RefreshIndicator(
       onRefresh: _loadCurrent,
       child: ListView(
-        physics: _anyCalendarOpen
-            ? const NeverScrollableScrollPhysics()
-            : null,
         padding: const EdgeInsets.fromLTRB(4, 0, 4, 110),
         children: [
           _SentArchiveExpandableCard(
