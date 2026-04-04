@@ -76,19 +76,21 @@ class _WerkaArchivePeriodScreenState extends State<WerkaArchivePeriodScreen> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(4, 0, 4, 110),
         children: [
-          _PeriodCard(
-            title: context.l10n.archiveDailyTitle,
-            onTap: () => _openList(context, WerkaArchivePeriod.daily),
-          ),
-          const SizedBox(height: 14),
-          _PeriodCard(
-            title: context.l10n.archiveMonthlyTitle,
-            onTap: () => _openList(context, WerkaArchivePeriod.monthly),
-          ),
-          const SizedBox(height: 14),
-          _PeriodCard(
-            title: context.l10n.archiveYearlyTitle,
-            onTap: () => _openList(context, WerkaArchivePeriod.yearly),
+          _PeriodGroupCard(
+            rows: [
+              _PeriodRowData(
+                title: context.l10n.archiveDailyTitle,
+                onTap: () => _openList(context, WerkaArchivePeriod.daily),
+              ),
+              _PeriodRowData(
+                title: context.l10n.archiveMonthlyTitle,
+                onTap: () => _openList(context, WerkaArchivePeriod.monthly),
+              ),
+              _PeriodRowData(
+                title: context.l10n.archiveYearlyTitle,
+                onTap: () => _openList(context, WerkaArchivePeriod.yearly),
+              ),
+            ],
           ),
         ],
       ),
@@ -96,14 +98,22 @@ class _WerkaArchivePeriodScreenState extends State<WerkaArchivePeriodScreen> {
   }
 }
 
-class _PeriodCard extends StatelessWidget {
-  const _PeriodCard({
+class _PeriodRowData {
+  const _PeriodRowData({
     required this.title,
     required this.onTap,
   });
 
   final String title;
   final VoidCallback onTap;
+}
+
+class _PeriodGroupCard extends StatelessWidget {
+  const _PeriodGroupCard({
+    required this.rows,
+  });
+
+  final List<_PeriodRowData> rows;
 
   @override
   Widget build(BuildContext context) {
@@ -115,22 +125,66 @@ class _PeriodCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(28),
       ),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: theme.textTheme.titleLarge,
-                ),
+      child: Column(
+        children: [
+          for (int index = 0; index < rows.length; index++) ...[
+            _PeriodRow(
+              title: rows[index].title,
+              onTap: rows[index].onTap,
+              isFirst: index == 0,
+              isLast: index == rows.length - 1,
+            ),
+            if (index != rows.length - 1)
+              Divider(
+                height: 1,
+                thickness: 1,
+                indent: 18,
+                endIndent: 18,
+                color: theme.dividerColor.withValues(alpha: 0.55),
               ),
-              const Icon(Icons.chevron_right_rounded),
-            ],
-          ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _PeriodRow extends StatelessWidget {
+  const _PeriodRow({
+    required this.title,
+    required this.onTap,
+    required this.isFirst,
+    required this.isLast,
+  });
+
+  final String title;
+  final VoidCallback onTap;
+  final bool isFirst;
+  final bool isLast;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          18,
+          isFirst ? 18 : 16,
+          18,
+          isLast ? 18 : 16,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: theme.textTheme.titleLarge,
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded),
+          ],
         ),
       ),
     );
