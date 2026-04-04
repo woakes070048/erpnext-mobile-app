@@ -193,6 +193,11 @@ class _WerkaArchiveDailyCalendarScreenState
     final localizations = MaterialLocalizations.of(context);
     final cells = _buildCells(localizations);
     final weekdayLabels = _weekdayLabels(localizations);
+    final rowCount = (cells.length / 7).ceil();
+    const gridSpacing = 8.0;
+    const availableWidth = 7 * 48.0 + 6 * gridSpacing;
+    const cellHeight = 48.0;
+    final gridHeight = rowCount * cellHeight + (rowCount - 1) * gridSpacing;
 
     return RefreshIndicator(
       onRefresh: _loadMonth,
@@ -263,28 +268,31 @@ class _WerkaArchiveDailyCalendarScreenState
                     ],
                   ),
                   const SizedBox(height: 10),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: cells.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 7,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      childAspectRatio: 1,
+                  SizedBox(
+                    width: availableWidth,
+                    height: gridHeight,
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: cells.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 7,
+                        mainAxisSpacing: gridSpacing,
+                        crossAxisSpacing: gridSpacing,
+                        childAspectRatio: 1,
+                      ),
+                      itemBuilder: (context, index) {
+                        final cell = cells[index];
+                        if (!cell.hasDay) {
+                          return const SizedBox.shrink();
+                        }
+                        return _CalendarDayCell(
+                          day: cell.day!,
+                          active: cell.active,
+                          onTap: () => _openDay(cell.day!),
+                        );
+                      },
                     ),
-                    itemBuilder: (context, index) {
-                      final cell = cells[index];
-                      if (!cell.hasDay) {
-                        return const SizedBox.shrink();
-                      }
-                      return _CalendarDayCell(
-                        day: cell.day!,
-                        active: cell.active,
-                        onTap: () => _openDay(cell.day!),
-                      );
-                    },
                   ),
                   if (_activeDays.isEmpty) ...[
                     const SizedBox(height: 14),
