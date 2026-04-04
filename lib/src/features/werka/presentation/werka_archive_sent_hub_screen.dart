@@ -43,6 +43,32 @@ class _WerkaArchiveSentHubScreenState extends State<WerkaArchiveSentHubScreen> {
   Set<int> _activeMonths = <int>{};
   Set<int> _activeYears = <int>{};
 
+  void _toggleSection(WerkaArchivePeriod period) {
+    setState(() {
+      final currentlyOpen = switch (period) {
+        WerkaArchivePeriod.daily => _dailyOpen,
+        WerkaArchivePeriod.monthly => _monthlyOpen,
+        WerkaArchivePeriod.yearly => _yearlyOpen,
+        WerkaArchivePeriod.custom => false,
+      };
+      _dailyOpen = false;
+      _monthlyOpen = false;
+      _yearlyOpen = false;
+      if (!currentlyOpen) {
+        switch (period) {
+          case WerkaArchivePeriod.daily:
+            _dailyOpen = true;
+          case WerkaArchivePeriod.monthly:
+            _monthlyOpen = true;
+          case WerkaArchivePeriod.yearly:
+            _yearlyOpen = true;
+          case WerkaArchivePeriod.custom:
+            break;
+        }
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -264,7 +290,7 @@ class _WerkaArchiveSentHubScreenState extends State<WerkaArchiveSentHubScreen> {
             value: _selectedDateLabel(context),
             actionLabel: l10n.archiveSelectDateAction,
             open: _dailyOpen,
-            onToggle: () => setState(() => _dailyOpen = !_dailyOpen),
+            onToggle: () => _toggleSection(WerkaArchivePeriod.daily),
             child: CalendarDatePicker(
               initialDate: _selectedDate,
               firstDate: DateTime(DateTime.now().year - 5),
@@ -289,7 +315,7 @@ class _WerkaArchiveSentHubScreenState extends State<WerkaArchiveSentHubScreen> {
             value: _selectedMonthLabel(context),
             actionLabel: l10n.archiveSelectMonthAction,
             open: _monthlyOpen,
-            onToggle: () => setState(() => _monthlyOpen = !_monthlyOpen),
+            onToggle: () => _toggleSection(WerkaArchivePeriod.monthly),
             child: _buildMonthlyPanel(context),
           ),
           const SizedBox(height: 14),
@@ -298,7 +324,7 @@ class _WerkaArchiveSentHubScreenState extends State<WerkaArchiveSentHubScreen> {
             value: _selectedYearLabel(),
             actionLabel: l10n.archiveSelectDateAction,
             open: _yearlyOpen,
-            onToggle: () => setState(() => _yearlyOpen = !_yearlyOpen),
+            onToggle: () => _toggleSection(WerkaArchivePeriod.yearly),
             child: _buildYearlyPanel(context),
           ),
         ],
