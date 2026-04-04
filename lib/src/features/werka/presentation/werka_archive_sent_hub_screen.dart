@@ -254,8 +254,6 @@ class _WerkaArchiveSentHubScreenState extends State<WerkaArchiveSentHubScreen> {
     }
 
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-
     return RefreshIndicator(
       onRefresh: _loadCurrent,
       child: ListView(
@@ -340,7 +338,7 @@ class _WerkaArchiveSentHubScreenState extends State<WerkaArchiveSentHubScreen> {
         ),
         const SizedBox(height: 12),
         Wrap(
-          spacing: 10,
+          spacing: 8,
           runSpacing: 10,
           children: [
             for (int month = 1; month <= 12; month++)
@@ -567,7 +565,7 @@ class _SentHubMonthCell extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
     return SizedBox(
-      width: 100,
+      width: 86,
       child: Material(
         color: active
             ? scheme.primaryContainer
