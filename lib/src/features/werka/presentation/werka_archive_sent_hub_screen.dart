@@ -250,14 +250,30 @@ class _WerkaArchiveSentHubScreenState extends State<WerkaArchiveSentHubScreen> {
 
   String _selectedYearLabel() => '$_startYear - ${_startYear + 11}';
 
-  double _dailyCalendarHeight(BuildContext context) {
-    final localizations = MaterialLocalizations.of(context);
+  List<String> _weekdayLabels(MaterialLocalizations localizations) {
+    final narrow = localizations.narrowWeekdays;
+    final start = localizations.firstDayOfWeekIndex;
+    return [
+      for (int i = 0; i < 7; i++) narrow[(start + i) % 7],
+    ];
+  }
+
+  List<_SentHubCalendarCell> _buildDailyCells(MaterialLocalizations localizations) {
     final year = _displayMonth.year;
     final month = _displayMonth.month;
     final daysInMonth = DateTime(year, month + 1, 0).day;
     final firstDayOffset = DateUtils.firstDayOffset(year, month, localizations);
-    final rowCount = ((firstDayOffset + daysInMonth + 6) ~/ 7);
-    return (rowCount + 1) * 48.0;
+    final total = ((firstDayOffset + daysInMonth + 6) ~/ 7) * 7;
+    return [
+      for (int index = 0; index < total; index++)
+        if (index < firstDayOffset || index >= firstDayOffset + daysInMonth)
+          const _SentHubCalendarCell.empty()
+        else
+          _SentHubCalendarCell.day(
+            day: index - firstDayOffset + 1,
+            active: _activeDays.contains(index - firstDayOffset + 1),
+          ),
+    ];
   }
 
   @override
@@ -302,28 +318,7 @@ class _WerkaArchiveSentHubScreenState extends State<WerkaArchiveSentHubScreen> {
             open: _dailyOpen,
             topGap: 0,
             onToggle: () => _toggleSection(WerkaArchivePeriod.daily),
-            child: SizedBox(
-              height: _dailyCalendarHeight(context),
-              child: ClipRect(
-                child: CalendarDatePicker(
-                  initialDate: _selectedDate,
-                  firstDate: DateTime(DateTime.now().year - 5),
-                  lastDate: DateTime(DateTime.now().year + 1, 12, 31),
-                  currentDate: DateTime.now(),
-                  onDisplayedMonthChanged: (value) async {
-                    final nextMonth = DateTime(value.year, value.month, 1);
-                    if (nextMonth == _displayMonth) return;
-                    setState(() => _displayMonth = nextMonth);
-                    await _loadDaily();
-                  },
-                  onDateChanged: (value) {
-                    final date = DateUtils.dateOnly(value);
-                    setState(() => _selectedDate = date);
-                    _openList(period: WerkaArchivePeriod.daily, from: date, to: date);
-                  },
-                ),
-              ),
-            ),
+            child: _buildDailyPanel(context),
           ),
           const SizedBox(height: 14),
           _SentArchiveExpandableCard(
@@ -456,6 +451,175 @@ class _WerkaArchiveSentHubScreenState extends State<WerkaArchiveSentHubScreen> {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildDailyPanel(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final localizations = MaterialLocalizations.of(context);
+    final cells = _buildDailyCells(localizations);
+    final weekdayLabels = _weekdayLabels(localizations);
+    final rowCount = (cells.length / 7).ceil();
+    const gridSpacing = 8.0;
+    const cellHeight = 48.0;
+    final gridHeight = rowCount * cellHeight + (rowCount - 1) * gridSpacing;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            IconButton(
+              onPressed: () async {
+                setState(() {
+                  _displayMonth = DateTime(
+                    _displayMonth.year,
+                    _displayMonth.month - 1,
+                    1,
+                  );
+                });
+                await _loadDaily();
+              },
+              icon: const Icon(Icons.chevron_left_rounded),
+            ),
+            Expanded(
+              child: Text(
+                localizations.formatMonthYear(_displayMonth),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleLarge,
+              ),
+            ),
+            IconButton(
+              onPressed: () async {
+                setState(() {
+                  _displayMonth = DateTime(
+                    _displayMonth.year,
+                    _displayMonth.month + 1,
+                    1,
+                  );
+                });
+                await _loadDaily();
+              },
+              icon: const Icon(Icons.chevron_right_rounded),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            for (final label in weekdayLabels)
+              Expanded(
+                child: Center(
+                  child: Text(
+                    label,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: gridHeight,
+          child: GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: cells.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 7,
+              mainAxisSpacing: gridSpacing,
+              crossAxisSpacing: gridSpacing,
+              childAspectRatio: 1,
+            ),
+            itemBuilder: (context, index) {
+              final cell = cells[index];
+              if (!cell.hasDay) {
+                return const SizedBox.shrink();
+              }
+              return _SentHubDayCell(
+                day: cell.day!,
+                active: cell.active,
+                onTap: () {
+                  final date = DateTime(
+                    _displayMonth.year,
+                    _displayMonth.month,
+                    cell.day!,
+                  );
+                  setState(() => _selectedDate = date);
+                  _openList(
+                    period: WerkaArchivePeriod.daily,
+                    from: date,
+                    to: date,
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SentHubCalendarCell {
+  const _SentHubCalendarCell.empty()
+      : hasDay = false,
+        day = null,
+        active = false;
+
+  const _SentHubCalendarCell.day({
+    required this.day,
+    required this.active,
+  }) : hasDay = true;
+
+  final bool hasDay;
+  final int? day;
+  final bool active;
+}
+
+class _SentHubDayCell extends StatelessWidget {
+  const _SentHubDayCell({
+    required this.day,
+    required this.active,
+    required this.onTap,
+  });
+
+  final int day;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    return Material(
+      color: active
+          ? scheme.primaryContainer
+          : scheme.surfaceContainerHighest.withValues(alpha: 0.45),
+      borderRadius: BorderRadius.circular(18),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            border: active
+                ? Border.all(color: scheme.primary, width: 1.2)
+                : null,
+          ),
+          child: Text(
+            '$day',
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: active
+                  ? scheme.onPrimaryContainer
+                  : scheme.onSurfaceVariant,
+              fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
