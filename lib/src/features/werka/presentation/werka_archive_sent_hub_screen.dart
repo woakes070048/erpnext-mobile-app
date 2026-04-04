@@ -291,22 +291,25 @@ class _WerkaArchiveSentHubScreenState extends State<WerkaArchiveSentHubScreen> {
             actionLabel: l10n.archiveSelectDateAction,
             open: _dailyOpen,
             onToggle: () => _toggleSection(WerkaArchivePeriod.daily),
-            child: CalendarDatePicker(
-              initialDate: _selectedDate,
-              firstDate: DateTime(DateTime.now().year - 5),
-              lastDate: DateTime(DateTime.now().year + 1, 12, 31),
-              currentDate: DateTime.now(),
-              onDisplayedMonthChanged: (value) async {
-                final nextMonth = DateTime(value.year, value.month, 1);
-                if (nextMonth == _displayMonth) return;
-                setState(() => _displayMonth = nextMonth);
-                await _loadDaily();
-              },
-              onDateChanged: (value) {
-                final date = DateUtils.dateOnly(value);
-                setState(() => _selectedDate = date);
-                _openList(period: WerkaArchivePeriod.daily, from: date, to: date);
-              },
+            child: Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: CalendarDatePicker(
+                initialDate: _selectedDate,
+                firstDate: DateTime(DateTime.now().year - 5),
+                lastDate: DateTime(DateTime.now().year + 1, 12, 31),
+                currentDate: DateTime.now(),
+                onDisplayedMonthChanged: (value) async {
+                  final nextMonth = DateTime(value.year, value.month, 1);
+                  if (nextMonth == _displayMonth) return;
+                  setState(() => _displayMonth = nextMonth);
+                  await _loadDaily();
+                },
+                onDateChanged: (value) {
+                  final date = DateUtils.dateOnly(value);
+                  setState(() => _selectedDate = date);
+                  _openList(period: WerkaArchivePeriod.daily, from: date, to: date);
+                },
+              ),
             ),
           ),
           const SizedBox(height: 14),
