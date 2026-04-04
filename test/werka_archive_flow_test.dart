@@ -1,6 +1,7 @@
 import 'package:erpnext_stock_mobile/src/app/app_router.dart';
 import 'package:erpnext_stock_mobile/src/core/localization/app_localizations.dart';
 import 'package:erpnext_stock_mobile/src/features/shared/models/app_models.dart';
+import 'package:erpnext_stock_mobile/src/features/werka/presentation/werka_archive_daily_calendar_screen.dart';
 import 'package:erpnext_stock_mobile/src/features/werka/presentation/werka_archive_screen.dart';
 import 'package:erpnext_stock_mobile/src/features/werka/presentation/werka_archive_list_screen.dart';
 import 'package:erpnext_stock_mobile/src/features/werka/presentation/werka_archive_period_screen.dart';
@@ -79,5 +80,22 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.byType(WerkaArchiveListScreen), findsOneWidget);
+  });
+
+  testWidgets('period screen opens daily calendar without exception',
+      (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        const WerkaArchivePeriodScreen(kind: WerkaArchiveKind.sent),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Kunlik'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 150));
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(WerkaArchiveDailyCalendarScreen), findsOneWidget);
   });
 }

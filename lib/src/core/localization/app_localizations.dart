@@ -223,6 +223,16 @@ class AppLocalizations {
       );
   String get archiveDateTitle => _t('Sana', 'Date', 'Дата');
   String get archiveMonthTitle => _t('Oy', 'Month', 'Месяц');
+  String get archiveCalendarHint => _t(
+        'Maʼlumot bor kunlar belgilangan.',
+        'Days with data are highlighted.',
+        'Дни с данными выделены.',
+      );
+  String get archiveCalendarEmptyMonth => _t(
+        'Bu oyda yozuv topilmadi.',
+        'No records found in this month.',
+        'За этот месяц записей не найдено.',
+      );
   String get archiveStartDateLabel => _t(
         'Boshlanish sana',
         'Start date',

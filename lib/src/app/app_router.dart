@@ -35,6 +35,7 @@ import '../features/supplier/presentation/supplier_recent_screen.dart';
 import '../features/supplier/presentation/supplier_success_screen.dart';
 import '../features/werka/presentation/werka_detail_screen.dart';
 import '../features/werka/presentation/werka_archive_screen.dart';
+import '../features/werka/presentation/werka_archive_daily_calendar_screen.dart';
 import '../features/werka/presentation/werka_archive_period_screen.dart';
 import '../features/werka/presentation/werka_archive_list_screen.dart';
 import '../features/werka/presentation/werka_home_screen.dart';
@@ -74,6 +75,7 @@ class AppRoutes {
   static const String werkaUnannouncedSupplier = '/werka-unannounced-supplier';
   static const String werkaNotifications = '/werka-notifications';
   static const String werkaArchive = '/werka-archive';
+  static const String werkaArchiveDailyCalendar = '/werka-archive-daily-calendar';
   static const String werkaArchivePeriods = '/werka-archive-periods';
   static const String werkaArchiveList = '/werka-archive-list';
   static const String werkaStatusBreakdown = '/werka-status-breakdown';
@@ -240,6 +242,14 @@ class AppRouter {
         return _buildRoute(settings, const WerkaNotificationsScreen());
       case AppRoutes.werkaArchive:
         return _buildRoute(settings, const WerkaArchiveScreen());
+      case AppRoutes.werkaArchiveDailyCalendar:
+        final WerkaArchiveKind kind = settings.arguments is WerkaArchiveKind
+            ? settings.arguments as WerkaArchiveKind
+            : WerkaArchiveKind.sent;
+        return _buildRoute(
+          settings,
+          WerkaArchiveDailyCalendarScreen(kind: kind),
+        );
       case AppRoutes.werkaArchivePeriods:
         final WerkaArchiveKind kind = settings.arguments is WerkaArchiveKind
             ? settings.arguments as WerkaArchiveKind
