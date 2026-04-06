@@ -120,7 +120,7 @@ class _WerkaStatusDetailScreenState extends State<WerkaStatusDetailScreen> {
                             color: scheme.surfaceContainerLow,
                             clipBehavior: Clip.antiAlias,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(28),
+                              borderRadius: BorderRadius.circular(16),
                             ),
                             child: Column(
                               children: [

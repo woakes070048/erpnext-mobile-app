@@ -156,7 +156,7 @@ class _WerkaUnannouncedSupplierScreenState
         return Dialog(
           insetPadding: const EdgeInsets.symmetric(horizontal: 28),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Padding(
             padding: const EdgeInsets.all(22),
@@ -256,7 +256,7 @@ class _WerkaUnannouncedSupplierScreenState
               margin: EdgeInsets.zero,
               color: scheme.surfaceContainerLow,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(28),
+                borderRadius: BorderRadius.circular(16),
                 side: BorderSide(
                   color: scheme.outlineVariant.withValues(alpha: 0.7),
                 ),

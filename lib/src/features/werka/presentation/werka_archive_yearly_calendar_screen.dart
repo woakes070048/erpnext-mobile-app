@@ -175,7 +175,7 @@ class _WerkaArchiveYearlyCalendarScreenState
             margin: EdgeInsets.zero,
             color: scheme.surfaceContainerLow,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Padding(
               padding: const EdgeInsets.all(18),

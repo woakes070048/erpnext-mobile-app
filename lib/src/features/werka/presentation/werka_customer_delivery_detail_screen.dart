@@ -86,7 +86,7 @@ class WerkaCustomerDeliveryDetailScreen extends StatelessWidget {
                     color: scheme.surfaceContainerLow,
                     clipBehavior: Clip.antiAlias,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(18),
@@ -160,7 +160,7 @@ class WerkaCustomerDeliveryDetailScreen extends StatelessWidget {
                     margin: EdgeInsets.zero,
                     color: scheme.surfaceContainerLow,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(18),

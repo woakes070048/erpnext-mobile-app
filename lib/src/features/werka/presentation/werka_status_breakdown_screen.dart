@@ -130,7 +130,7 @@ class _WerkaStatusBreakdownScreenState
                             color: scheme.surfaceContainerLow,
                             clipBehavior: Clip.antiAlias,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(28),
+                              borderRadius: BorderRadius.circular(16),
                             ),
                             child: Column(
                               children: [
@@ -220,7 +220,7 @@ class _WerkaBreakdownRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final radius = BorderRadius.circular(28);
+    final radius = BorderRadius.circular(16);
     return Material(
       color: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: radius),

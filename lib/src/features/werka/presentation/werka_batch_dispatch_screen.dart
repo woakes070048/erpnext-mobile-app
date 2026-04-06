@@ -478,7 +478,7 @@ class _WerkaBatchDispatchScreenState extends State<WerkaBatchDispatchScreen> {
               margin: EdgeInsets.zero,
               color: scheme.surfaceContainerLow,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(28),
+                borderRadius: BorderRadius.circular(16),
                 side: BorderSide(
                   color: scheme.outlineVariant.withValues(alpha: 0.7),
                 ),
@@ -876,7 +876,7 @@ class _WerkaBatchDispatchReviewScreenState
                       margin: EdgeInsets.zero,
                       color: scheme.surfaceContainerLow,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
+                        borderRadius: BorderRadius.circular(16),
                         side: BorderSide(
                           color: scheme.outlineVariant.withValues(alpha: 0.7),
                         ),
@@ -1114,7 +1114,7 @@ class _WerkaBatchSuccessScreen extends StatelessWidget {
             margin: EdgeInsets.zero,
             color: scheme.surfaceContainerLow,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(16),
               side: BorderSide(
                 color: scheme.outlineVariant.withValues(alpha: 0.7),
               ),

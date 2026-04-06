@@ -68,7 +68,7 @@ class _ArchiveModuleCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       color: scheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,

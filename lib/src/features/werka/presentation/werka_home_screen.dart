@@ -179,7 +179,7 @@ class _WerkaSummaryCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         color: scheme.surfaceContainerLow,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           children: [
@@ -360,7 +360,7 @@ class _WerkaPendingSection extends StatelessWidget {
         color: scheme.surfaceContainerLow,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),

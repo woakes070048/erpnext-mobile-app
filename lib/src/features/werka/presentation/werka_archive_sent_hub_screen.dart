@@ -502,7 +502,7 @@ class _SentArchiveExpandableCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       color: scheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),

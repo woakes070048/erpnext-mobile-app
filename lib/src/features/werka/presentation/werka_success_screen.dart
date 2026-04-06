@@ -64,7 +64,7 @@ class WerkaSuccessScreen extends StatelessWidget {
             margin: EdgeInsets.zero,
             color: scheme.surfaceContainerLow,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(16),
               side: BorderSide(
                 color: scheme.outlineVariant.withValues(alpha: 0.7),
               ),
