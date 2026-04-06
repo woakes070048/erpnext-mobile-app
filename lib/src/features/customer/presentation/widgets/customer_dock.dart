@@ -1,5 +1,4 @@
 import '../../../../app/app_router.dart';
-import '../../../../core/native_back_button_bridge.dart';
 import '../../../../core/notifications/notification_unread_store.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/widgets/common_widgets.dart';
@@ -28,9 +27,6 @@ class CustomerDock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final navigator = NativeBackButtonBridge.instance.navigatorKey.currentState;
-    final navigatorContext =
-        NativeBackButtonBridge.instance.navigatorKey.currentContext;
     return AnimatedBuilder(
       animation: NotificationUnreadStore.instance,
       builder: (context, _) {
@@ -61,7 +57,7 @@ class CustomerDock extends StatelessWidget {
                 if (onTabSelected != null) {
                   onTabSelected!(CustomerDockTab.home);
                 } else {
-                  navigator?.pushNamedAndRemoveUntil(
+                  Navigator.of(context).pushNamedAndRemoveUntil(
                     AppRoutes.customerHome,
                     (route) => false,
                   );
@@ -88,7 +84,7 @@ class CustomerDock extends StatelessWidget {
               if (onTabSelected != null) {
                 onTabSelected!(CustomerDockTab.notifications);
               } else {
-                navigator?.pushNamedAndRemoveUntil(
+                Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoutes.customerNotifications,
                   (route) => false,
                 );
@@ -107,15 +103,13 @@ class CustomerDock extends StatelessWidget {
               active: activeTab == CustomerDockTab.profile,
               compact: compact,
               onHoldComplete: activeTab == CustomerDockTab.profile
-                  ? navigatorContext == null
-                      ? null
-                      : () => showLogoutPrompt(navigatorContext)
+                  ? () => showLogoutPrompt(context)
                   : null,
               onTap: () {
                 if (activeTab == CustomerDockTab.profile) {
                   return;
                 }
-                navigator?.pushNamedAndRemoveUntil(
+                Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoutes.profile,
                   (route) => false,
                 );

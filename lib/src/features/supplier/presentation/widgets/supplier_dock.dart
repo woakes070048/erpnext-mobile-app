@@ -1,5 +1,4 @@
 import '../../../../app/app_router.dart';
-import '../../../../core/native_back_button_bridge.dart';
 import '../../../../core/notifications/notification_unread_store.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/widgets/common_widgets.dart';
@@ -29,9 +28,6 @@ class SupplierDock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final navigator = NativeBackButtonBridge.instance.navigatorKey.currentState;
-    final navigatorContext =
-        NativeBackButtonBridge.instance.navigatorKey.currentContext;
     return AnimatedBuilder(
       animation: NotificationUnreadStore.instance,
       builder: (context, _) {
@@ -57,7 +53,7 @@ class SupplierDock extends StatelessWidget {
                 if (activeTab == SupplierDockTab.home && !centerActive) {
                   return;
                 }
-                navigator?.pushNamedAndRemoveUntil(
+                Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoutes.supplierHome,
                   (route) => false,
                 );
@@ -78,7 +74,7 @@ class SupplierDock extends StatelessWidget {
                 if (activeTab == SupplierDockTab.notifications) {
                   return;
                 }
-                navigator?.pushNamedAndRemoveUntil(
+                Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoutes.supplierNotifications,
                   (route) => false,
                 );
@@ -94,13 +90,13 @@ class SupplierDock extends StatelessWidget {
             selectedIcon: Icons.add_rounded,
             primary: true,
             compact: compact,
-              onTap: () {
-                if (centerActive) {
-                  return;
-                }
-                navigator?.pushNamed(AppRoutes.supplierItemPicker);
-              },
-            ),
+            onTap: () {
+              if (centerActive) {
+                return;
+              }
+              Navigator.of(context).pushNamed(AppRoutes.supplierItemPicker);
+            },
+          ),
           trailing: [
             DockButton(
               nativeId: 'supplier_recent',
@@ -116,7 +112,7 @@ class SupplierDock extends StatelessWidget {
                 if (activeTab == SupplierDockTab.recent) {
                   return;
                 }
-                navigator?.pushNamedAndRemoveUntil(
+                Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoutes.supplierRecent,
                   (route) => false,
                 );
@@ -130,21 +126,19 @@ class SupplierDock extends StatelessWidget {
               nativeReplaceStack: true,
               icon: Icons.account_circle_outlined,
               selectedIcon: Icons.account_circle_rounded,
-                active: activeTab == SupplierDockTab.profile,
-                compact: compact,
-                onHoldComplete: activeTab == SupplierDockTab.profile
-                    ? navigatorContext == null
-                        ? null
-                        : () => showLogoutPrompt(navigatorContext)
-                    : null,
-                onTap: () {
-                  if (activeTab == SupplierDockTab.profile) {
-                    return;
-                  }
-                  navigator?.pushNamedAndRemoveUntil(
-                    AppRoutes.profile,
-                    (route) => false,
-                  );
+              active: activeTab == SupplierDockTab.profile,
+              compact: compact,
+              onHoldComplete: activeTab == SupplierDockTab.profile
+                  ? () => showLogoutPrompt(context)
+                  : null,
+              onTap: () {
+                if (activeTab == SupplierDockTab.profile) {
+                  return;
+                }
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  AppRoutes.profile,
+                  (route) => false,
+                );
               },
             ),
           ],

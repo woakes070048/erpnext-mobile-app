@@ -1,5 +1,4 @@
 import '../../../../app/app_router.dart';
-import '../../../../core/native_back_button_bridge.dart';
 import '../../../../core/notifications/notification_unread_store.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/widgets/common_widgets.dart';
@@ -27,9 +26,6 @@ class WerkaDock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final navigator = NativeBackButtonBridge.instance.navigatorKey.currentState;
-    final navigatorContext =
-        NativeBackButtonBridge.instance.navigatorKey.currentContext;
     return AnimatedBuilder(
       animation: NotificationUnreadStore.instance,
       builder: (context, _) {
@@ -55,7 +51,7 @@ class WerkaDock extends StatelessWidget {
                   if (activeTab == WerkaDockTab.home) {
                     return;
                   }
-                  navigator?.pushNamedAndRemoveUntil(
+                  Navigator.of(context).pushNamedAndRemoveUntil(
                     AppRoutes.werkaHome,
                     (route) => false,
                   );
@@ -76,7 +72,7 @@ class WerkaDock extends StatelessWidget {
                   if (activeTab == WerkaDockTab.notifications) {
                     return;
                   }
-                  navigator?.pushNamedAndRemoveUntil(
+                  Navigator.of(context).pushNamedAndRemoveUntil(
                     AppRoutes.werkaNotifications,
                     (route) => false,
                   );
@@ -93,9 +89,9 @@ class WerkaDock extends StatelessWidget {
               primary: true,
               compact: compact,
               onTap: () {
-                navigator?.pushNamed(AppRoutes.werkaCreateHub);
+                Navigator.of(context).pushNamed(AppRoutes.werkaCreateHub);
               },
-            ),
+          ),
           trailing: [
               DockButton(
                 nativeId: 'werka_archive',
@@ -111,7 +107,7 @@ class WerkaDock extends StatelessWidget {
                   if (activeTab == WerkaDockTab.archive) {
                     return;
                   }
-                  navigator?.pushNamedAndRemoveUntil(
+                  Navigator.of(context).pushNamedAndRemoveUntil(
                     AppRoutes.werkaArchive,
                     (route) => false,
                   );
@@ -128,15 +124,13 @@ class WerkaDock extends StatelessWidget {
                 active: activeTab == WerkaDockTab.profile,
                 compact: compact,
                 onHoldComplete: activeTab == WerkaDockTab.profile
-                    ? navigatorContext == null
-                        ? null
-                        : () => showLogoutPrompt(navigatorContext)
+                    ? () => showLogoutPrompt(context)
                     : null,
                 onTap: () {
                   if (activeTab == WerkaDockTab.profile) {
                     return;
                   }
-                  navigator?.pushNamedAndRemoveUntil(
+                  Navigator.of(context).pushNamedAndRemoveUntil(
                     AppRoutes.profile,
                     (route) => false,
                   );
