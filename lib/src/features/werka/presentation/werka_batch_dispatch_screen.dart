@@ -15,6 +15,9 @@ import '../../shared/models/app_models.dart';
 import 'dart:math';
 import 'widgets/m3_picker_sheet.dart';
 import 'widgets/werka_dock.dart';
+import 'package:full_screen_back_gesture/cupertino.dart'
+    as fullscreen_cupertino;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 int _compareSupplierItemsByName(SupplierItem left, SupplierItem right) {
@@ -454,13 +457,25 @@ class _WerkaBatchDispatchScreenState extends State<WerkaBatchDispatchScreen> {
 
     final updated =
         await Navigator.of(context).push<List<_WerkaBatchDraftLine>>(
-      MaterialPageRoute<List<_WerkaBatchDraftLine>>(
-        builder: (context) => _WerkaBatchDispatchReviewScreen(
-          initialLines: lines,
-          previewMode: _previewMode,
-        ),
-        settings: const RouteSettings(name: 'werka-batch-dispatch-review'),
-      ),
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS
+          ? fullscreen_cupertino.CupertinoPageRoute<List<_WerkaBatchDraftLine>>(
+              builder: (context) => _WerkaBatchDispatchReviewScreen(
+                initialLines: lines,
+                previewMode: _previewMode,
+              ),
+              settings: const RouteSettings(
+                name: 'werka-batch-dispatch-review',
+              ),
+            )
+          : MaterialPageRoute<List<_WerkaBatchDraftLine>>(
+              builder: (context) => _WerkaBatchDispatchReviewScreen(
+                initialLines: lines,
+                previewMode: _previewMode,
+              ),
+              settings: const RouteSettings(
+                name: 'werka-batch-dispatch-review',
+              ),
+            ),
     );
     if (updated == null || !mounted) {
       return;
