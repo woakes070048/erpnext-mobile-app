@@ -99,8 +99,8 @@ class WerkaDock extends StatelessWidget {
               nativeSelectedSymbol: 'checklist.checked',
               nativeRouteName: AppRoutes.werkaArchive,
               nativeReplaceStack: true,
-              icon: Icons.data_array_outlined,
-              selectedIcon: Icons.data_array_rounded,
+              iconWidget: const _WerkaDataCheckDockGlyph(),
+              selectedIconWidget: const _WerkaDataCheckDockGlyph(active: true),
               active: activeTab == WerkaDockTab.archive,
               compact: compact,
               onTap: () {
@@ -139,6 +139,109 @@ class WerkaDock extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class _WerkaDataCheckDockGlyph extends StatelessWidget {
+  const _WerkaDataCheckDockGlyph({
+    this.active = false,
+  });
+
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    final iconTheme = IconTheme.of(context);
+    final color = iconTheme.color ?? Theme.of(context).colorScheme.onSurface;
+    final size = iconTheme.size ?? 24;
+    final bubbleColor = active
+        ? color
+        : color.withValues(alpha: 0.92);
+    final bubbleForeground = active
+        ? Theme.of(context).colorScheme.onSecondaryContainer
+        : Theme.of(context).colorScheme.surface;
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: size * 0.12,
+            right: size * 0.34,
+            top: size * 0.18,
+            child: _DockLine(
+              color: color,
+              height: size * 0.10,
+              radius: size * 0.04,
+            ),
+          ),
+          Positioned(
+            left: size * 0.12,
+            right: size * 0.20,
+            top: size * 0.44,
+            child: _DockLine(
+              color: color,
+              height: size * 0.10,
+              radius: size * 0.04,
+            ),
+          ),
+          Positioned(
+            left: size * 0.12,
+            right: size * 0.28,
+            top: size * 0.70,
+            child: _DockLine(
+              color: color,
+              height: size * 0.10,
+              radius: size * 0.04,
+            ),
+          ),
+          Positioned(
+            right: size * 0.02,
+            top: size * 0.02,
+            child: Container(
+              width: size * 0.42,
+              height: size * 0.42,
+              decoration: BoxDecoration(
+                color: bubbleColor,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.check_rounded,
+                  size: size * 0.28,
+                  color: bubbleForeground,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DockLine extends StatelessWidget {
+  const _DockLine({
+    required this.color,
+    required this.height,
+    required this.radius,
+  });
+
+  final Color color;
+  final double height;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(radius),
+      ),
     );
   }
 }
