@@ -34,6 +34,7 @@ class SharedHeaderTitle extends StatelessWidget {
         }
         return _SharedHeaderFlight(
           animation: animation,
+          direction: flightDirection,
           from: fromHero,
           to: toHero,
         );
@@ -67,11 +68,13 @@ class _SharedHeaderManifest extends StatelessWidget {
 class _SharedHeaderFlight extends StatelessWidget {
   const _SharedHeaderFlight({
     required this.animation,
+    required this.direction,
     required this.from,
     required this.to,
   });
 
   final Animation<double> animation;
+  final HeroFlightDirection direction;
   final _SharedHeaderManifest from;
   final _SharedHeaderManifest to;
 
@@ -83,6 +86,9 @@ class _SharedHeaderFlight extends StatelessWidget {
         final t = Curves.easeInOutCubicEmphasized.transform(
           animation.value.clamp(0.0, 1.0),
         );
+        final leavingShift = direction == HeroFlightDirection.push ? -14.0 : 14.0;
+        final enteringStartShift =
+            direction == HeroFlightDirection.push ? 14.0 : -14.0;
 
         return Material(
           color: Colors.transparent,
@@ -90,15 +96,15 @@ class _SharedHeaderFlight extends StatelessWidget {
             children: [
               _AnimatedFlightTitle(
                 title: from.title,
-                shiftX: _lerpDouble(0, -18, t),
+                shiftX: _lerpDouble(0, leavingShift, t),
                 opacity: _lerpDouble(1, 0, Curves.easeOut.transform(t)),
-                blurSigma: _lerpDouble(0, 8, Curves.easeOut.transform(t)),
+                blurSigma: _lerpDouble(0, 6, Curves.easeOut.transform(t)),
               ),
               _AnimatedFlightTitle(
                 title: to.title,
-                shiftX: _lerpDouble(18, 0, t),
+                shiftX: _lerpDouble(enteringStartShift, 0, t),
                 opacity: _lerpDouble(0, 1, Curves.easeIn.transform(t)),
-                blurSigma: _lerpDouble(8, 0, Curves.easeOut.transform(t)),
+                blurSigma: _lerpDouble(6, 0, Curves.easeOut.transform(t)),
               ),
             ],
           ),
