@@ -151,7 +151,7 @@ class _WerkaDockSvgIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final iconTheme = IconTheme.of(context);
     final color = iconTheme.color ?? Theme.of(context).colorScheme.onSurface;
-    final size = iconTheme.size ?? 24;
+    final size = (iconTheme.size ?? 24) + 5;
     return SvgPicture.asset(
       'assets/icons/data-check.svg',
       width: size,
