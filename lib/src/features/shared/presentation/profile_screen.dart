@@ -45,11 +45,25 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   SessionProfile get profile => AppSession.instance.profile!;
 
+  String _normalizeWerkaLabel(String value, UserRole role) {
+    final trimmed = value.trim();
+    if (role == UserRole.werka && trimmed.toLowerCase() == 'werka') {
+      return 'Wmanager';
+    }
+    return value;
+  }
+
+  String _normalizedDisplayName(SessionProfile profile) =>
+      _normalizeWerkaLabel(profile.displayName, profile.role);
+
+  String _normalizedLegalName(SessionProfile profile) =>
+      _normalizeWerkaLabel(profile.legalName, profile.role);
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    nicknameController.text = profile.displayName;
+    nicknameController.text = _normalizedDisplayName(profile);
     _loadCachedAvatar();
   }
 
@@ -70,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       return;
     }
     setState(() {
-      nicknameController.text = updated.displayName;
+      nicknameController.text = _normalizedDisplayName(updated);
       cachedAvatar = file;
       errorMessage = null;
     });
@@ -84,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     });
     try {
       final updated = await MobileApi.instance.updateNickname(nickname);
-      nicknameController.text = updated.displayName;
+      nicknameController.text = _normalizedDisplayName(updated);
       if (!mounted) {
         return;
       }
@@ -186,7 +200,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   bool get _hasNicknameChanges =>
-      nicknameController.text.trim() != profile.displayName.trim();
+      nicknameController.text.trim() != _normalizedDisplayName(profile).trim();
 
   bool get _hasProfileChanges =>
       _hasNicknameChanges || pendingAvatarBytes != null;
@@ -335,6 +349,10 @@ class _ProfileScreenState extends State<ProfileScreen>
         final bool biometricEnabled =
             SecurityController.instance.biometricEnabledForCurrentUser;
         final bool savingProfileChanges = savingNickname || savingAvatar;
+        final displayName = _normalizedDisplayName(current);
+        final legalName = _normalizedLegalName(current);
+        final effectiveLegalName =
+            (legalName.isEmpty ? displayName : legalName).trim();
 
         return AppShell(
           title: l10n.profileTitle,
@@ -368,7 +386,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             Stack(
                               children: [
                                 _AvatarPreview(
-                                  displayName: current.displayName,
+                                  displayName: displayName,
                                   cachedAvatar: cachedAvatar,
                                   pendingAvatarBytes: pendingAvatarBytes,
                                 ),
@@ -410,7 +428,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    current.displayName,
+                                    displayName,
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineSmall
@@ -450,11 +468,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       ],
                                     ),
                                   ],
-                                  if ((current.legalName.isEmpty
-                                          ? current.displayName
-                                          : current.legalName)
-                                      .trim()
-                                      .isNotEmpty) ...[
+                                  if (effectiveLegalName.isNotEmpty) ...[
                                     const SizedBox(height: 8),
                                     Row(
                                       children: [
@@ -468,9 +482,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         const SizedBox(width: 8),
                                         Expanded(
                                           child: Text(
-                                            current.legalName.isEmpty
-                                                ? current.displayName
-                                                : current.legalName,
+                                            effectiveLegalName,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium
