@@ -83,8 +83,11 @@ class _SharedHeaderFlight extends StatelessWidget {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, _) {
+        final progress = direction == HeroFlightDirection.pop
+            ? 1 - animation.value
+            : animation.value;
         final t = Curves.easeInOutCubicEmphasized.transform(
-          animation.value.clamp(0.0, 1.0),
+          progress.clamp(0.0, 1.0),
         );
         final leavingShift = direction == HeroFlightDirection.push ? -14.0 : 14.0;
         final enteringStartShift =
