@@ -1,6 +1,7 @@
 import '../../../app/app_router.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/widgets/app_shell.dart';
+import '../../../core/widgets/motion_widgets.dart';
 import '../../shared/models/app_models.dart';
 import 'widgets/werka_dock.dart';
 import 'package:flutter/material.dart';
@@ -130,27 +131,39 @@ class _ArchiveModuleRow extends StatelessWidget {
         bottomRight: Radius.circular(isLast ? 28 : 0),
       ),
     );
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        customBorder: shape,
-        onTap: onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 84),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-            child: Row(
-              children: [
-                Icon(icon, size: 28),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: theme.textTheme.titleLarge,
+    return PressableScale(
+      onTap: onTap,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          customBorder: shape,
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 80),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 24,
+                    child: Center(
+                      child: Icon(icon, size: 22),
+                    ),
                   ),
-                ),
-                const Icon(Icons.chevron_right_rounded),
-              ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: theme.textTheme.titleMedium,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    size: 22,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
