@@ -136,18 +136,22 @@ class _ArchiveModuleRow extends StatelessWidget {
         customBorder: shape,
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: Row(
             children: [
-              Icon(icon, size: 28),
+              Icon(icon, size: 24),
               const SizedBox(width: 14),
               Expanded(
                 child: Text(
                   title,
-                  style: theme.textTheme.titleLarge,
+                  style: theme.textTheme.titleMedium,
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded),
+              const SizedBox(width: 6),
+              const Icon(
+                Icons.chevron_right_rounded,
+                size: 22,
+              ),
             ],
           ),
         ),
