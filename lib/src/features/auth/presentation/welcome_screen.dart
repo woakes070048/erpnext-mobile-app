@@ -246,10 +246,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                             child: FilledButton(
                               onPressed: widget.onGetStarted,
                               style: FilledButton.styleFrom(
-                                minimumSize: const Size(0, 46),
+                                minimumSize: const Size(0, 54),
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 22,
-                                  vertical: 12,
+                                  horizontal: 28,
+                                  vertical: 15,
                                 ),
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 visualDensity: VisualDensity.compact,
