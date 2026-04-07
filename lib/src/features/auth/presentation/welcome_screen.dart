@@ -1112,11 +1112,6 @@ class _WelcomeSelectionRow extends StatelessWidget {
               Flexible(
                 child: value,
               ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.expand_more_rounded,
-                color: scheme.onSurface.withValues(alpha: 0.72),
-              ),
             ],
           ),
         ),
