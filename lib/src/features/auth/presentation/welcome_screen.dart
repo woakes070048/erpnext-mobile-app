@@ -849,18 +849,18 @@ class _AmbientOutlinePainter extends CustomPainter {
         Curves.easeOut.transform(impactEnergy.clamp(0.0, 1.0).toDouble());
     final ovalPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.55
-      ..color = outlineColor.withValues(alpha: 0.18);
+      ..strokeWidth = 2.0
+      ..color = outlineColor.withValues(alpha: 0.28);
     final accentPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.15 + (impact * 0.55)
-      ..color = accentColor.withValues(alpha: 0.22 + (impact * 0.08));
+      ..strokeWidth = 1.45 + (impact * 0.75)
+      ..color = accentColor.withValues(alpha: 0.36 + (impact * 0.12));
     final cookieMaskPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.8 + (impact * 1.8)
+      ..strokeWidth = 5.2 + (impact * 1.9)
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..color = const Color(0xFF000000).withValues(alpha: 0.92);
+      ..color = const Color(0xFF000000).withValues(alpha: 0.96);
 
     final Path ovalPath = _buildOfficialOvalPath(
       center: ovalCenter,
