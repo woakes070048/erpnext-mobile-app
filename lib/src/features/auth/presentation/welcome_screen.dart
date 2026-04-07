@@ -320,39 +320,48 @@ class _CyclingWelcomeHeadlineState extends State<_CyclingWelcomeHeadline> {
   Widget build(BuildContext context) {
     final Locale locale = _headlineLocales[_index];
     final String headline = AppLocalizations(locale).welcomeToAccord;
+    final double fontSize = widget.textStyle.fontSize ?? 46;
+    final double lineHeight = (widget.textStyle.height ?? 1.02) * fontSize;
+    final double headlineHeight = lineHeight * 3.15;
 
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 880),
-      reverseDuration: const Duration(milliseconds: 680),
-      switchInCurve: Curves.easeOutQuart,
-      switchOutCurve: Curves.easeInOutCubic,
-      layoutBuilder: (currentChild, previousChildren) {
-        return Stack(
-          alignment: Alignment.topLeft,
-          children: <Widget>[
-            ...previousChildren,
-            if (currentChild != null) currentChild,
-          ],
-        );
-      },
-      transitionBuilder: (child, animation) {
-        final Animation<double> fade = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutCubic,
-          reverseCurve: Curves.easeInCubic,
-        );
-        return FadeTransition(
-          opacity: fade,
-          child: _SplitBlurTransition(
-            animation: animation,
-            child: child,
-          ),
-        );
-      },
-      child: Text(
-        headline,
-        key: ValueKey<String>(locale.languageCode),
-        style: widget.textStyle,
+    return SizedBox(
+      height: headlineHeight,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 880),
+        reverseDuration: const Duration(milliseconds: 680),
+        switchInCurve: Curves.easeOutQuart,
+        switchOutCurve: Curves.easeInOutCubic,
+        layoutBuilder: (currentChild, previousChildren) {
+          return Stack(
+            alignment: Alignment.topLeft,
+            clipBehavior: Clip.none,
+            children: <Widget>[
+              ...previousChildren,
+              if (currentChild != null) currentChild,
+            ],
+          );
+        },
+        transitionBuilder: (child, animation) {
+          final Animation<double> fade = CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutCubic,
+            reverseCurve: Curves.easeInCubic,
+          );
+          return FadeTransition(
+            opacity: fade,
+            child: _SplitBlurTransition(
+              animation: animation,
+              child: child,
+            ),
+          );
+        },
+        child: Text(
+          headline,
+          key: ValueKey<String>(locale.languageCode),
+          maxLines: 3,
+          softWrap: true,
+          style: widget.textStyle,
+        ),
       ),
     );
   }
@@ -375,46 +384,54 @@ class _SplitBlurTransition extends StatelessWidget {
       builder: (context, childWidget) {
         final double t = Curves.easeOutQuart.transform(animation.value);
         final double travel = 1 - t;
-        final double sigma = 0.01 + (travel * 8);
-        final double lift = travel * 10;
-        final double split = travel * 12;
+        final double sigma = 0.01 + (travel * 5.5);
+        final double lift = travel * 8;
+        final double split = travel * 7;
         final double scale = 0.992 + (0.008 * t);
+        final double ghostOpacity = 0.12 * travel;
 
         return Transform.translate(
           offset: Offset(0, lift),
           child: Transform.scale(
             scale: scale,
             alignment: Alignment.centerLeft,
-            child: ImageFiltered(
-              imageFilter: ui.ImageFilter.blur(
-                sigmaX: sigma,
-                sigmaY: sigma * 0.45,
-              ),
-              child: Stack(
-                alignment: Alignment.topLeft,
-                children: <Widget>[
-                  ClipRect(
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      heightFactor: 0.5,
-                      child: Transform.translate(
-                        offset: Offset(-split, -travel * 2),
-                        child: childWidget,
+            child: Stack(
+              alignment: Alignment.topLeft,
+              children: <Widget>[
+                Opacity(
+                  opacity: ghostOpacity,
+                  child: Transform.translate(
+                    offset: Offset(-split, 0),
+                    child: ImageFiltered(
+                      imageFilter: ui.ImageFilter.blur(
+                        sigmaX: sigma,
+                        sigmaY: sigma * 0.35,
                       ),
+                      child: childWidget,
                     ),
                   ),
-                  ClipRect(
-                    child: Align(
-                      alignment: Alignment.bottomLeft,
-                      heightFactor: 0.5,
-                      child: Transform.translate(
-                        offset: Offset(split, travel * 2),
-                        child: childWidget,
+                ),
+                Opacity(
+                  opacity: ghostOpacity,
+                  child: Transform.translate(
+                    offset: Offset(split, 0),
+                    child: ImageFiltered(
+                      imageFilter: ui.ImageFilter.blur(
+                        sigmaX: sigma,
+                        sigmaY: sigma * 0.35,
                       ),
+                      child: childWidget,
                     ),
                   ),
-                ],
-              ),
+                ),
+                ImageFiltered(
+                  imageFilter: ui.ImageFilter.blur(
+                    sigmaX: sigma * 0.42,
+                    sigmaY: sigma * 0.18,
+                  ),
+                  child: childWidget,
+                ),
+              ],
             ),
           ),
         );
