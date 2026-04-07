@@ -349,6 +349,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       builder: (context) {
         return _SelectionSheet(
           title: l10n.themeTitle,
+          trailing: const _ThemeModeToggleButton(),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1135,10 +1136,12 @@ class _SelectionSheet extends StatelessWidget {
   const _SelectionSheet({
     required this.title,
     required this.child,
+    this.trailing,
   });
 
   final String title;
   final Widget child;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -1175,9 +1178,19 @@ class _SelectionSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 14),
-              Text(
-                title,
-                style: theme.textTheme.titleLarge,
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: theme.textTheme.titleLarge,
+                    ),
+                  ),
+                  if (trailing != null) ...[
+                    const SizedBox(width: 12),
+                    trailing!,
+                  ],
+                ],
               ),
               const SizedBox(height: 16),
               child,
@@ -1185,6 +1198,68 @@ class _SelectionSheet extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ThemeModeToggleButton extends StatelessWidget {
+  const _ThemeModeToggleButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return AnimatedBuilder(
+      animation: ThemeController.instance,
+      builder: (context, _) {
+        final bool isDark = ThemeController.instance.isDark;
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(999),
+            onTap: () => ThemeController.instance.setThemeMode(
+              isDark ? ThemeMode.light : ThemeMode.dark,
+            ),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutCubic,
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: scheme.surfaceContainerHighest,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: scheme.outlineVariant.withValues(alpha: 0.82),
+                ),
+              ),
+              alignment: Alignment.center,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: RotationTransition(
+                      turns: Tween<double>(
+                        begin: 0.08,
+                        end: 0,
+                      ).animate(animation),
+                      child: child,
+                    ),
+                  );
+                },
+                child: Icon(
+                  isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                  key: ValueKey<bool>(isDark),
+                  size: 20,
+                  color: scheme.onSurface,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
