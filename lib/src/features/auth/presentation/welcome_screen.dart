@@ -237,15 +237,15 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                             onTap: () => _pickTheme(context, currentVariant),
                           ),
                         ),
-                        const SizedBox(height: 46),
+                        const SizedBox(height: 58),
                         SmoothAppear(
                           delay: const Duration(milliseconds: 190),
                           offset: const Offset(0, 10),
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: AnimatedSize(
-                              duration: const Duration(milliseconds: 260),
-                              curve: Curves.easeOutCubic,
+                              duration: const Duration(milliseconds: 420),
+                              curve: Curves.easeInOutCubicEmphasized,
                               alignment: Alignment.centerRight,
                               child: FilledButton(
                                 onPressed: widget.onGetStarted,
