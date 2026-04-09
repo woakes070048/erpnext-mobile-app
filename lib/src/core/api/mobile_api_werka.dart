@@ -3,6 +3,47 @@ part of 'mobile_api.dart';
 extension MobileApiWerka on MobileApi {
   String get baseUrl => MobileApi.baseUrl;
 
+  Future<Map<String, dynamic>> werkaAiSearchSuggestion({
+    required List<int> bytes,
+    required String filename,
+  }) async {
+    final streamed = await _sendMultipartAuthorized(
+      () {
+        final request = http.MultipartRequest(
+          'POST',
+          Uri.parse('$baseUrl/v1/mobile/werka/ai-search-suggestion'),
+        );
+        request.headers.addAll(_headers(requireToken()));
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'image',
+            bytes,
+            filename: filename,
+          ),
+        );
+        return request.send();
+      },
+    );
+    final response = await http.Response.fromStream(streamed);
+    Map<String, dynamic>? payload;
+    if (response.body.trim().isNotEmpty) {
+      try {
+        payload = jsonDecode(response.body) as Map<String, dynamic>;
+      } catch (_) {
+        payload = null;
+      }
+    }
+    if (response.statusCode != 200) {
+      throw MobileApiException(
+        code: (payload?['code'] as String? ?? 'werka_ai_search_failed').trim(),
+        message:
+            (payload?['error'] as String? ?? 'Werka AI search failed').trim(),
+        statusCode: response.statusCode,
+      );
+    }
+    return payload ?? <String, dynamic>{};
+  }
+
   Future<List<DispatchRecord>> werkaPending() async {
     final http.Response response = await _sendAuthorized(
       () => http.get(
