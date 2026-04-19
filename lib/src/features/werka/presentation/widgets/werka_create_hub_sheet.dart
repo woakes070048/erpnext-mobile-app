@@ -355,10 +355,12 @@ class _WerkaCreateHubToggleButton extends StatelessWidget {
           child: Center(
             child: Transform.scale(
               scale: buttonScale,
+              alignment: Alignment.center,
               child: Material(
                 color: color,
                 elevation: 8,
                 shadowColor: color.withValues(alpha: 0.28),
+                clipBehavior: Clip.antiAlias,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(radius),
                 ),
@@ -367,13 +369,17 @@ class _WerkaCreateHubToggleButton extends StatelessWidget {
                     borderRadius: BorderRadius.circular(radius),
                   ),
                   onTap: onTap,
-                  child: Center(
-                    child: Transform.rotate(
-                      angle: (-math.pi / 4) * iconProgress,
-                      child: Icon(
-                        Icons.add_rounded,
-                        color: foregroundColor,
-                        size: 28.5,
+                  child: SizedBox.square(
+                    dimension: expandedSize,
+                    child: Center(
+                      child: Transform.rotate(
+                        angle: (-math.pi / 4) * iconProgress,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.add_rounded,
+                          color: foregroundColor,
+                          size: 28.5,
+                        ),
                       ),
                     ),
                   ),
