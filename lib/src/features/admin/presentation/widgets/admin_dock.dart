@@ -1,5 +1,5 @@
 import '../../../../app/app_router.dart';
-import '../../../../core/widgets/common_widgets.dart';
+import '../../../../core/widgets/app_navigation_bar.dart';
 import '../../../../core/widgets/logout_prompt.dart';
 import 'package:flutter/material.dart';
 
@@ -25,109 +25,89 @@ class AdminDock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ActionDock(
-      compact: compact,
-      tightToEdges: tightToEdges,
-      leading: [
-        DockButton(
-          label: 'Uy',
-          nativeId: 'admin_home',
-          nativeSymbol: 'house',
-          nativeSelectedSymbol: 'house.fill',
-          nativeRouteName: AppRoutes.adminHome,
-          nativeReplaceStack: true,
-          icon: Icons.home_outlined,
-          selectedIcon: Icons.home_rounded,
-          active: activeTab == AdminDockTab.home,
-          compact: compact,
-          onTap: () {
+    final int selectedIndex = switch (activeTab) {
+      AdminDockTab.home => 0,
+      AdminDockTab.suppliers => 1,
+      AdminDockTab.settings => 2,
+      AdminDockTab.activity => 3,
+      AdminDockTab.profile => 4,
+    };
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: tightToEdges ? 0 : 8),
+      child: AppNavigationBar(
+        height: compact ? 72 : 76,
+        selectedIndex: selectedIndex,
+        destinations: [
+          AppNavigationDestination(
+            label: 'Uy',
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home_rounded),
+          ),
+          AppNavigationDestination(
+            label: 'Yetkazuvchilar',
+            icon: const Icon(Icons.groups_outlined),
+            selectedIcon: const Icon(Icons.groups_rounded),
+          ),
+          AppNavigationDestination(
+            label: 'Yangi',
+            icon: const Icon(Icons.add_rounded),
+            selectedIcon: const Icon(Icons.add_rounded),
+            isPrimary: true,
+          ),
+          AppNavigationDestination(
+            label: 'Faoliyat',
+            icon: const Icon(Icons.history_outlined),
+            selectedIcon: const Icon(Icons.history_rounded),
+          ),
+          AppNavigationDestination(
+            label: 'Profil',
+            icon: const Icon(Icons.account_circle_outlined),
+            selectedIcon: const Icon(Icons.account_circle_rounded),
+            onLongPress: activeTab == AdminDockTab.profile
+                ? () => showLogoutPrompt(context)
+                : null,
+          ),
+        ],
+        onDestinationSelected: (index) {
+          if (index == 0) {
             if (activeTab == AdminDockTab.home) return;
-            Navigator.of(context)
-                .pushNamedAndRemoveUntil(AppRoutes.adminHome, (route) => false);
-          },
-        ),
-        DockButton(
-          label: 'Yetkazuvchilar',
-          nativeId: 'admin_suppliers',
-          nativeSymbol: 'person.3',
-          nativeSelectedSymbol: 'person.3.fill',
-          nativeRouteName: AppRoutes.adminSuppliers,
-          nativeReplaceStack: true,
-          icon: Icons.groups_outlined,
-          selectedIcon: Icons.groups_rounded,
-          active: activeTab == AdminDockTab.suppliers,
-          compact: compact,
-          onTap: () {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.adminHome,
+              (route) => false,
+            );
+            return;
+          }
+          if (index == 1) {
             if (activeTab == AdminDockTab.suppliers) return;
             Navigator.of(context).pushNamedAndRemoveUntil(
               AppRoutes.adminSuppliers,
               (route) => false,
             );
-          },
-        ),
-      ],
-      center: DockButton(
-        label: 'Yangi',
-        nativeId: 'admin_create',
-        nativeSymbol: 'plus',
-        nativeSelectedSymbol: 'plus',
-        nativeRouteName: AppRoutes.adminCreateHub,
-        nativeReplaceStack: true,
-        icon: Icons.add_rounded,
-        selectedIcon: Icons.add_rounded,
-        primary: true,
-        compact: compact,
-        onTap: () {
-          if (activeTab == AdminDockTab.settings) return;
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            AppRoutes.adminCreateHub,
-            (route) => false,
-          );
-        },
-      ),
-      trailing: [
-        DockButton(
-          label: 'Faoliyat',
-          nativeId: 'admin_activity',
-          nativeSymbol: 'clock',
-          nativeSelectedSymbol: 'clock.fill',
-          nativeRouteName: AppRoutes.adminActivity,
-          nativeReplaceStack: true,
-          icon: Icons.history_outlined,
-          selectedIcon: Icons.history_rounded,
-          active: activeTab == AdminDockTab.activity,
-          compact: compact,
-          onTap: () {
+            return;
+          }
+          if (index == 2) {
+            if (activeTab == AdminDockTab.settings) return;
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.adminCreateHub,
+              (route) => false,
+            );
+            return;
+          }
+          if (index == 3) {
             if (activeTab == AdminDockTab.activity) return;
             Navigator.of(context).pushNamedAndRemoveUntil(
               AppRoutes.adminActivity,
               (route) => false,
             );
-          },
-        ),
-        DockButton(
-          label: 'Profil',
-          nativeId: 'admin_profile',
-          nativeSymbol: 'person.crop.circle',
-          nativeSelectedSymbol: 'person.crop.circle.fill',
-          nativeRouteName: AppRoutes.profile,
-          nativeReplaceStack: true,
-          icon: Icons.account_circle_outlined,
-          selectedIcon: Icons.account_circle_rounded,
-          active: activeTab == AdminDockTab.profile,
-          compact: compact,
-          onHoldComplete: activeTab == AdminDockTab.profile
-              ? () => showLogoutPrompt(context)
-              : null,
-          onTap: () {
-            if (activeTab == AdminDockTab.profile) {
-              return;
-            }
-            Navigator.of(context)
-                .pushNamedAndRemoveUntil(AppRoutes.profile, (route) => false);
-          },
-        ),
-      ],
+            return;
+          }
+          if (activeTab == AdminDockTab.profile) return;
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            AppRoutes.profile,
+            (route) => false,
+          );
+        },
+      ),
     );
   }
 }

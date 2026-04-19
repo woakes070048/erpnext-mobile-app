@@ -1,7 +1,7 @@
 import '../../../../app/app_router.dart';
 import '../../../../core/notifications/notification_unread_store.dart';
 import '../../../../core/session/app_session.dart';
-import '../../../../core/widgets/common_widgets.dart';
+import '../../../../core/widgets/app_navigation_bar.dart';
 import '../../../../core/widgets/logout_prompt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 enum WerkaDockTab {
   home,
   notifications,
+  create,
   archive,
   profile,
 }
@@ -34,115 +35,92 @@ class WerkaDock extends StatelessWidget {
               AppSession.instance.profile,
             ) &&
             activeTab != WerkaDockTab.notifications;
-        return ActionDock(
-          compact: compact,
-          tightToEdges: tightToEdges,
-          leading: [
-            DockButton(
-              label: 'Uy',
-              nativeId: 'werka_home',
-              nativeSymbol: 'house',
-              nativeSelectedSymbol: 'house.fill',
-              nativeRouteName: AppRoutes.werkaHome,
-              nativeReplaceStack: true,
-              icon: Icons.home_outlined,
-              selectedIcon: Icons.home_rounded,
-              active: activeTab == WerkaDockTab.home,
-              compact: compact,
-              onTap: () {
-                if (activeTab == WerkaDockTab.home) {
-                  return;
-                }
+        final bool selectionVisible = activeTab != null;
+        final int selectedIndex = switch (activeTab) {
+          WerkaDockTab.home => 0,
+          WerkaDockTab.notifications => 1,
+          WerkaDockTab.create => 2,
+          WerkaDockTab.archive => 3,
+          WerkaDockTab.profile => 4,
+          null => 0,
+        };
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: tightToEdges ? 0 : 8),
+          child: AppNavigationBar(
+            height: compact ? 72 : 76,
+            selectionVisible: selectionVisible,
+            selectedIndex: selectedIndex,
+            destinations: [
+              AppNavigationDestination(
+                label: 'Uy',
+                icon: const Icon(Icons.home_outlined),
+                selectedIcon: const Icon(Icons.home_rounded),
+              ),
+              AppNavigationDestination(
+                label: 'Bildirish',
+                icon: const Icon(Icons.notifications_outlined),
+                selectedIcon: const Icon(Icons.notifications_rounded),
+                showBadge: showBadge,
+              ),
+              AppNavigationDestination(
+                label: 'Yangi',
+                icon: const Icon(Icons.add_rounded),
+                selectedIcon: const Icon(Icons.add_rounded),
+                isPrimary: true,
+              ),
+              AppNavigationDestination(
+                label: 'Arxiv',
+                icon: const _WerkaDockSvgIcon(),
+                selectedIcon: const _WerkaDockSvgIcon(),
+              ),
+              AppNavigationDestination(
+                label: 'Profil',
+                icon: const Icon(Icons.account_circle_outlined),
+                selectedIcon: const Icon(Icons.account_circle_rounded),
+                onLongPress: activeTab == WerkaDockTab.profile
+                    ? () => showLogoutPrompt(context)
+                    : null,
+              ),
+            ],
+            onDestinationSelected: (index) {
+              if (index == 0) {
+                if (activeTab == WerkaDockTab.home) return;
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoutes.werkaHome,
                   (route) => false,
                 );
-              },
-            ),
-            DockButton(
-              label: 'Bildirish',
-              nativeId: 'werka_notifications',
-              nativeSymbol: 'bell',
-              nativeSelectedSymbol: 'bell.fill',
-              nativeRouteName: AppRoutes.werkaNotifications,
-              nativeReplaceStack: true,
-              icon: Icons.notifications_outlined,
-              selectedIcon: Icons.notifications_rounded,
-              active: activeTab == WerkaDockTab.notifications,
-              compact: compact,
-              showBadge: showBadge,
-              onTap: () {
-                if (activeTab == WerkaDockTab.notifications) {
-                  return;
-                }
+                return;
+              }
+              if (index == 1) {
+                if (activeTab == WerkaDockTab.notifications) return;
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoutes.werkaNotifications,
                   (route) => false,
                 );
-              },
-            ),
-          ],
-          center: DockButton(
-            label: 'Yangi',
-            nativeId: 'werka_create',
-            nativeSymbol: 'plus',
-            nativeSelectedSymbol: 'plus',
-            nativeRouteName: AppRoutes.werkaCreateHub,
-            icon: Icons.add_rounded,
-            selectedIcon: Icons.add_rounded,
-            primary: true,
-            compact: compact,
-            onTap: () {
-              Navigator.of(context).pushNamed(AppRoutes.werkaCreateHub);
-            },
-          ),
-          trailing: [
-            DockButton(
-              label: 'Arxiv',
-              nativeId: 'werka_archive',
-              nativeSymbol: 'checklist',
-              nativeSelectedSymbol: 'checklist.checked',
-              nativeRouteName: AppRoutes.werkaArchive,
-              nativeReplaceStack: true,
-              iconWidget: const _WerkaDockSvgIcon(),
-              selectedIconWidget: const _WerkaDockSvgIcon(),
-              active: activeTab == WerkaDockTab.archive,
-              compact: compact,
-              onTap: () {
-                if (activeTab == WerkaDockTab.archive) {
-                  return;
-                }
+                return;
+              }
+              if (index == 2) {
+                if (activeTab == WerkaDockTab.create) return;
+                Navigator.of(context).pushNamed(
+                  AppRoutes.werkaCreateHub,
+                );
+                return;
+              }
+              if (index == 3) {
+                if (activeTab == WerkaDockTab.archive) return;
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoutes.werkaArchive,
                   (route) => false,
                 );
-              },
-            ),
-            DockButton(
-              label: 'Profil',
-              nativeId: 'werka_profile',
-              nativeSymbol: 'person.crop.circle',
-              nativeSelectedSymbol: 'person.crop.circle.fill',
-              nativeRouteName: AppRoutes.profile,
-              nativeReplaceStack: true,
-              icon: Icons.account_circle_outlined,
-              selectedIcon: Icons.account_circle_rounded,
-              active: activeTab == WerkaDockTab.profile,
-              compact: compact,
-              onHoldComplete: activeTab == WerkaDockTab.profile
-                  ? () => showLogoutPrompt(context)
-                  : null,
-              onTap: () {
-                if (activeTab == WerkaDockTab.profile) {
-                  return;
-                }
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  AppRoutes.profile,
-                  (route) => false,
-                );
-              },
-            ),
-          ],
+                return;
+              }
+              if (activeTab == WerkaDockTab.profile) return;
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRoutes.profile,
+                (route) => false,
+              );
+            },
+          ),
         );
       },
     );

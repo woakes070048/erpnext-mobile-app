@@ -1,7 +1,7 @@
 import '../../../../app/app_router.dart';
 import '../../../../core/notifications/notification_unread_store.dart';
 import '../../../../core/session/app_session.dart';
-import '../../../../core/widgets/common_widgets.dart';
+import '../../../../core/widgets/app_navigation_bar.dart';
 import '../../../../core/widgets/logout_prompt.dart';
 import 'package:flutter/material.dart';
 
@@ -35,22 +35,54 @@ class SupplierDock extends StatelessWidget {
               AppSession.instance.profile,
             ) &&
             activeTab != SupplierDockTab.notifications;
-        return ActionDock(
-          compact: compact,
-          tightToEdges: tightToEdges,
-          leading: [
-            DockButton(
-              label: 'Uy',
-              nativeId: 'supplier_home',
-              nativeSymbol: 'house',
-              nativeSelectedSymbol: 'house.fill',
-              nativeRouteName: AppRoutes.supplierHome,
-              nativeReplaceStack: true,
-              icon: Icons.home_outlined,
-              selectedIcon: Icons.home_rounded,
-              active: activeTab == SupplierDockTab.home,
-              compact: compact,
-              onTap: () {
+        final bool selectionVisible = activeTab != null || centerActive;
+        final int selectedIndex = switch (activeTab) {
+          SupplierDockTab.home => 0,
+          SupplierDockTab.notifications => 1,
+          SupplierDockTab.recent => 3,
+          SupplierDockTab.profile => 4,
+          null => centerActive ? 2 : 0,
+        };
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: tightToEdges ? 0 : 8),
+          child: AppNavigationBar(
+            height: compact ? 72 : 76,
+            selectionVisible: selectionVisible,
+            selectedIndex: selectedIndex,
+            destinations: [
+              AppNavigationDestination(
+                label: 'Uy',
+                icon: const Icon(Icons.home_outlined),
+                selectedIcon: const Icon(Icons.home_rounded),
+              ),
+              AppNavigationDestination(
+                label: 'Bildirish',
+                icon: const Icon(Icons.notifications_outlined),
+                selectedIcon: const Icon(Icons.notifications_rounded),
+                showBadge: showBadge,
+              ),
+              AppNavigationDestination(
+                label: 'Yangi',
+                icon: const Icon(Icons.add_rounded),
+                selectedIcon: const Icon(Icons.add_rounded),
+                isPrimary: true,
+              ),
+              AppNavigationDestination(
+                label: 'Tarix',
+                icon: const Icon(Icons.history_outlined),
+                selectedIcon: const Icon(Icons.history_rounded),
+              ),
+              AppNavigationDestination(
+                label: 'Profil',
+                icon: const Icon(Icons.account_circle_outlined),
+                selectedIcon: const Icon(Icons.account_circle_rounded),
+                onLongPress: activeTab == SupplierDockTab.profile
+                    ? () => showLogoutPrompt(context)
+                    : null,
+              ),
+            ],
+            onDestinationSelected: (index) {
+              if (index == 0) {
                 if (activeTab == SupplierDockTab.home && !centerActive) {
                   return;
                 }
@@ -58,95 +90,36 @@ class SupplierDock extends StatelessWidget {
                   AppRoutes.supplierHome,
                   (route) => false,
                 );
-              },
-            ),
-            DockButton(
-              label: 'Bildirish',
-              nativeId: 'supplier_notifications',
-              nativeSymbol: 'bell',
-              nativeSelectedSymbol: 'bell.fill',
-              nativeRouteName: AppRoutes.supplierNotifications,
-              nativeReplaceStack: true,
-              icon: Icons.notifications_outlined,
-              selectedIcon: Icons.notifications_rounded,
-              active: activeTab == SupplierDockTab.notifications,
-              compact: compact,
-              showBadge: showBadge,
-              onTap: () {
-                if (activeTab == SupplierDockTab.notifications) {
-                  return;
-                }
+                return;
+              }
+              if (index == 1) {
+                if (activeTab == SupplierDockTab.notifications) return;
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoutes.supplierNotifications,
                   (route) => false,
                 );
-              },
-            ),
-          ],
-          center: DockButton(
-            label: 'Yangi',
-            nativeId: 'supplier_create',
-            nativeSymbol: 'plus',
-            nativeSelectedSymbol: 'plus',
-            nativeRouteName: AppRoutes.supplierItemPicker,
-            icon: Icons.add_rounded,
-            selectedIcon: Icons.add_rounded,
-            primary: true,
-            compact: compact,
-            onTap: () {
-              if (centerActive) {
                 return;
               }
-              Navigator.of(context).pushNamed(AppRoutes.supplierItemPicker);
-            },
-          ),
-          trailing: [
-            DockButton(
-              label: 'Tarix',
-              nativeId: 'supplier_recent',
-              nativeSymbol: 'clock',
-              nativeSelectedSymbol: 'clock.fill',
-              nativeRouteName: AppRoutes.supplierRecent,
-              nativeReplaceStack: true,
-              icon: Icons.history_outlined,
-              selectedIcon: Icons.history_rounded,
-              active: activeTab == SupplierDockTab.recent,
-              compact: compact,
-              onTap: () {
-                if (activeTab == SupplierDockTab.recent) {
-                  return;
-                }
+              if (index == 2) {
+                if (centerActive) return;
+                Navigator.of(context).pushNamed(AppRoutes.supplierItemPicker);
+                return;
+              }
+              if (index == 3) {
+                if (activeTab == SupplierDockTab.recent) return;
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoutes.supplierRecent,
                   (route) => false,
                 );
-              },
-            ),
-            DockButton(
-              label: 'Profil',
-              nativeId: 'supplier_profile',
-              nativeSymbol: 'person.crop.circle',
-              nativeSelectedSymbol: 'person.crop.circle.fill',
-              nativeRouteName: AppRoutes.profile,
-              nativeReplaceStack: true,
-              icon: Icons.account_circle_outlined,
-              selectedIcon: Icons.account_circle_rounded,
-              active: activeTab == SupplierDockTab.profile,
-              compact: compact,
-              onHoldComplete: activeTab == SupplierDockTab.profile
-                  ? () => showLogoutPrompt(context)
-                  : null,
-              onTap: () {
-                if (activeTab == SupplierDockTab.profile) {
-                  return;
-                }
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  AppRoutes.profile,
-                  (route) => false,
-                );
-              },
-            ),
-          ],
+                return;
+              }
+              if (activeTab == SupplierDockTab.profile) return;
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRoutes.profile,
+                (route) => false,
+              );
+            },
+          ),
         );
       },
     );
