@@ -10,6 +10,7 @@ import '../../shared/models/app_models.dart';
 import '../state/werka_store.dart';
 import 'widgets/werka_dock.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class WerkaHomeScreen extends StatefulWidget {
   const WerkaHomeScreen({super.key});
@@ -79,7 +80,15 @@ class _WerkaHomeScreenState extends State<WerkaHomeScreen>
             onPressed: () => Navigator.of(context).pushNamed(
               AppRoutes.profile,
             ),
-            icon: const Icon(Icons.account_circle_outlined, size: 25),
+            icon: SvgPicture.asset(
+              'assets/icons/account-circle-line.svg',
+              width: 28,
+              height: 28,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).colorScheme.onSecondaryContainer,
+                BlendMode.srcIn,
+              ),
+            ),
           ),
         ),
       ],
