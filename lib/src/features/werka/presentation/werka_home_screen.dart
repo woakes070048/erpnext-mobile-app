@@ -67,17 +67,20 @@ class _WerkaHomeScreenState extends State<WerkaHomeScreen>
       subtitle: '',
       nativeTopBar: true,
       actions: [
-        IconButton.filledTonal(
-          style: IconButton.styleFrom(
-            minimumSize: const Size.square(32),
-            fixedSize: const Size.square(32),
-            padding: EdgeInsets.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        Padding(
+          padding: const EdgeInsets.only(right: 6),
+          child: IconButton.filledTonal(
+            style: IconButton.styleFrom(
+              minimumSize: const Size.square(32),
+              fixedSize: const Size.square(32),
+              padding: EdgeInsets.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            onPressed: () => Navigator.of(context).pushNamed(
+              AppRoutes.profile,
+            ),
+            icon: const Icon(Icons.account_circle_outlined, size: 18),
           ),
-          onPressed: () => Navigator.of(context).pushNamed(
-            AppRoutes.profile,
-          ),
-          icon: const Icon(Icons.account_circle_outlined, size: 18),
         ),
       ],
       bottom: const WerkaDock(activeTab: WerkaDockTab.home),
