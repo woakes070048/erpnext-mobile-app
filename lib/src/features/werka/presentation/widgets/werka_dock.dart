@@ -3,6 +3,7 @@ import '../../../../core/notifications/notification_unread_store.dart';
 import '../../../../core/session/app_session.dart';
 import '../../../../core/widgets/app_navigation_bar.dart';
 import '../../../../core/widgets/logout_prompt.dart';
+import 'werka_create_hub_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -100,10 +101,7 @@ class WerkaDock extends StatelessWidget {
                 return;
               }
               if (index == 2) {
-                if (activeTab == WerkaDockTab.create) return;
-                Navigator.of(context).pushNamed(
-                  AppRoutes.werkaCreateHub,
-                );
+                showWerkaCreateHubSheet(context);
                 return;
               }
               if (index == 3) {
