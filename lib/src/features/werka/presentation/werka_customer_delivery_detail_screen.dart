@@ -200,13 +200,7 @@ class WerkaCustomerDeliveryDetailScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const SafeArea(
-        top: false,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: WerkaDock(activeTab: null),
-        ),
-      ),
+      bottomNavigationBar: const WerkaDock(activeTab: null),
     );
   }
 }

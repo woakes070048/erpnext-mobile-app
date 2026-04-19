@@ -142,13 +142,7 @@ class _CustomerStatusDetailScreenState
           ],
         ),
       ),
-      bottomNavigationBar: const SafeArea(
-        top: false,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: CustomerDock(activeTab: null),
-        ),
-      ),
+      bottomNavigationBar: const CustomerDock(activeTab: null),
     );
   }
 }

@@ -531,11 +531,12 @@ class AppTheme {
         titleTextStyle: textTheme.titleLarge,
       ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 82,
-        backgroundColor: colorScheme.surfaceContainerLowest,
+        height: 80,
+        backgroundColor: colorScheme.surfaceContainerLow,
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.transparent,
         indicatorColor: colorScheme.secondaryContainer,
+        indicatorShape: const StadiumBorder(),
         labelTextStyle: WidgetStateProperty.resolveWith<TextStyle?>(
           (states) {
             final bool selected = states.contains(WidgetState.selected);
@@ -729,20 +730,6 @@ class AppTheme {
 
   static Color actionSurface(BuildContext context) =>
       Theme.of(context).colorScheme.surfaceContainer;
-
-  static Color dockDivider(BuildContext context) =>
-      Theme.of(context).colorScheme.outlineVariant;
-
-  static Color dockInactive(BuildContext context) => Colors.transparent;
-
-  static Color dockActive(BuildContext context) =>
-      Theme.of(context).colorScheme.secondaryContainer;
-
-  static Color primaryButton(BuildContext context) =>
-      Theme.of(context).colorScheme.primary;
-
-  static Color primaryButtonForeground(BuildContext context) =>
-      Theme.of(context).colorScheme.onPrimary;
 
   static TextStyle pageTitleStyle(BuildContext context) {
     final theme = Theme.of(context);

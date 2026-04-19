@@ -77,99 +77,122 @@ class AppNavigationBar extends StatelessWidget {
     final double hostHeight =
         hasPrimary ? height + primaryButtonSize + primaryButtonGap : height;
 
-    return SizedBox(
-      height: hostHeight,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: NavigationBarTheme(
-              data: NavigationBarThemeData(
-                height: height,
-                backgroundColor: scheme.surfaceContainerLow,
-                surfaceTintColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                indicatorColor: !barSelectionVisible
-                    ? Colors.transparent
-                    : scheme.secondaryContainer,
-                indicatorShape: const StadiumBorder(),
-                labelTextStyle: WidgetStateProperty.resolveWith<TextStyle?>(
-                  (states) {
-                    final bool selected = barSelectionVisible &&
-                        states.contains(
-                          WidgetState.selected,
-                        );
-                    return theme.textTheme.labelSmall?.copyWith(
-                      fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                      color:
-                          selected ? selectedLabelColor : unselectedLabelColor,
-                      letterSpacing: 0.1,
-                    );
-                  },
-                ),
-                iconTheme:
-                    WidgetStateProperty.resolveWith<IconThemeData?>((states) {
-                  final bool selected = barSelectionVisible &&
-                      states.contains(
-                        WidgetState.selected,
-                      );
-                  return IconThemeData(
-                    color: selected ? selectedLabelColor : unselectedLabelColor,
-                    size: 24,
-                  );
-                }),
-              ),
-              child: NavigationBar(
-                height: height,
-                selectedIndex: barSelectedIndex,
-                onDestinationSelected: (index) {
-                  final destination = barDestinations[index];
-                  final originalIndex = destinations.indexOf(destination);
-                  onDestinationSelected(originalIndex);
-                },
-                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-                backgroundColor: scheme.surfaceContainerLow,
-                surfaceTintColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                indicatorColor: !barSelectionVisible
-                    ? Colors.transparent
-                    : scheme.secondaryContainer,
-                indicatorShape: const StadiumBorder(),
-                destinations: List<NavigationDestination>.generate(
-                  barDestinations.length,
-                  (index) {
-                    final destination = barDestinations[index];
-                    return NavigationDestination(
-                      label: destination.label,
-                      icon: _AppNavigationDestinationIcon(
-                        destination: destination,
-                        selected: false,
-                        selectionVisible: selectionVisible,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double availableWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.sizeOf(context).width;
+
+        return SizedBox(
+          width: availableWidth,
+          height: hostHeight,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    width: availableWidth,
+                    child: NavigationBarTheme(
+                      data: NavigationBarThemeData(
+                        height: height,
+                        backgroundColor: scheme.surfaceContainerLow,
+                        surfaceTintColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        indicatorColor: !barSelectionVisible
+                            ? Colors.transparent
+                            : scheme.secondaryContainer,
+                        indicatorShape: const StadiumBorder(),
+                        labelTextStyle:
+                            WidgetStateProperty.resolveWith<TextStyle?>(
+                          (states) {
+                            final bool selected = barSelectionVisible &&
+                                states.contains(
+                                  WidgetState.selected,
+                                );
+                            return theme.textTheme.labelSmall?.copyWith(
+                              fontWeight: selected
+                                  ? FontWeight.w700
+                                  : FontWeight.w600,
+                              color: selected
+                                  ? selectedLabelColor
+                                  : unselectedLabelColor,
+                              letterSpacing: 0.1,
+                            );
+                          },
+                        ),
+                        iconTheme:
+                            WidgetStateProperty.resolveWith<IconThemeData?>(
+                          (states) {
+                            final bool selected = barSelectionVisible &&
+                                states.contains(
+                                  WidgetState.selected,
+                                );
+                            return IconThemeData(
+                              color: selected
+                                  ? selectedLabelColor
+                                  : unselectedLabelColor,
+                              size: 24,
+                            );
+                          },
+                        ),
                       ),
-                      selectedIcon: _AppNavigationDestinationIcon(
-                        destination: destination,
-                        selected: true,
-                        selectionVisible: selectionVisible,
+                      child: NavigationBar(
+                        height: height,
+                        selectedIndex: barSelectedIndex,
+                        onDestinationSelected: (index) {
+                          final destination = barDestinations[index];
+                          final originalIndex = destinations.indexOf(destination);
+                          onDestinationSelected(originalIndex);
+                        },
+                        labelBehavior:
+                            NavigationDestinationLabelBehavior.alwaysShow,
+                        backgroundColor: scheme.surfaceContainerLow,
+                        surfaceTintColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        indicatorColor: !barSelectionVisible
+                            ? Colors.transparent
+                            : scheme.secondaryContainer,
+                        indicatorShape: const StadiumBorder(),
+                        destinations: List<NavigationDestination>.generate(
+                          barDestinations.length,
+                          (index) {
+                            final destination = barDestinations[index];
+                            return NavigationDestination(
+                              label: destination.label,
+                              icon: _AppNavigationDestinationIcon(
+                                destination: destination,
+                                selected: false,
+                                selectionVisible: selectionVisible,
+                              ),
+                              selectedIcon: _AppNavigationDestinationIcon(
+                                destination: destination,
+                                selected: true,
+                                selectionVisible: selectionVisible,
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ),
-            ),
+              if (hasPrimary)
+                PositionedDirectional(
+                  end: 16,
+                  bottom: height + primaryButtonGap,
+                  child: _AppPrimaryNavigationButton(
+                    destination: destinations[primaryIndex],
+                    selected: primarySelected,
+                    onTap: () => onDestinationSelected(primaryIndex),
+                  ),
+                ),
+            ],
           ),
-          if (hasPrimary)
-            PositionedDirectional(
-              end: 16,
-              bottom: height + primaryButtonGap,
-              child: _AppPrimaryNavigationButton(
-                destination: destinations[primaryIndex],
-                selected: primarySelected,
-                onTap: () => onDestinationSelected(primaryIndex),
-              ),
-            ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
