@@ -59,6 +59,16 @@ class _WerkaHomeScreenState extends State<WerkaHomeScreen>
     await WerkaStore.instance.refreshHome();
   }
 
+  void _openDrawerRoute(String route) {
+    Navigator.of(context).pop();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      Navigator.of(context).pushNamed(route);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.viewPaddingOf(context).bottom + 136.0;
@@ -66,23 +76,7 @@ class _WerkaHomeScreenState extends State<WerkaHomeScreen>
       title: context.l10n.werkaRoleName,
       subtitle: '',
       nativeTopBar: true,
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 6),
-          child: IconButton.filledTonal(
-            style: IconButton.styleFrom(
-              minimumSize: const Size.square(32),
-              fixedSize: const Size.square(32),
-              padding: EdgeInsets.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            onPressed: () => Navigator.of(context).pushNamed(
-              AppRoutes.profile,
-            ),
-            icon: const Icon(Icons.person_outline_rounded, size: 26),
-          ),
-        ),
-      ],
+      drawer: _WerkaHomeDrawer(onSelected: _openDrawerRoute),
       bottom: const WerkaDock(activeTab: WerkaDockTab.home),
       contentPadding: EdgeInsets.zero,
       child: Column(
@@ -133,6 +127,58 @@ class _WerkaHomeScreenState extends State<WerkaHomeScreen>
           ),
         ],
       ),
+    );
+  }
+}
+
+class _WerkaHomeDrawer extends StatelessWidget {
+  const _WerkaHomeDrawer({
+    required this.onSelected,
+  });
+
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final onSurfaceVariant = scheme.onSurfaceVariant;
+    return NavigationDrawer(
+      backgroundColor: scheme.surfaceContainerLow,
+      indicatorColor: scheme.secondaryContainer,
+      surfaceTintColor: Colors.transparent,
+      selectedIndex: -1,
+      onDestinationSelected: (index) {
+        if (index == 0) {
+          onSelected(AppRoutes.profile);
+          return;
+        }
+        if (index == 1) {
+          onSelected(AppRoutes.werkaArchive);
+        }
+      },
+      header: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 4),
+        child: Text(
+          'Bo‘limlar',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: onSurfaceVariant,
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+      ),
+      children: [
+        NavigationDrawerDestination(
+          icon: const Icon(Icons.person_outline_rounded),
+          selectedIcon: const Icon(Icons.person_rounded),
+          label: Text(context.l10n.profileTitle),
+        ),
+        const SizedBox(height: 4),
+        NavigationDrawerDestination(
+          icon: const Icon(Icons.archive_outlined),
+          selectedIcon: const Icon(Icons.archive_rounded),
+          label: Text(context.l10n.archiveTitle),
+        ),
+      ],
     );
   }
 }

@@ -14,6 +14,7 @@ class AppShell extends StatelessWidget {
     required this.child,
     this.leading,
     this.actions,
+    this.drawer,
     this.bottom,
     this.contentPadding = const EdgeInsets.fromLTRB(4, 0, 6, 0),
     this.bottomPadding = EdgeInsets.zero,
@@ -28,6 +29,7 @@ class AppShell extends StatelessWidget {
   final Widget child;
   final Widget? leading;
   final List<Widget>? actions;
+  final Widget? drawer;
   final Widget? bottom;
   final EdgeInsets contentPadding;
   final EdgeInsets bottomPadding;
@@ -56,6 +58,7 @@ class AppShell extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor ?? theme.scaffoldBackgroundColor,
       extendBody: true,
+      drawer: drawer,
       appBar: nativeTopBar
           ? AppBar(
               title: Text(title),
