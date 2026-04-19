@@ -87,7 +87,7 @@ class _WerkaCreateHubOverlayState extends State<_WerkaCreateHubOverlay>
 
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 320),
+    duration: const Duration(milliseconds: 260),
   )..forward();
 
   @override
