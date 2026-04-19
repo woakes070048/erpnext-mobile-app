@@ -80,8 +80,8 @@ class _WerkaCreateHubOverlay extends StatefulWidget {
 class _WerkaCreateHubOverlayState extends State<_WerkaCreateHubOverlay>
     with SingleTickerProviderStateMixin {
   static const double _toggleBottom = 112.0;
-  static const double _toggleLeftShift = 8.0;
-  static const double _toggleUpShift = 6.0;
+  static const double _toggleLeftShift = 12.0;
+  static const double _toggleUpShift = 10.0;
   static const double _toggleCollapsedSize = 58.0;
   static const double _toggleExpandedSize = 84.0;
   static const double _menuGap = 14.0;
@@ -377,8 +377,8 @@ class _WerkaCreateHubToggleButton extends StatelessWidget {
                       opacity: value,
                       child: Transform.translate(
                         offset: Offset(
-                          _lerpDouble(0, -0.8, value),
-                          _lerpDouble(0, -2.4, value),
+                          _lerpDouble(0, -1.4, value),
+                          _lerpDouble(0, -3.6, value),
                         ),
                         child: Icon(
                           Icons.close_rounded,
