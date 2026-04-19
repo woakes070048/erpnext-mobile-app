@@ -15,7 +15,7 @@ Future<void> showWerkaCreateHubSheet(BuildContext context) {
     barrierDismissible: true,
     barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
     barrierColor: scheme.scrim.withValues(alpha: 0.58),
-    transitionDuration: const Duration(milliseconds: 240),
+    transitionDuration: const Duration(milliseconds: 320),
     pageBuilder: (dialogContext, animation, secondaryAnimation) {
       return _WerkaCreateHubFloatingMenu(
         onClose: () => Navigator.of(dialogContext).pop(),
@@ -81,7 +81,7 @@ class _WerkaCreateHubFloatingMenuState
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 240),
+    duration: const Duration(milliseconds: 320),
   )..forward();
 
   @override
@@ -96,7 +96,7 @@ class _WerkaCreateHubFloatingMenuState
     final scheme = Theme.of(context).colorScheme;
     final size = MediaQuery.sizeOf(context);
     final menuWidth = math.min(320.0, size.width - 32.0);
-    const double bottomAnchor = 112.0;
+    const double bottomAnchor = 124.0;
     const double menuGap = 14.0;
     const double collapsedButtonSize = 58.0;
     const double expandedButtonSize = 84.0;
@@ -171,7 +171,8 @@ class _WerkaCreateHubFloatingMenuState
               child: _WerkaCreateHubToggleButton(
                 animation: CurvedAnimation(
                   parent: _controller,
-                  curve: Curves.easeOutBack,
+                  curve: Curves.easeOutCubic,
+                  reverseCurve: Curves.easeInCubic,
                 ),
                 onTap: widget.onClose,
                 color: scheme.primaryContainer,
@@ -315,7 +316,7 @@ class _WerkaCreateHubToggleButton extends StatelessWidget {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
-        final value = Curves.easeOutBack.transform(animation.value.clamp(
+        final value = Curves.easeOutCubic.transform(animation.value.clamp(
           0.0,
           1.0,
         ));
@@ -343,7 +344,7 @@ class _WerkaCreateHubToggleButton extends StatelessWidget {
                     Opacity(
                       opacity: 1 - value,
                       child: Transform.rotate(
-                        angle: math.pi * 0.18 * value,
+                        angle: math.pi * 0.12 * value,
                         child: Icon(
                           Icons.add_rounded,
                           color: foregroundColor,
