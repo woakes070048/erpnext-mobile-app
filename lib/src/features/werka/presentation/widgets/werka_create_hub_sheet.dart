@@ -85,14 +85,19 @@ class _WerkaCreateHubOverlayState extends State<_WerkaCreateHubOverlay>
   static const double _menuGap = 34.0;
   static const double _menuSpacing = 10.0;
 
-  late final AnimationController _controller = AnimationController(
+  late final AnimationController _menuController = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 260),
+  )..forward();
+  late final AnimationController _toggleController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 180),
   )..forward();
 
   @override
   void dispose() {
-    _controller.dispose();
+    _menuController.dispose();
+    _toggleController.dispose();
     super.dispose();
   }
 
@@ -104,12 +109,12 @@ class _WerkaCreateHubOverlayState extends State<_WerkaCreateHubOverlay>
     final size = MediaQuery.sizeOf(context);
     final menuWidth = math.min(320.0, size.width - 32.0);
     final menuAnimation = CurvedAnimation(
-      parent: _controller,
+      parent: _menuController,
       curve: Curves.easeOutCubic,
       reverseCurve: Curves.easeInCubic,
     );
     final toggleAnimation = CurvedAnimation(
-      parent: _controller,
+      parent: _toggleController,
       curve: Curves.easeOutCubic,
       reverseCurve: Curves.easeInCubic,
     );
@@ -119,7 +124,7 @@ class _WerkaCreateHubOverlayState extends State<_WerkaCreateHubOverlay>
         description: l10n.unannouncedDescription,
         icon: Icons.inventory_2_outlined,
         animation: CurvedAnimation(
-          parent: _controller,
+          parent: _menuController,
           curve: const Interval(0.00, 0.46, curve: Curves.easeOutCubic),
         ),
         onTap: () => widget.onOpenRoute(AppRoutes.werkaUnannouncedSupplier),
@@ -129,7 +134,7 @@ class _WerkaCreateHubOverlayState extends State<_WerkaCreateHubOverlay>
         description: l10n.customerIssueDescription,
         icon: Icons.send_outlined,
         animation: CurvedAnimation(
-          parent: _controller,
+          parent: _menuController,
           curve: const Interval(0.08, 0.54, curve: Curves.easeOutCubic),
         ),
         onTap: () => widget.onOpenRoute(AppRoutes.werkaCustomerIssueCustomer),
@@ -139,7 +144,7 @@ class _WerkaCreateHubOverlayState extends State<_WerkaCreateHubOverlay>
         description: l10n.batchDispatchDescription,
         icon: Icons.playlist_add_check_rounded,
         animation: CurvedAnimation(
-          parent: _controller,
+          parent: _menuController,
           curve: const Interval(0.16, 0.62, curve: Curves.easeOutCubic),
         ),
         onTap: () => widget.onOpenRoute(AppRoutes.werkaBatchDispatch),
