@@ -199,7 +199,6 @@ class ActionDock extends StatelessWidget {
     final double hostHeight = _hostHeightForDevice(deviceClass);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final bool isDark = AppTheme.isDark(context);
     final int selectedIndex =
         buttons.indexWhere((button) => button.active).clamp(
               0,
@@ -212,94 +211,69 @@ class ActionDock extends StatelessWidget {
 
     return SizedBox(
       height: hostHeight,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          tightToEdges ? 0 : 12,
-          0,
-          tightToEdges ? 0 : 12,
-          0,
-        ),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: isDark
-                ? scheme.surfaceContainerLow
-                : scheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: AppTheme.cardBorder(context)),
-            boxShadow: [
-              BoxShadow(
-                color: isDark
-                    ? const Color(0x24000000)
-                    : const Color(0x140E1525),
-                blurRadius: isDark ? 22 : 18,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(30),
-            child: NavigationBarTheme(
-              data: NavigationBarThemeData(
-                height: hostHeight,
-                backgroundColor: Colors.transparent,
-                surfaceTintColor: Colors.transparent,
-                indicatorColor: scheme.secondaryContainer,
-                shadowColor: Colors.transparent,
-                labelTextStyle:
-                    WidgetStateProperty.resolveWith<TextStyle?>((states) {
-                  final bool selected = states.contains(WidgetState.selected);
-                  return theme.textTheme.labelSmall?.copyWith(
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                    color: selected
-                        ? scheme.onSecondaryContainer
-                        : scheme.onSurfaceVariant,
-                    letterSpacing: 0.1,
-                  );
-                }),
-                iconTheme:
-                    WidgetStateProperty.resolveWith<IconThemeData?>((states) {
-                  final bool selected = states.contains(WidgetState.selected);
-                  return IconThemeData(
-                    size: switch (deviceClass) {
-                      _DockDeviceClass.small => 25,
-                      _DockDeviceClass.medium => 25,
-                      _DockDeviceClass.large => 26,
-                    },
-                    color: selected
-                        ? scheme.onSecondaryContainer
-                        : scheme.onSurfaceVariant,
-                  );
-                }),
-              ),
-              child: NavigationBar(
-                height: hostHeight,
-                selectedIndex: selectedIndex,
-                onDestinationSelected: (index) {
-                  buttons[index].onTap();
-                },
-                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-                backgroundColor: Colors.transparent,
-                indicatorColor: scheme.secondaryContainer,
-                surfaceTintColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                destinations: List<NavigationDestination>.generate(
-                  buttons.length,
-                  (index) {
-                    final button = buttons[index];
-                    return NavigationDestination(
-                      label: button.label,
-                      icon: _DockDestinationIcon(
-                        button: button,
-                        selected: false,
-                      ),
-                      selectedIcon: _DockDestinationIcon(
-                        button: button,
-                        selected: true,
-                      ),
-                    );
+      child: Material(
+        color: scheme.surfaceContainerLow,
+        child: NavigationBarTheme(
+          data: NavigationBarThemeData(
+            height: hostHeight,
+            backgroundColor: scheme.surfaceContainerLow,
+            surfaceTintColor: Colors.transparent,
+            indicatorColor: scheme.secondaryContainer,
+            shadowColor: Colors.transparent,
+            labelTextStyle:
+                WidgetStateProperty.resolveWith<TextStyle?>((states) {
+              final bool selected = states.contains(WidgetState.selected);
+                return theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                  color: selected
+                      ? scheme.onSecondaryContainer
+                      : scheme.onSurfaceVariant,
+                  letterSpacing: 0.1,
+                );
+            }),
+            iconTheme: WidgetStateProperty.resolveWith<IconThemeData?>(
+              (states) {
+                final bool selected = states.contains(WidgetState.selected);
+                return IconThemeData(
+                  size: switch (deviceClass) {
+                    _DockDeviceClass.small => 25,
+                    _DockDeviceClass.medium => 25,
+                    _DockDeviceClass.large => 26,
                   },
-                ),
-              ),
+                  color: selected
+                      ? scheme.onSecondaryContainer
+                      : scheme.onSurfaceVariant,
+                );
+              },
+            ),
+          ),
+          child: NavigationBar(
+            height: hostHeight,
+            selectedIndex: selectedIndex,
+            onDestinationSelected: (index) {
+              buttons[index].onTap();
+            },
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            backgroundColor: scheme.surfaceContainerLow,
+            indicatorColor: scheme.secondaryContainer,
+            surfaceTintColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            destinations: List<NavigationDestination>.generate(
+              buttons.length,
+              (index) {
+                final button = buttons[index];
+                return NavigationDestination(
+                  label: button.label,
+                  icon: _DockDestinationIcon(
+                    button: button,
+                    selected: false,
+                  ),
+                  selectedIcon: _DockDestinationIcon(
+                    button: button,
+                    selected: true,
+                  ),
+                );
+              },
             ),
           ),
         ),
