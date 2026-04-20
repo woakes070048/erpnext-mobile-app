@@ -60,4 +60,41 @@ void main() {
 
     expect(selectedIndex, 2);
   });
+
+  testWidgets('navigation bar ignores bottom system padding', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: MediaQuery(
+          data: const MediaQueryData(
+            size: Size(400, 800),
+            padding: EdgeInsets.only(bottom: 32),
+          ),
+          child: Scaffold(
+            body: const SizedBox.expand(),
+            bottomNavigationBar: AppNavigationBar(
+              destinations: const [
+                AppNavigationDestination(
+                  label: 'Home',
+                  icon: Icon(Icons.home_outlined),
+                ),
+                AppNavigationDestination(
+                  label: 'Search',
+                  icon: Icon(Icons.search_outlined),
+                ),
+              ],
+              selectedIndex: 0,
+              onDestinationSelected: (_) {},
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    final navBarFinder = find.byType(NavigationBar);
+    expect(navBarFinder, findsOneWidget);
+    expect(tester.getSize(navBarFinder).height, 80);
+  });
 }
